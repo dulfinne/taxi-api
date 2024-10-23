@@ -8,6 +8,10 @@
   <name>taxi Maven Webapp</name>
   <url>http://maven.apache.org</url>
 
+  <modules>
+    <module>passenger-service</module>
+  </modules>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
