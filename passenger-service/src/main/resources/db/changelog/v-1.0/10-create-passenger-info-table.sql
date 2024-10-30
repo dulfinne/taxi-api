@@ -4,8 +4,8 @@ CREATE TABLE passenger_info
     first_name   VARCHAR(255),
     last_name    VARCHAR(255),
     phone_number VARCHAR(255),
-    payment      VARCHAR(10) NOT NULL,
-    ride_count   VARCHAR(255)
+    payment      VARCHAR(10),
+    ride_count   INTEGER
 );
 
 ALTER TABLE passenger_info

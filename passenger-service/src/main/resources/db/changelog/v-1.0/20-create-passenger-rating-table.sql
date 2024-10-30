@@ -1,9 +1,9 @@
 CREATE TABLE passenger_rating
 (
     id           BIGSERIAL PRIMARY KEY,
-    passenger_id BIGINT,
+    passenger_id BIGINT NOT NULL,
     rating       BIGINT NOT NULL,
-    feedback     TEXT
+    feedback     VARCHAR(255)
 );
 
 ALTER TABLE passenger_rating
