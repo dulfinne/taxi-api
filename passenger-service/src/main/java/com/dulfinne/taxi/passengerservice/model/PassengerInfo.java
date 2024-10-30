@@ -34,7 +34,7 @@ public class PassengerInfo {
     private Payment payment;
 
     @Column(name = "ride_count")
-    private String rideCount;
+    private Integer rideCount;
 
     @OneToOne
     @MapsId
