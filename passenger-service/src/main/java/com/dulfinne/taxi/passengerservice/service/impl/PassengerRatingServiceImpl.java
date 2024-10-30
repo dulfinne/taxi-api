@@ -1,0 +1,41 @@
+package com.dulfinne.taxi.passengerservice.service.impl;
+
+import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
+import com.dulfinne.taxi.passengerservice.model.Passenger;
+import com.dulfinne.taxi.passengerservice.model.PassengerRating;
+import com.dulfinne.taxi.passengerservice.repository.PassengerRatingRepository;
+import com.dulfinne.taxi.passengerservice.repository.PassengerRepository;
+import com.dulfinne.taxi.passengerservice.service.PassengerRatingService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class PassengerRatingServiceImpl implements PassengerRatingService {
+
+    private final PassengerRatingRepository passengerRatingRepository;
+    private final PassengerRepository passengerRepository;
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<PassengerRating> getPassengerRatings(Long passengerId) {
+        return passengerRatingRepository.findByPassengerId(passengerId);
+    }
+
+    @Transactional
+    @Override
+    public PassengerRating savePassengerRating(Long passengerId, PassengerRating passengerRating) {
+        Passenger passenger = getPassengerIfExists(passengerId);
+        passengerRating.setPassenger(passenger);
+
+        return passengerRatingRepository.save(passengerRating);
+    }
+
+    private Passenger getPassengerIfExists(Long id) {
+        return passengerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Passenger not found: id = " + id));
+    }
+}
