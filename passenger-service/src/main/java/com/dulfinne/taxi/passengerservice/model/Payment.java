@@ -1,12 +1,13 @@
 package com.dulfinne.taxi.passengerservice.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum Payment {
     CASH("Cash Payment"),
     CARD("Card Payment");
 
-    public final String description;
-
-    private Payment(String description) {
-        this.description = description;
-    }
+    private final String description;
 }
