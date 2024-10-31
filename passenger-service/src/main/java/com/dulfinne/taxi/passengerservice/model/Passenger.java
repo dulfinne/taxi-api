@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 
 @Entity
 @Table(name = "passenger")
@@ -31,7 +32,6 @@ import java.util.Objects;
 @AllArgsConstructor
 @ToString
 public class Passenger {
-    private static final String CURRENT_TIMEZONE = "Europe/Minsk";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,7 +57,7 @@ public class Passenger {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = ZonedDateTime.now(ZoneId.of(CURRENT_TIMEZONE));
+        this.createdAt = ZonedDateTime.now(ZoneId.of(TimeZone.getDefault().getID()));
     }
 
     @Override
