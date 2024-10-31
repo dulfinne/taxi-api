@@ -1,7 +1,20 @@
 package com.dulfinne.taxi.passengerservice.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
@@ -20,13 +33,13 @@ public class PassengerRating {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "passenger_id", referencedColumnName = "id")
     @ToString.Exclude
-    private Passenger passenger;
+    private PassengerInfo passengerInfo;
 
     @Column(name = "rating", nullable = false)
-    private Long rating;
+    private Integer rating;
 
     @Column(name = "feedback")
     private String feedback;

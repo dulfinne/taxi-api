@@ -1,7 +1,21 @@
 package com.dulfinne.taxi.passengerservice.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.ZoneId;
@@ -40,10 +54,6 @@ public class Passenger {
     @OneToOne(mappedBy = "passenger", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private PassengerInfo info;
-
-    @OneToMany(mappedBy = "passenger", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<PassengerRating> ratings;
 
     @PrePersist
     protected void onCreate() {
