@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Payment {
-    CASH("Cash Payment"),
-    CARD("Card Payment");
+  CASH("Cash Payment"),
+  CARD("Card Payment");
 
-    private final String description;
+  private final String description;
 }
