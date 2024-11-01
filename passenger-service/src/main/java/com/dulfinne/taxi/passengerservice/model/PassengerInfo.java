@@ -4,6 +4,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +25,9 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "passenger_info")
+@Table(
+    name = "passenger_info",
+    indexes = {@Index(name = "idx_phone_number", columnList = "phone_number")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,58 +35,55 @@ import java.util.Objects;
 @ToString
 public class PassengerInfo {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "first_name")
-    private String firstName;
+  @Column(name = "first_name")
+  private String firstName;
 
-    @Column(name = "last_name")
-    private String lastName;
+  @Column(name = "last_name")
+  private String lastName;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+  @Column(name = "phone_number", unique = true)
+  private String phoneNumber;
 
-    @Column(name = "payment", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Payment payment;
+  @Column(name = "payment", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private Payment payment;
 
-    @Column(name = "ride_count")
-    private Integer rideCount;
+  @Column(name = "ride_count")
+  private Integer rideCount;
 
-    @Column(name = "average_rating")
-    private Double averageRating;
+  @Column(name = "average_rating")
+  private Double averageRating;
 
-    @OneToOne
-    @JoinColumn(name = "id")
-    @ToString.Exclude
-    private Passenger passenger;
+  @OneToMany(mappedBy = "passengerInfo", cascade = CascadeType.ALL)
+  @ToString.Exclude
+  private List<PassengerRating> ratings;
 
-    @OneToMany(mappedBy = "passengerInfo", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<PassengerRating> ratings;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null) return false;
+    Class<?> oEffectiveClass =
+        o instanceof HibernateProxy
+            ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+            : o.getClass();
+    Class<?> thisEffectiveClass =
+        this instanceof HibernateProxy
+            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+            : this.getClass();
+    if (thisEffectiveClass != oEffectiveClass) return false;
+    PassengerInfo passengerInfo = (PassengerInfo) o;
+    return getId() != null && Objects.equals(getId(), passengerInfo.getId());
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy
-                ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
-                : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy
-                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
-                : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        PassengerInfo passengerInfo = (PassengerInfo) o;
-        return getId() != null && Objects.equals(getId(), passengerInfo.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return this instanceof HibernateProxy
-                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
-                : getClass().hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return this instanceof HibernateProxy
+        ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
+        : getClass().hashCode();
+  }
 }
