@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.passengerservice.mapper;
 
+import com.dulfinne.taxi.passengerservice.dto.request.PassengerRatingRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
 import com.dulfinne.taxi.passengerservice.model.PassengerRating;
 import org.mapstruct.Mapper;
@@ -11,5 +12,5 @@ public interface PassengerRatingMapper {
 
   PassengerRatingResponse toResponse(PassengerRating entity);
 
-  PassengerRating toEntity(PassengerRatingResponse response);
+  PassengerRating toEntity(PassengerRatingRequest request);
 }
