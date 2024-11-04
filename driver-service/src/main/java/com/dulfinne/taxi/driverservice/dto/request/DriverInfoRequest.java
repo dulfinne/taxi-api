@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record DriverInfoRequest(
-    Long driverId,
-
     @NotNull(message = "Please enter first name")
     String firstName,
 

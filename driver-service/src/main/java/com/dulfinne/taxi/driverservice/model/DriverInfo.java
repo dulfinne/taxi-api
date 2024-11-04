@@ -32,8 +32,8 @@ public class DriverInfo {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "driver_id", nullable = false, unique = true)
-  private Long driverId;
+  @Column(name = "username", nullable = false, unique = true)
+  private String username;
 
   @Column(name = "first_name")
   private String firstName;
