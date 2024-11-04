@@ -49,17 +49,11 @@ public class PassengerInfoServiceImpl implements PassengerInfoService {
     checkPassengerIdUniqueness(newPassengerInfo.getPassengerId());
     checkPhoneNumberUniqueness(newPassengerInfo.getPhoneNumber());
 
-    PassengerInfo passengerInfo = new PassengerInfo();
-    passengerInfo.setPassengerId(newPassengerInfo.getPassengerId());
-    passengerInfo.setFirstName(newPassengerInfo.getFirstName());
-    passengerInfo.setLastName(newPassengerInfo.getLastName());
-    passengerInfo.setPhoneNumber(newPassengerInfo.getPhoneNumber());
-    passengerInfo.setPayment(newPassengerInfo.getPayment());
-    passengerInfo.setRideCount(0);
-    passengerInfo.setAverageRating(5.0);
+    newPassengerInfo.setRideCount(0);
+    newPassengerInfo.setAverageRating(5.0);
 
-    passengerInfoRepository.save(passengerInfo);
-    return INFO_MAPPER_INSTANCE.toResponse(passengerInfo);
+    passengerInfoRepository.save(newPassengerInfo);
+    return INFO_MAPPER_INSTANCE.toResponse(newPassengerInfo);
   }
 
   @Transactional
