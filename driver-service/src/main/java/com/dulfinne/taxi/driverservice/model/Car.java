@@ -38,9 +38,9 @@ public class Car {
   @Column(name = "registration_number", nullable = false)
   private String registrationNumber;
 
-  @Column(name = "car_class")
+  @Column(name = "car_category")
   @Enumerated(EnumType.STRING)
-  private CarClass carClass;
+  private CarCategory carCategory;
 
   @OneToOne(mappedBy = "car")
   @ToString.Exclude

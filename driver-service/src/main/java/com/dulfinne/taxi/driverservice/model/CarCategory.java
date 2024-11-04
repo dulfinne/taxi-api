@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum CarClass {
+public enum CarCategory {
   ECONOM("Econom class"),
   COMFORT("Comfort class");
 

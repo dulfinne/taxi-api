@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.driverservice.dto.request;
 
-import com.dulfinne.taxi.driverservice.model.CarClass;
+import com.dulfinne.taxi.driverservice.model.CarCategory;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
@@ -18,6 +18,6 @@ public record CarRequest(
     String registrationNumber,
 
     @NotNull(message = "Please enter car class: (ECONOM/BUISENESS)")
-    CarClass carClass
+    CarCategory carCategory
 ) {
 }
