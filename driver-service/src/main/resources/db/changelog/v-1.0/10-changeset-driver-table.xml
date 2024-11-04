@@ -11,7 +11,7 @@
                  relativeToChangelogFile="true"
                  splitStatements="true"
                  stripComments="true"
-                 path="10-create-driver-info-table.sql"/>
+                 path="10-create-driver-table.sql"/>
         <rollback>
             <sqlFile dbms="postgresql"
                      encoding="utf8"
@@ -19,7 +19,7 @@
                      relativeToChangelogFile="true"
                      splitStatements="true"
                      stripComments="true"
-                     path="10-drop-driver-info-table.sql"/>
+                     path="10-drop-driver-table.sql"/>
         </rollback>
     </changeSet>
 

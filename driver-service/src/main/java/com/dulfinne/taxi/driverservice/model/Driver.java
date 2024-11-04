@@ -25,7 +25,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class DriverInfo {
+public class Driver {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,7 +58,7 @@ public class DriverInfo {
   @ToString.Exclude
   private Car car;
 
-  @OneToMany(mappedBy = "driverInfo", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL)
   @ToString.Exclude
   private List<DriverRating> ratings;
 }

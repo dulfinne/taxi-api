@@ -1,4 +1,4 @@
-CREATE TABLE driver_info
+CREATE TABLE driver
 (
     id                BIGSERIAL PRIMARY KEY,
     username          VARCHAR NOT NULL UNIQUE,
@@ -15,4 +15,4 @@ CREATE TABLE driver_info
             ON DELETE SET NULL
 );
 
-CREATE INDEX idx_phone_number ON driver_info (phone_number);
+CREATE INDEX idx_phone_number ON driver (phone_number);

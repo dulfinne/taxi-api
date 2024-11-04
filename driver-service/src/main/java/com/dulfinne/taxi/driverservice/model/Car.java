@@ -44,5 +44,5 @@ public class Car {
 
   @OneToOne(mappedBy = "car")
   @ToString.Exclude
-  private DriverInfo driverInfo;
+  private Driver driver;
 }

@@ -6,7 +6,7 @@
                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="01-changeset-car-table.xml" relativeToChangelogFile="true"/>
-    <include file="10-changeset-driver-info-table.xml" relativeToChangelogFile="true"/>
+    <include file="10-changeset-driver-table.xml" relativeToChangelogFile="true"/>
     <include file="20-changeset-driver-rating-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.driverservice.dto.response;
 
-public record DriverInfoResponse(
+public record DriverResponse(
     Long id,
     String firstName,
     String lastName,

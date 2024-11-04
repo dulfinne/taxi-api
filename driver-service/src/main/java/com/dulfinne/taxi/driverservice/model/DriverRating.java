@@ -1,6 +1,5 @@
 package com.dulfinne.taxi.driverservice.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,7 +35,7 @@ public class DriverRating {
   private String feedback;
 
   @ManyToOne
-  @JoinColumn(name = "driver_info_id", referencedColumnName = "id")
+  @JoinColumn(name = "driver_id", referencedColumnName = "id")
   @ToString.Exclude
-  private DriverInfo driverInfo;
+  private Driver driver;
 }
