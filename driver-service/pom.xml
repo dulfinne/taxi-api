@@ -6,13 +6,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.3.5</version>
-        <relativePath/>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.dulfinne.taxi</groupId>
-    <artifactId>passenger-service</artifactId>
+    <artifactId>driver-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>passenger-service</name>
-    <description>passenger-service</description>
+    <name>driver-service</name>
+    <description>driver-service</description>
 
     <properties>
         <java.version>17</java.version>
