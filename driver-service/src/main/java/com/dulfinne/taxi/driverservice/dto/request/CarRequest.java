@@ -1,23 +1,24 @@
 package com.dulfinne.taxi.driverservice.dto.request;
 
 import com.dulfinne.taxi.driverservice.model.CarCategory;
+import com.dulfinne.taxi.driverservice.util.ValidationKeys;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record CarRequest(
-    @NotNull(message = "Please enter car name")
+    @NotNull(message = ValidationKeys.CAR_NAME_REQUIRED)
     String name,
 
-    @NotNull(message = "Please enter color")
+    @NotNull(message = ValidationKeys.COLOR_REQUIRED)
     String color,
 
-    @NotNull(message = "Please enter registration number")
+    @NotNull(message = ValidationKeys.REGISTRATION_NUMBER_REQUIRED)
     @Pattern(
             regexp = "\\d{4}[A-Z]{2}-[1-7]",
-            message = "Please enter correct registration number, according to NNNNLL-N")
+            message = ValidationKeys.INVALID_REGISTRATION_NUMBER)
     String registrationNumber,
 
-    @NotNull(message = "Please enter car class: (ECONOM/BUISENESS)")
-    CarCategory carCategory
-) {
+    @NotNull(message = ValidationKeys.CAR_CATEGORY_REQUIRED)
+    CarCategory carCategory)
+{
 }
