@@ -4,7 +4,6 @@ import static com.dulfinne.taxi.passengerservice.mapper.PassengerInfoMapper.INFO
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerInfoRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerInfoResponse;
 import com.dulfinne.taxi.passengerservice.model.PassengerInfo;
-import com.dulfinne.taxi.passengerservice.model.Payment;
 import com.dulfinne.taxi.passengerservice.repository.PassengerInfoRepository;
 import com.dulfinne.taxi.passengerservice.service.PassengerInfoService;
 import jakarta.persistence.EntityExistsException;
@@ -59,17 +58,11 @@ public class PassengerInfoServiceImpl implements PassengerInfoService {
   @Transactional
   @Override
   public PassengerInfoResponse updatePassengerInfo(PassengerInfoRequest request) {
+    PassengerInfo passengerInfo = getPassengerInfoIfExists(request.passengerId());
 
-    PassengerInfo updatedPassengerInfo = INFO_MAPPER_INSTANCE.toEntity(request);
-    PassengerInfo passengerInfo = getPassengerInfoIfExists(updatedPassengerInfo.getPassengerId());
+    checkPhoneNumberUniqueness(passengerInfo.getPhoneNumber(), request.phoneNumber());
 
-    checkPhoneNumberUniqueness(
-        passengerInfo.getPhoneNumber(), updatedPassengerInfo.getPhoneNumber());
-
-    passengerInfo.setFirstName(updatedPassengerInfo.getFirstName());
-    passengerInfo.setLastName(updatedPassengerInfo.getLastName());
-    passengerInfo.setPhoneNumber(updatedPassengerInfo.getPhoneNumber());
-    passengerInfo.setPayment(updatedPassengerInfo.getPayment());
+    INFO_MAPPER_INSTANCE.updateEntity(request, passengerInfo);
 
     passengerInfoRepository.save(passengerInfo);
     return INFO_MAPPER_INSTANCE.toResponse(passengerInfo);
