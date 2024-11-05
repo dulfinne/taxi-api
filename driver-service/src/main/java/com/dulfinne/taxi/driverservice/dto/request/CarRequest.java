@@ -14,11 +14,11 @@ public record CarRequest(
 
     @NotNull(message = ValidationKeys.REGISTRATION_NUMBER_REQUIRED)
     @Pattern(
-            regexp = "\\d{4}[A-Z]{2}-[1-7]",
+            regexp = ValidationKeys.REGISTRATION_NUMBER_FORMAT,
             message = ValidationKeys.INVALID_REGISTRATION_NUMBER)
     String registrationNumber,
 
     @NotNull(message = ValidationKeys.CAR_CATEGORY_REQUIRED)
-    CarCategory carCategory)
-{
+    CarCategory carCategory
+) {
 }

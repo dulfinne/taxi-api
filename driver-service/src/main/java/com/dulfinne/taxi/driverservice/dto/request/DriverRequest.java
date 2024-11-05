@@ -14,7 +14,7 @@ public record DriverRequest(
     String lastName,
 
     @NotNull(message = ValidationKeys.PHONE_NUMBER_REQUIRED)
-    @Pattern(regexp = "^375(33|44|29|25)\\d{7}$", message = ValidationKeys.INVALID_PHONE_NUMBER)
+    @Pattern(regexp = ValidationKeys.PHONE_NUMBER_FORMAT, message = ValidationKeys.INVALID_PHONE_NUMBER)
     String phoneNumber,
 
     @NotNull(message = ValidationKeys.EXPERIENCE_REQUIRED)

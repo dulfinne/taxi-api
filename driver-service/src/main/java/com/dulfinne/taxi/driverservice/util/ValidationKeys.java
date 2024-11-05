@@ -20,4 +20,7 @@ public class ValidationKeys {
   public static final String INVALID_PHONE_NUMBER = "invalid-phone-number";
   public static final String INVALID_MIN_EXPERIENCE = "invalid-min-experience";
   public static final String INVALID_MAX_EXPERIENCE = "invalid-max-experience";
+
+  public static final String PHONE_NUMBER_FORMAT = "^375(33|44|29|25)\\d{7}$";
+  public static final String REGISTRATION_NUMBER_FORMAT = "\\d{4}[A-Z]{2}-[1-7]";
 }
