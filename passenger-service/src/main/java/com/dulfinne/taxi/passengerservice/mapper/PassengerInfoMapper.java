@@ -5,6 +5,7 @@ import com.dulfinne.taxi.passengerservice.dto.response.PassengerInfoResponse;
 import com.dulfinne.taxi.passengerservice.model.PassengerInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -14,4 +15,6 @@ public interface PassengerInfoMapper {
   PassengerInfoResponse toResponse(PassengerInfo entity);
 
   PassengerInfo toEntity(PassengerInfoRequest request);
+
+  void updateEntity(PassengerInfoRequest request, @MappingTarget PassengerInfo entity);
 }
