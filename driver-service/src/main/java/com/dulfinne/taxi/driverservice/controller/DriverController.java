@@ -2,9 +2,11 @@ package com.dulfinne.taxi.driverservice.controller;
 
 import com.dulfinne.taxi.driverservice.dto.request.DriverRequest;
 import com.dulfinne.taxi.driverservice.dto.response.DriverResponse;
+import com.dulfinne.taxi.driverservice.service.DriverService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,17 +22,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/drivers")
+@RequiredArgsConstructor
 public class DriverController {
+
+  private final DriverService driverService;
 
   @GetMapping
   public ResponseEntity<Page<DriverResponse>> getAllDrivers(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
-      @RequestParam(value = "sort", defaultValue = "averageRating") String sortField) {
+      @RequestParam(value = "sort", defaultValue = "experience") String sortField) {
 
-    // TODO: Services implemented
-
-    Page<DriverResponse> driverResponsePage = null;
+    Page<DriverResponse> driverResponsePage = driverService.getAllDrivers(offset, limit, sortField);
 
     return ResponseEntity.ok(driverResponsePage);
   }
@@ -38,9 +41,8 @@ public class DriverController {
   @GetMapping("/{id}")
   public ResponseEntity<DriverResponse> getDriverById(@PathVariable Long id) {
 
-    // TODO: Services implemented
+    DriverResponse driverResponse = driverService.getDriverById(id);
 
-    DriverResponse driverResponse = null;
     return ResponseEntity.ok(driverResponse);
   }
 
@@ -49,9 +51,8 @@ public class DriverController {
   public ResponseEntity<DriverResponse> saveDriver(
       @PathVariable String username, @RequestBody @Valid DriverRequest driverRequest) {
 
-    // TODO: Services implemented
+    DriverResponse driverResponse = driverService.saveDriver(username, driverRequest);
 
-    DriverResponse driverResponse = null;
     return ResponseEntity.status(HttpStatus.CREATED).body(driverResponse);
   }
 
@@ -59,18 +60,16 @@ public class DriverController {
   public ResponseEntity<DriverResponse> updateDriver(
       @PathVariable Long id, @RequestBody @Valid DriverRequest driverRequest) {
 
-    // TODO: Services implemented
+    DriverResponse driverResponse = driverService.updateDriver(id, driverRequest);
 
-    DriverResponse driverResponse = null;
     return ResponseEntity.ok(driverResponse);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteDriver(@PathVariable Long id) {
 
-    // TODO: Services implemented
+    driverService.deleteDriver(id);
 
-    DriverResponse driverResponse = null;
     return ResponseEntity.noContent().build();
   }
 
@@ -78,9 +77,8 @@ public class DriverController {
   public ResponseEntity<DriverResponse> assignCarToDriver(
       @PathVariable Long driverId, @PathVariable Long carId) {
 
-    // TODO: Services implemented
+    DriverResponse driverResponse = driverService.assignCarToDriver(driverId, carId);
 
-    DriverResponse driverResponse = null;
     return ResponseEntity.ok(driverResponse);
   }
 
@@ -88,9 +86,8 @@ public class DriverController {
   public ResponseEntity<DriverResponse> removeCarFromDriver(
       @PathVariable Long driverId, @PathVariable Long carId) {
 
-    // TODO: Services implemented
+    DriverResponse driverResponse = driverService.removeCarFromDriver(driverId, carId);
 
-    DriverResponse driverResponse = null;
     return ResponseEntity.ok(driverResponse);
   }
 }
