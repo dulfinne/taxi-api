@@ -12,5 +12,14 @@
                  splitStatements="true"
                  stripComments="true"
                  path="10-alter-driver-table.sql"/>
+        <rollback>
+            <sqlFile dbms="postgresql"
+                     encoding="utf8"
+                     endDelimiter="\n;"
+                     relativeToChangelogFile="true"
+                     splitStatements="true"
+                     stripComments="true"
+                     path="10-rollback-driver-table.sql"/>
+        </rollback>
     </changeSet>
 </databaseChangeLog>

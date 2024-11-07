@@ -12,5 +12,14 @@
                  splitStatements="true"
                  stripComments="true"
                  path="01-alter-car-table.sql"/>
+        <rollback>
+            <sqlFile dbms="postgresql"
+                     encoding="utf8"
+                     endDelimiter="\n;"
+                     relativeToChangelogFile="true"
+                     splitStatements="true"
+                     stripComments="true"
+                     path="01-rollback-car-table.sql"/>
+        </rollback>
     </changeSet>
 </databaseChangeLog>
