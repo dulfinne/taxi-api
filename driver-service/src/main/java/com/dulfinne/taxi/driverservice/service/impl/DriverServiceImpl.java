@@ -81,7 +81,7 @@ public class DriverServiceImpl implements DriverService {
   public DriverResponse assignCarToDriver(Long driverId, Long carId) {
     Driver driver = getDriverIfExist(driverId);
     Car car = getCarIfExist(carId);
-    checkCarIdUniqueness(driverId, carId);
+    checkCarNotAssigned(carId);
 
     driver.setCar(car);
     driverRepository.save(driver);
@@ -113,9 +113,9 @@ public class DriverServiceImpl implements DriverService {
         .orElseThrow(() -> new EntityNotFoundException(ExceptionKeys.CAR_NOT_FOUND_ID, id));
   }
 
-  private void checkCarIdUniqueness(Long driverId, Long carId) {
+  private void checkCarNotAssigned(Long carId) {
     if (driverRepository.findByCarId(carId).isPresent()) {
-      throw new EntityAlreadyExistsException(ExceptionKeys.CAR_ALREADY_ASSIGNED, driverId, carId);
+      throw new EntityAlreadyExistsException(ExceptionKeys.CAR_ALREADY_ASSIGNED, carId);
     }
   }
 
