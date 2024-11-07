@@ -34,23 +34,18 @@ public class CarController {
       @RequestParam(value = "sort", defaultValue = "carCategory") String sortField) {
 
     Page<CarResponse> carResponsePage = carService.getAllCars(offset, limit, sortField);
-
     return ResponseEntity.ok(carResponsePage);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<CarResponse> getCarById(@PathVariable Long id) {
-
     CarResponse carResponse = carService.getCarById(id);
-
     return ResponseEntity.ok(carResponse);
   }
 
   @PostMapping
   public ResponseEntity<CarResponse> saveCar(@RequestBody @Valid CarRequest carRequest) {
-
     CarResponse carResponse = carService.saveCar(carRequest);
-
     return ResponseEntity.status(HttpStatus.CREATED).body(carResponse);
   }
 
@@ -59,15 +54,12 @@ public class CarController {
       @PathVariable Long id, @RequestBody @Valid CarRequest carRequest) {
 
     CarResponse carResponse = carService.updateCar(id, carRequest);
-
     return ResponseEntity.ok(carResponse);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteCar(@PathVariable Long id) {
-
     carService.deleteCar(id);
-
     return ResponseEntity.noContent().build();
   }
 }

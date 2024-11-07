@@ -34,15 +34,12 @@ public class DriverController {
       @RequestParam(value = "sort", defaultValue = "experience") String sortField) {
 
     Page<DriverResponse> driverResponsePage = driverService.getAllDrivers(offset, limit, sortField);
-
     return ResponseEntity.ok(driverResponsePage);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<DriverResponse> getDriverById(@PathVariable Long id) {
-
     DriverResponse driverResponse = driverService.getDriverById(id);
-
     return ResponseEntity.ok(driverResponse);
   }
 
@@ -52,7 +49,6 @@ public class DriverController {
       @PathVariable String username, @RequestBody @Valid DriverRequest driverRequest) {
 
     DriverResponse driverResponse = driverService.saveDriver(username, driverRequest);
-
     return ResponseEntity.status(HttpStatus.CREATED).body(driverResponse);
   }
 
@@ -61,15 +57,12 @@ public class DriverController {
       @PathVariable Long id, @RequestBody @Valid DriverRequest driverRequest) {
 
     DriverResponse driverResponse = driverService.updateDriver(id, driverRequest);
-
     return ResponseEntity.ok(driverResponse);
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteDriver(@PathVariable Long id) {
-
     driverService.deleteDriver(id);
-
     return ResponseEntity.noContent().build();
   }
 
@@ -78,7 +71,6 @@ public class DriverController {
       @PathVariable Long driverId, @PathVariable Long carId) {
 
     DriverResponse driverResponse = driverService.assignCarToDriver(driverId, carId);
-
     return ResponseEntity.ok(driverResponse);
   }
 
@@ -87,7 +79,6 @@ public class DriverController {
       @PathVariable Long driverId, @PathVariable Long carId) {
 
     DriverResponse driverResponse = driverService.removeCarFromDriver(driverId, carId);
-
     return ResponseEntity.ok(driverResponse);
   }
 }

@@ -34,7 +34,6 @@ public class DriverRatingController {
 
     Page<DriverRatingResponse> driverRatingResponsePage =
         ratingService.getAllDriverRatings(driverId, offset, limit, sortField);
-
     return ResponseEntity.ok(driverRatingResponsePage);
   }
 
@@ -44,7 +43,6 @@ public class DriverRatingController {
 
     DriverRatingResponse driverRatingResponse =
         ratingService.saveDriverRating(driverId, driverRatingRequest);
-
     return ResponseEntity.status(HttpStatus.CREATED).body(driverRatingResponse);
   }
 }
