@@ -14,7 +14,7 @@ public class LocalizationConfig {
   @Bean
   public LocaleResolver localeResolver() {
     AcceptHeaderLocaleResolver resolver = new AcceptHeaderLocaleResolver();
-    resolver.setDefaultLocale(Locale.ENGLISH);
+    resolver.setDefaultLocale(Locale.GERMANY);
     return resolver;
   }
 
@@ -23,6 +23,15 @@ public class LocalizationConfig {
     ReloadableResourceBundleMessageSource messageSource =
         new ReloadableResourceBundleMessageSource();
     messageSource.setBasename("classpath:localization/validation/validation");
+    messageSource.setDefaultEncoding("ISO-8859-1");
+    return messageSource;
+  }
+
+  @Bean
+  public MessageSource exceptionMessageSource() {
+    ReloadableResourceBundleMessageSource messageSource =
+        new ReloadableResourceBundleMessageSource();
+    messageSource.setBasename("classpath:localization/exception/exception");
     messageSource.setDefaultEncoding("ISO-8859-1");
     return messageSource;
   }

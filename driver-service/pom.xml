@@ -20,6 +20,11 @@
         <lombok-mapstruct.binding.version>0.2.0</lombok-mapstruct.binding.version>
         <mapstruct-processor.version>1.6.0.Beta1</mapstruct-processor.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <liquibase-maven-plugin>4.27.0</liquibase-maven-plugin>
+
+        <pg.url>${env.PG_URL}/driver_service_db</pg.url>
+        <pg.username>${env.PG_USERNAME}</pg.username>
+        <pg.password>${env.PG_PASSWORD}</pg.password>
     </properties>
 
     <dependencies>
@@ -99,6 +104,18 @@
                             <version>${mapstruct-processor.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>${liquibase-maven-plugin}</version>
+                <configuration>
+                    <changeLogFile>db/changelog/db.changelog-master.xml</changeLogFile>
+                    <url>${pg.url}</url>
+                    <username>${pg.username}</username>
+                    <password>${pg.password}</password>
                 </configuration>
             </plugin>
         </plugins>

@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "car")
+@Table(
+    name = "car",
+    indexes = {@Index(name = "idx_registration_number", columnList = "registration_number")})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

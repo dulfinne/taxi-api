@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -19,7 +20,12 @@ import lombok.ToString;
 import java.util.List;
 
 @Entity
-@Table(name = "driver_info")
+@Table(
+    name = "driver",
+    indexes = {
+      @Index(name = "idx_phone_number", columnList = "phone_number"),
+      @Index(name = "idx_username", columnList = "username")
+    })
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -41,7 +47,7 @@ public class Driver {
   @Column(name = "last_name")
   private String lastName;
 
-  @Column(name = "phone_number")
+  @Column(name = "phone_number", nullable = false, unique = true)
   private String phoneNumber;
 
   @Column(name = "experience")
