@@ -1,7 +1,6 @@
 package com.dulfinne.taxi.driverservice.exception;
 
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
+import com.dulfinne.taxi.driverservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -20,6 +19,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
   private final MessageSource validationMessageSource;
+  private final MessageSource exceptionMessageSource;
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Map<String, String>> handleValidationExceptions(
@@ -33,26 +33,36 @@ public class GlobalExceptionHandler {
           fieldName,
           validationMessageSource.getMessage(errorMessage, null, LocaleContextHolder.getLocale()));
     }
-
     return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
-    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    String message =
+        exceptionMessageSource.getMessage(
+            ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND, message);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
   }
 
-  @ExceptionHandler(EntityExistsException.class)
-  public ResponseEntity<ErrorResponse> handleEntityExistsException(EntityExistsException ex) {
-    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
+  @ExceptionHandler(EntityAlreadyExistsException.class)
+  public ResponseEntity<ErrorResponse> handleEntityAlreadyExistsException(
+      EntityAlreadyExistsException ex) {
+
+    String message =
+        exceptionMessageSource.getMessage(
+            ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT, message);
     return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
-    ErrorResponse errorResponse =
-            new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unknown error has occurred...");
+    String message =
+        exceptionMessageSource.getMessage(
+            ExceptionKeys.UNKNOWN_ERROR, null, LocaleContextHolder.getLocale());
+
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
   }
 }
