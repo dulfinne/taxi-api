@@ -4,13 +4,12 @@ import com.dulfinne.taxi.driverservice.dto.request.DriverRequest;
 import com.dulfinne.taxi.driverservice.dto.response.DriverResponse;
 import com.dulfinne.taxi.driverservice.model.Driver;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface DriverMapper {
-  DriverMapper DRIVER_MAPPER_INSTANCE = Mappers.getMapper(DriverMapper.class);
-
   DriverResponse toResponse(Driver driver);
 
   Driver toEntity(DriverRequest driverRequest);
