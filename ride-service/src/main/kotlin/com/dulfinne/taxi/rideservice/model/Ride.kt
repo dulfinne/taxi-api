@@ -19,16 +19,16 @@ data class Ride(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    var id: Long?,
+    val id: Long?,
 
     @Column(name = "driver_id")
     var driverId: Long?,
 
     @Column(name = "passenger_id")
-    var passengerId: Long,
+    val passengerId: Long,
 
     @Column(name = "price")
-    var price: BigDecimal,
+    val price: BigDecimal,
 
     @Column(name = "start_time")
     var startTime: ZonedDateTime?,
@@ -37,10 +37,10 @@ data class Ride(
     var endTime: ZonedDateTime?,
 
     @Column(name = "start_position", columnDefinition = "geography(Point, 4326)")
-    var startPosition: Point,
+    val startPosition: Point,
 
     @Column(name = "end_position", columnDefinition = "geography(Point, 4326)")
-    var endPosition: Point,
+    val endPosition: Point,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
