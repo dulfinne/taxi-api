@@ -42,7 +42,6 @@ data class Ride(
     @Column(name = "end_position", columnDefinition = "geography(Point, 4326)")
     val endPosition: Point,
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    var status: RideStatus
+    @Column(name = "status_id")
+    var statusId: Int
 )

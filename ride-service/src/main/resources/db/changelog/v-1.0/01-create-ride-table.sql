@@ -11,5 +11,5 @@ CREATE TABLE rides
     end_time       TIMESTAMP WITH TIME ZONE,
     start_position GEOGRAPHY(Point, 4326) NOT NULL,
     end_position   GEOGRAPHY(Point, 4326) NOT NULL,
-    status         VARCHAR(255)   NOT NULL
+    status         INT            NOT NULL
 );
