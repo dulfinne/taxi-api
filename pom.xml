@@ -11,6 +11,7 @@
   <modules>
     <module>passenger-service</module>
     <module>driver-service</module>
+    <module>ride-service</module>
   </modules>
 
   <dependencies>
