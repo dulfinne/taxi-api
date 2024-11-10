@@ -18,7 +18,9 @@
         <java.version>17</java.version>
         <kotlin.version>1.9.25</kotlin.version>
         <jts-core.version>1.19.0</jts-core.version>
+        <hibernate.spatial.version>6.1.7.Final</hibernate.spatial.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -77,6 +79,12 @@
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
             <version>${jts-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+            <version>${hibernate.spatial.version}</version>
         </dependency>
     </dependencies>
 
