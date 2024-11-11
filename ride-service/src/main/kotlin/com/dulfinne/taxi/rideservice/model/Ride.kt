@@ -3,8 +3,6 @@ package com.dulfinne.taxi.rideservice.model
 import org.locationtech.jts.geom.Point
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -28,7 +26,7 @@ data class Ride(
     val passengerId: Long,
 
     @Column(name = "price")
-    val price: BigDecimal,
+    var price: BigDecimal,
 
     @Column(name = "start_time")
     var startTime: ZonedDateTime?,
@@ -42,6 +40,6 @@ data class Ride(
     @Column(name = "end_position", columnDefinition = "geography(Point, 4326)")
     val endPosition: Point,
 
-    @Column(name = "status_id")
-    var statusId: Int
+    @Column(name = "status")
+    var status: Int
 )
