@@ -30,7 +30,7 @@ class DriverController {
     }
 
     // TODO: Get {driverId} from token
-    @PostMapping("/{rideId}/accept/{driverId}")
+    @PostMapping("/{driverId}/accept/{rideId}")
     fun acceptRide(
         @PathVariable("rideId") rideId: Long,
         @PathVariable("driverId") driverId: Long
@@ -42,7 +42,7 @@ class DriverController {
     }
 
     // TODO: Get {driverId} from token
-    @PostMapping("/{rideId}/start/{driverId}")
+    @PostMapping("/{driverId}/start/{rideId}")
     fun startRide(
         @PathVariable("rideId") rideId: Long,
         @PathVariable("driverId") driverId: Long
@@ -54,7 +54,7 @@ class DriverController {
     }
 
     // TODO: Get {driverId} from token
-    @PostMapping("/{rideId}/finish/{driverId}")
+    @PostMapping("/{driverId}/finish/{rideId}")
     fun finishRide(
         @PathVariable("rideId") rideId: Long,
         @PathVariable("driverId") driverId: Long
@@ -66,7 +66,7 @@ class DriverController {
     }
 
     // TODO: Get {driverId} from token
-    @PostMapping("/{rideId}/rate/{driverId}")
+    @PostMapping("/{driverId}/rate/{rideId}")
     fun ratePassenger(
         @PathVariable rideId: Long,
         @PathVariable driverId: Long,
@@ -79,7 +79,7 @@ class DriverController {
     }
 
     // TODO: Get {driverId} from token
-    @GetMapping("/rides/{driverId}")
+    @GetMapping("/{driverId}/rides")
     fun getAllDriverRides(
         @PathVariable driverId: Long,
         @RequestParam(value = "offset", defaultValue = "0") offset: Int,

@@ -8,7 +8,6 @@ import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/rides/passenger")
 class PassengerController {
 
-    @PostMapping("/count-price")
+    @PostMapping("/price")
     fun countPrice(@RequestBody @Valid request: LocationRequest): ResponseEntity<CountPriceResponse> {
 
         // TODO: Impl services
@@ -31,7 +30,7 @@ class PassengerController {
     }
 
     // TODO: Get {passengerId} from token
-    @PostMapping("/create-ride/{passengerId}")
+    @PostMapping("/{passengerId}")
     fun createRide(
         @PathVariable passengerId: Long,
         @RequestBody @Valid request: LocationRequest
@@ -44,16 +43,16 @@ class PassengerController {
     }
 
     // TODO: Get {passengerId} from token
-    @DeleteMapping("/{rideId}/cancel-ride/{passengerId}")
+    @PostMapping("/{passengerId}/cancel/{rideId}")
     fun cancelRide(@PathVariable rideId: Long, @PathVariable passengerId: Long): ResponseEntity<Void> {
 
         // TODO: Impl services
 
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok().build()
     }
 
     // TODO: Get {passengerId} from token
-    @PostMapping("/{rideId}/rate/{passengerId}")
+    @PostMapping("/{passengerId}/rate/{rideId}")
     fun rateDriver(
         @PathVariable rideId: Long,
         @PathVariable passengerId: Long,
@@ -66,7 +65,7 @@ class PassengerController {
     }
 
     // TODO: Get {passengerId} from token
-    @GetMapping("/rides/{passengerId}")
+    @GetMapping("/{passengerId}/rides")
     fun getAllPassengerRides(
         @PathVariable passengerId: Long,
         @RequestParam(value = "offset", defaultValue = "0") offset: Int,

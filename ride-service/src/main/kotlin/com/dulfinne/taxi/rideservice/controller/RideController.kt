@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/rides")
 class RideController {
 
-    @GetMapping()
+    @GetMapping
     fun getAvailableRides(
         @RequestParam(value = "offset", defaultValue = "0") offset: Int,
         @RequestParam(value = "limit", defaultValue = "10") limit: Int,
