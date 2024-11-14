@@ -42,8 +42,10 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
             throw ActionNotAllowedException(ExceptionKeys.ACCEPT_NOT_ALLOWED, RideStatus.fromId(ride.status))
         }
 
-        ride.driverId = driverId
-        ride.status = RideStatus.ACCEPTED.id
+        ride.apply {
+            this.driverId = driverId
+            status = RideStatus.ACCEPTED.id
+        }
         repository.save(ride)
         return mapper.toRideResponse(ride)
     }
@@ -57,10 +59,10 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
             throw ActionNotAllowedException(ExceptionKeys.START_NOT_ALLOWED, RideStatus.fromId(ride.status))
         }
 
-        ride.startTime = ZonedDateTime.now(
-            ZoneId.of(TimeZone.getDefault().id)
-        )
-        ride.status = RideStatus.IN_PROGRESS.id
+        ride.apply {
+            startTime = ZonedDateTime.now(ZoneId.of(TimeZone.getDefault().id))
+            status = RideStatus.IN_PROGRESS.id
+        }
         repository.save(ride)
         return mapper.toRideResponse(ride)
     }
@@ -74,10 +76,10 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
             throw ActionNotAllowedException(ExceptionKeys.FINISH_NOT_ALLOWED, RideStatus.fromId(ride.status))
         }
 
-        ride.endTime = ZonedDateTime.now(
-            ZoneId.of(TimeZone.getDefault().id)
-        )
-        ride.status = RideStatus.COMPLETED.id
+        ride.apply {
+            endTime = ZonedDateTime.now(ZoneId.of(TimeZone.getDefault().id))
+            status = RideStatus.COMPLETED.id
+        }
         repository.save(ride)
         return mapper.toRideResponse(ride)
     }
