@@ -22,8 +22,8 @@ class RideMapper {
 
     fun toCountPriceResponse(request: LocationRequest, price: BigDecimal): CountPriceResponse {
         return CountPriceResponse(
-            startPosition = toPointResponse(request.startPosition),
-            endPosition = toPointResponse(request.endPosition),
+            startPosition = toPointResponse(request.startPosition!!),
+            endPosition = toPointResponse(request.endPosition!!),
             price = price
         )
     }
@@ -34,8 +34,8 @@ class RideMapper {
             driverId = null,
             passengerId = passengerId,
             price = BigDecimal.ZERO,
-            startPosition = toPoint(request.startPosition),
-            endPosition = toPoint(request.endPosition),
+            startPosition = toPoint(request.startPosition!!),
+            endPosition = toPoint(request.endPosition!!),
             startTime = null,
             endTime = null,
             status = RideStatus.SEARCHING.id
@@ -57,14 +57,14 @@ class RideMapper {
     }
 
     fun toPoint(requestPoint: PointRequest): Point {
-        val coordinate = Coordinate(requestPoint.longitude.toDouble(), requestPoint.latitude.toDouble())
+        val coordinate = Coordinate(requestPoint.longitude!!.toDouble(), requestPoint.latitude!!.toDouble())
         return geometryFactory.createPoint(coordinate)
     }
 
     private fun toPointResponse(request: PointRequest): PointResponse {
         return PointResponse(
-            latitude = request.latitude,
-            longitude = request.longitude
+            latitude = request.latitude!!,
+            longitude = request.longitude!!
         )
     }
 
