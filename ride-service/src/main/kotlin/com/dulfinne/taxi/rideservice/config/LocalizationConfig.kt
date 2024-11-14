@@ -12,24 +12,24 @@ import java.util.Locale
 class LocalizationConfig {
     @Bean
     fun localeResolver(): LocaleResolver {
-        val resolver = AcceptHeaderLocaleResolver()
-        resolver.setDefaultLocale(Locale.ENGLISH)
-        return resolver
+        return AcceptHeaderLocaleResolver().apply {
+            setDefaultLocale(Locale.ENGLISH)
+        }
     }
 
     @Bean
     fun validationMessageSource(): MessageSource {
-        val messageSource = ReloadableResourceBundleMessageSource()
-        messageSource.setBasename("classpath:localization/validation/validation")
-        messageSource.setDefaultEncoding("ISO-8859-1")
-        return messageSource
+        return ReloadableResourceBundleMessageSource().apply {
+            setBasename("classpath:localization/validation/validation")
+            setDefaultEncoding("ISO-8859-1")
+        }
     }
 
     @Bean
     fun exceptionMessageSource(): MessageSource {
-        val messageSource = ReloadableResourceBundleMessageSource()
-        messageSource.setBasename("classpath:localization/exception/exception")
-        messageSource.setDefaultEncoding("ISO-8859-1")
-        return messageSource
+        return ReloadableResourceBundleMessageSource().apply {
+            setBasename("classpath:localization/exception/exception")
+            setDefaultEncoding("ISO-8859-1")
+        }
     }
 }
