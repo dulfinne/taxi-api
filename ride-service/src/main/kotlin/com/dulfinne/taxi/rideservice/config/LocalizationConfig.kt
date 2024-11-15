@@ -11,25 +11,19 @@ import java.util.Locale
 @Configuration
 class LocalizationConfig {
     @Bean
-    fun localeResolver(): LocaleResolver {
-        return AcceptHeaderLocaleResolver().apply {
-            setDefaultLocale(Locale.ENGLISH)
-        }
+    fun localeResolver(): LocaleResolver = AcceptHeaderLocaleResolver().apply {
+        setDefaultLocale(Locale.ENGLISH)
     }
 
     @Bean
-    fun validationMessageSource(): MessageSource {
-        return ReloadableResourceBundleMessageSource().apply {
-            setBasename("classpath:localization/validation/validation")
-            setDefaultEncoding("ISO-8859-1")
-        }
+    fun validationMessageSource(): MessageSource = ReloadableResourceBundleMessageSource().apply {
+        setBasename("classpath:localization/validation/validation")
+        setDefaultEncoding("ISO-8859-1")
     }
 
     @Bean
-    fun exceptionMessageSource(): MessageSource {
-        return ReloadableResourceBundleMessageSource().apply {
-            setBasename("classpath:localization/exception/exception")
-            setDefaultEncoding("ISO-8859-1")
-        }
+    fun exceptionMessageSource(): MessageSource = ReloadableResourceBundleMessageSource().apply {
+        setBasename("classpath:localization/exception/exception")
+        setDefaultEncoding("ISO-8859-1")
     }
 }
