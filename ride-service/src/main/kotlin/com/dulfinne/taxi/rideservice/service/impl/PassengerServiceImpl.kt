@@ -35,8 +35,8 @@ import kotlin.math.sqrt
 class PassengerServiceImpl(val repository: RideRepository, val mapper: RideMapper) : PassengerService {
 
     override fun countPrice(request: LocationRequest): CountPriceResponse {
-        val startPosition = mapper.toPoint(request.startPosition!!)
-        val endPosition = mapper.toPoint(request.endPosition!!)
+        val startPosition = mapper.toPoint(request.startPosition)
+        val endPosition = mapper.toPoint(request.endPosition)
         val price = countPriceByLocation(startPosition, endPosition)
 
         return mapper.toCountPriceResponse(request, price)
