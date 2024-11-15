@@ -2,6 +2,7 @@ package com.dulfinne.taxi.rideservice.controller
 
 import com.dulfinne.taxi.rideservice.dto.request.RatingRequest
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
+import com.dulfinne.taxi.rideservice.service.DriverService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/rides/driver")
-class DriverController {
+class DriverController(val service: DriverService) {
 
     @GetMapping("/available-rides")
     fun getAvailableRides(
@@ -24,8 +25,7 @@ class DriverController {
         @RequestParam(value = "sort", defaultValue = "id") sortField: String
     ): ResponseEntity<Page<RideResponse>> {
 
-        // TODO: Impl services
-        val ridesResponsePage: Page<RideResponse>? = null
+        val ridesResponsePage = service.getAvailableRides(offset, limit, sortField)
         return ResponseEntity.ok(ridesResponsePage)
     }
 
@@ -36,8 +36,7 @@ class DriverController {
         @PathVariable("driverId") driverId: Long
     ): ResponseEntity<RideResponse> {
 
-        // TODO: Impl services
-        val response: RideResponse? = null
+        val response = service.acceptRide(rideId, driverId)
         return ResponseEntity.ok(response)
     }
 
@@ -48,8 +47,7 @@ class DriverController {
         @PathVariable("driverId") driverId: Long
     ): ResponseEntity<RideResponse> {
 
-        // TODO: Impl services
-        val response: RideResponse? = null
+        val response = service.startRide(rideId, driverId)
         return ResponseEntity.ok(response)
     }
 
@@ -60,8 +58,7 @@ class DriverController {
         @PathVariable("driverId") driverId: Long
     ): ResponseEntity<RideResponse> {
 
-        // TODO: Impl services
-        val response: RideResponse? = null
+        val response = service.finishRide(rideId, driverId)
         return ResponseEntity.ok(response)
     }
 
@@ -73,8 +70,7 @@ class DriverController {
         @RequestBody @Valid request: RatingRequest
     ): ResponseEntity<Void> {
 
-        // TODO: Impl services
-
+        service.ratePassenger(rideId, driverId, request)
         return ResponseEntity.ok().build()
     }
 
@@ -87,8 +83,17 @@ class DriverController {
         @RequestParam(value = "sort", defaultValue = "id") sortField: String
     ): ResponseEntity<Page<RideResponse>> {
 
-        // TODO: Impl services
-        val ridesResponsePage: Page<RideResponse>? = null
+        val ridesResponsePage = service.getAllDriverRides(driverId, offset, limit, sortField)
         return ResponseEntity.ok(ridesResponsePage)
+    }
+
+    @GetMapping("/{driverId}/rides/{rideId}")
+    fun getRideById(
+        @PathVariable driverId: Long,
+        @PathVariable rideId: Long
+    ): ResponseEntity<RideResponse> {
+
+        val response = service.getRideById(driverId, rideId)
+        return ResponseEntity.ok(response)
     }
 }
