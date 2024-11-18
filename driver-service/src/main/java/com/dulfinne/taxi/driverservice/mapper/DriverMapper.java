@@ -8,6 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 
+import java.math.BigDecimal;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface DriverMapper {
 
@@ -22,7 +24,7 @@ public interface DriverMapper {
   void updateEntity(DriverRequest driverRequest, @MappingTarget Driver driver);
 
   default Double calculateAverageRating(Double sumOfRatings, Integer numberOfRatings) {
-    return new java.math.BigDecimal(sumOfRatings / numberOfRatings)
+    return new BigDecimal(sumOfRatings / numberOfRatings)
         .setScale(2, java.math.RoundingMode.HALF_UP)
         .doubleValue();
   }
