@@ -38,8 +38,8 @@ public class DriverServiceImpl implements DriverService {
 
   @Transactional(readOnly = true)
   @Override
-  public DriverResponse getDriverById(Long id) {
-    Driver driver = getDriverIfExist(id);
+  public DriverResponse getDriverByUsername(String username) {
+    Driver driver = getDriverIfExistByUsername(username);
 
     return driverMapper.toResponse(driver);
   }
@@ -52,16 +52,16 @@ public class DriverServiceImpl implements DriverService {
 
     Driver driver = driverMapper.toEntity(driverRequest);
     driver.setUsername(username);
-    driver.setSumOfRatings(0.0);
-    driver.setNumberOfRatings(0);
+    driver.setSumOfRatings(5.0);
+    driver.setNumberOfRatings(1);
     driverRepository.save(driver);
     return driverMapper.toResponse(driver);
   }
 
   @Transactional
   @Override
-  public DriverResponse updateDriver(Long id, DriverRequest driverRequest) {
-    Driver driver = getDriverIfExist(id);
+  public DriverResponse updateDriver(String username, DriverRequest driverRequest) {
+    Driver driver = getDriverIfExistByUsername(username);
     checkPhoneNumberUniqueness(driver.getPhoneNumber(), driverRequest.phoneNumber());
 
     driverMapper.updateEntity(driverRequest, driver);
@@ -71,15 +71,15 @@ public class DriverServiceImpl implements DriverService {
 
   @Transactional
   @Override
-  public void deleteDriver(Long id) {
-    Driver driver = getDriverIfExist(id);
+  public void deleteDriver(String username) {
+    Driver driver = getDriverIfExistByUsername(username);
     driverRepository.delete(driver);
   }
 
   @Transactional
   @Override
-  public DriverResponse assignCarToDriver(Long driverId, Long carId) {
-    Driver driver = getDriverIfExist(driverId);
+  public DriverResponse assignCarToDriver(String username, Long carId) {
+    Driver driver = getDriverIfExistByUsername(username);
     Car car = getCarIfExist(carId);
     checkCarNotAssigned(carId);
 
@@ -91,8 +91,8 @@ public class DriverServiceImpl implements DriverService {
 
   @Transactional
   @Override
-  public DriverResponse removeCarFromDriver(Long driverId, Long carId) {
-    Driver driver = getDriverIfExist(driverId);
+  public DriverResponse removeCarFromDriver(String username, Long carId) {
+    Driver driver = getDriverIfExistByUsername(username);
     Car car = getCarIfExist(carId);
 
     driver.setCar(null);
@@ -101,10 +101,11 @@ public class DriverServiceImpl implements DriverService {
     return driverMapper.toResponse(driver);
   }
 
-  private Driver getDriverIfExist(Long id) {
+  private Driver getDriverIfExistByUsername(String username) {
     return driverRepository
-        .findById(id)
-        .orElseThrow(() -> new EntityNotFoundException(ExceptionKeys.DRIVER_NOT_FOUND_ID, id));
+        .findByUsername(username)
+        .orElseThrow(
+            () -> new EntityNotFoundException(ExceptionKeys.DRIVER_NOT_FOUND_USERNAME, username));
   }
 
   private Car getCarIfExist(Long id) {

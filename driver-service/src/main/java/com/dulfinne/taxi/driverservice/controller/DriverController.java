@@ -37,9 +37,18 @@ public class DriverController {
     return ResponseEntity.ok(driverResponsePage);
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<DriverResponse> getDriverById(@PathVariable Long id) {
-    DriverResponse driverResponse = driverService.getDriverById(id);
+  //For ADMIN
+  @GetMapping("/{username}/admin")
+  public ResponseEntity<DriverResponse> getDriverByUsername(@PathVariable String username) {
+    DriverResponse driverResponse = driverService.getDriverByUsername(username);
+    return ResponseEntity.ok(driverResponse);
+  }
+
+  // For DRIVER
+  //TODO: Later will get username from token
+  @GetMapping("/{username}")
+  public ResponseEntity<DriverResponse> getDriver(@PathVariable String username) {
+    DriverResponse driverResponse = driverService.getDriverByUsername(username);
     return ResponseEntity.ok(driverResponse);
   }
 
@@ -52,33 +61,35 @@ public class DriverController {
     return ResponseEntity.status(HttpStatus.CREATED).body(driverResponse);
   }
 
-  @PutMapping("/{id}")
+  // TODO: Later will get username from token
+  @PutMapping("/{username}")
   public ResponseEntity<DriverResponse> updateDriver(
-      @PathVariable Long id, @RequestBody @Valid DriverRequest driverRequest) {
+      @PathVariable String username, @RequestBody @Valid DriverRequest driverRequest) {
 
-    DriverResponse driverResponse = driverService.updateDriver(id, driverRequest);
+    DriverResponse driverResponse = driverService.updateDriver(username, driverRequest);
     return ResponseEntity.ok(driverResponse);
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteDriver(@PathVariable Long id) {
-    driverService.deleteDriver(id);
+  // TODO: Later will get username from token
+  @DeleteMapping("/{username}")
+  public ResponseEntity<Void> deleteDriver(@PathVariable String username) {
+    driverService.deleteDriver(username);
     return ResponseEntity.noContent().build();
   }
 
-  @PutMapping("/{driverId}/assign-car/{carId}")
+  @PutMapping("/{username}/assign-car/{carId}")
   public ResponseEntity<DriverResponse> assignCarToDriver(
-      @PathVariable Long driverId, @PathVariable Long carId) {
+      @PathVariable String username, @PathVariable Long carId) {
 
-    DriverResponse driverResponse = driverService.assignCarToDriver(driverId, carId);
+    DriverResponse driverResponse = driverService.assignCarToDriver(username, carId);
     return ResponseEntity.ok(driverResponse);
   }
 
-  @PutMapping("/{driverId}/remove-car/{carId}")
+  @PutMapping("/{username}/remove-car/{carId}")
   public ResponseEntity<DriverResponse> removeCarFromDriver(
-      @PathVariable Long driverId, @PathVariable Long carId) {
+      @PathVariable String username, @PathVariable Long carId) {
 
-    DriverResponse driverResponse = driverService.removeCarFromDriver(driverId, carId);
+    DriverResponse driverResponse = driverService.removeCarFromDriver(username, carId);
     return ResponseEntity.ok(driverResponse);
   }
 }

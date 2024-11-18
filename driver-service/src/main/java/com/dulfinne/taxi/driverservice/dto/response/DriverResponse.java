@@ -6,7 +6,6 @@ public record DriverResponse(
     String lastName,
     String phoneNumber,
     String experience,
-    Double sumOfRatings,
-    Integer numberOfRatings
+    Double averageRating
 ) {
 }

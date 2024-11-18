@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ExceptionKeys {
 
-  public static final String DRIVER_NOT_FOUND_ID = "driver-not-found-id";
+  public static final String DRIVER_NOT_FOUND_USERNAME = "driver-not-found-username";
   public static final String CAR_NOT_FOUND_ID = "car-not-found-id";
 
   public static final String DRIVER_EXISTS_USERNAME = "driver-exists-username";

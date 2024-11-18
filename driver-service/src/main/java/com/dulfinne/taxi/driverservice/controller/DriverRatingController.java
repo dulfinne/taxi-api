@@ -25,24 +25,39 @@ public class DriverRatingController {
 
   private final DriverRatingService ratingService;
 
-  @GetMapping("/ratings/{driverId}")
-  public ResponseEntity<Page<DriverRatingResponse>> getAllDriverRatings(
-      @PathVariable Long driverId,
+  // For ADMIN
+  @GetMapping("/ratings/{username}/admin")
+  public ResponseEntity<Page<DriverRatingResponse>> getAllDriverRatingsByUsername(
+      @PathVariable String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
 
     Page<DriverRatingResponse> driverRatingResponsePage =
-        ratingService.getAllDriverRatings(driverId, offset, limit, sortField);
+        ratingService.getAllDriverRatings(username, offset, limit, sortField);
     return ResponseEntity.ok(driverRatingResponsePage);
   }
 
-  @PostMapping("/rate/{driverId}")
+  // For DRIVER
+  // TODO: Later will get username from token
+  @GetMapping("/ratings/{username}")
+  public ResponseEntity<Page<DriverRatingResponse>> getAllDriverRatings(
+      @PathVariable String username,
+      @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
+      @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
+      @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
+
+    Page<DriverRatingResponse> driverRatingResponsePage =
+        ratingService.getAllDriverRatings(username, offset, limit, sortField);
+    return ResponseEntity.ok(driverRatingResponsePage);
+  }
+
+  @PostMapping("/rate/{username}")
   public ResponseEntity<DriverRatingResponse> saveDriverRating(
-      @PathVariable Long driverId, @RequestBody @Valid DriverRatingRequest driverRatingRequest) {
+      @PathVariable String username, @RequestBody @Valid DriverRatingRequest driverRatingRequest) {
 
     DriverRatingResponse driverRatingResponse =
-        ratingService.saveDriverRating(driverId, driverRatingRequest);
+        ratingService.saveDriverRating(username, driverRatingRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(driverRatingResponse);
   }
 }
