@@ -31,7 +31,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PassengerInfo {
+public class Passenger {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,7 +63,7 @@ public class PassengerInfo {
   @Column(name = "number_of_ratings")
   private Integer numberOfRatings;
 
-  @OneToMany(mappedBy = "passengerInfo", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "passenger", cascade = CascadeType.ALL)
   @ToString.Exclude
   private List<PassengerRating> ratings;
 }

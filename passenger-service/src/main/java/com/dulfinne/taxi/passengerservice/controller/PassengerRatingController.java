@@ -19,27 +19,40 @@ public class PassengerRatingController {
 
   private final PassengerRatingService passengerRatingService;
 
-  @GetMapping("/ratings/{id}")
-  public ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatings(
-      @PathVariable long id,
+  // For ADMIN
+  @GetMapping("/ratings/{username}/admin")
+  public ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatingsByUsername(
+      @PathVariable String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
 
     Page<PassengerRatingResponse> ratingResponsePage =
-        passengerRatingService.getPassengerRatings(id, offset, limit, sortField);
-
+        passengerRatingService.getPassengerRatings(username, offset, limit, sortField);
     return ResponseEntity.ok(ratingResponsePage);
   }
 
-  @PostMapping("/rate/{id}")
+  // For DRIVER
+  // TODO: Later will get username from token
+  @GetMapping("/ratings/{username}")
+  public ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatings(
+          @PathVariable String username,
+          @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
+          @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
+          @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
+
+    Page<PassengerRatingResponse> ratingResponsePage =
+            passengerRatingService.getPassengerRatings(username, offset, limit, sortField);
+    return ResponseEntity.ok(ratingResponsePage);
+  }
+
+  @PostMapping("/rate/{username}")
   public ResponseEntity<PassengerRatingResponse> savePassengerRating(
-      @PathVariable long id,
+      @PathVariable String username,
       @RequestBody @Valid PassengerRatingRequest passengerRatingRequest) {
 
     PassengerRatingResponse ratingResponse =
-        passengerRatingService.savePassengerRating(id, passengerRatingRequest);
-
+        passengerRatingService.savePassengerRating(username, passengerRatingRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(ratingResponse);
   }
 }

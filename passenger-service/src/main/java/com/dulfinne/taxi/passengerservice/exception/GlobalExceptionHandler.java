@@ -43,6 +43,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
+    ex.printStackTrace();
     ErrorResponse errorResponse =
         new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unknown error has occurred...");
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);

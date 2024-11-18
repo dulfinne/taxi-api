@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PassengerRatingRepository extends JpaRepository<PassengerRating, Long> {
-  Page<PassengerRating> findByPassengerInfo_Id(Long passengerId, Pageable pageable);
+  Page<PassengerRating> findByPassengerId(Long passengerId, Pageable pageable);
 }
