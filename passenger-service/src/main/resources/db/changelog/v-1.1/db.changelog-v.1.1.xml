@@ -6,6 +6,4 @@
                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="10-changeset-passenger-table.xml" relativeToChangelogFile="true"/>
-    <include file="20-changeset-passenger-rating-table.xml" relativeToChangelogFile="true"/>
-
 </databaseChangeLog>

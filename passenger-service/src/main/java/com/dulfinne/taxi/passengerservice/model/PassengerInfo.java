@@ -17,15 +17,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.proxy.HibernateProxy;
-
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(
-    name = "passenger_info",
-    indexes = {@Index(name = "idx_phone_number", columnList = "phone_number")})
+    name = "passenger",
+    indexes = {
+      @Index(name = "idx_phone_number", columnList = "phone_number"),
+      @Index(name = "idx_username", columnList = "username")
+    })
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,8 +38,8 @@ public class PassengerInfo {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "passenger_id", unique = true, nullable = false)
-  private Long passengerId;
+  @Column(name = "username", nullable = false, unique = true)
+  private String username;
 
   @Column(name = "first_name")
   private String firstName;
@@ -57,34 +57,13 @@ public class PassengerInfo {
   @Column(name = "ride_count")
   private Integer rideCount;
 
-  @Column(name = "average_rating")
-  private Double averageRating;
+  @Column(name = "sum_of_ratings")
+  private Double sumOfRatings;
+
+  @Column(name = "number_of_ratings")
+  private Integer numberOfRatings;
 
   @OneToMany(mappedBy = "passengerInfo", cascade = CascadeType.ALL)
   @ToString.Exclude
   private List<PassengerRating> ratings;
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null) return false;
-    Class<?> oEffectiveClass =
-        o instanceof HibernateProxy
-            ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
-            : o.getClass();
-    Class<?> thisEffectiveClass =
-        this instanceof HibernateProxy
-            ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
-            : this.getClass();
-    if (thisEffectiveClass != oEffectiveClass) return false;
-    PassengerInfo passengerInfo = (PassengerInfo) o;
-    return getId() != null && Objects.equals(getId(), passengerInfo.getId());
-  }
-
-  @Override
-  public int hashCode() {
-    return this instanceof HibernateProxy
-        ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode()
-        : getClass().hashCode();
-  }
 }
