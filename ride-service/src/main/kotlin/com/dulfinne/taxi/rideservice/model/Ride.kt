@@ -1,17 +1,24 @@
 package com.dulfinne.taxi.rideservice.model
 
-import org.locationtech.jts.geom.Point
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
 import jakarta.persistence.Table
+import org.locationtech.jts.geom.Point
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 @Entity
-@Table(name = "rides")
+@Table(
+    name = "rides",
+    indexes = [
+        Index(name = "idx_passenger_username", columnList = "passenger_username"),
+        Index(name = "idx_driver_username", columnList = "driver_username")
+    ]
+)
 data class Ride(
 
     @Id
@@ -19,11 +26,11 @@ data class Ride(
     @Column(name = "id")
     val id: Long?,
 
-    @Column(name = "driver_id")
-    var driverId: Long?,
+    @Column(name = "driver_username")
+    var driverUsername: String?,
 
-    @Column(name = "passenger_id")
-    val passengerId: Long,
+    @Column(name = "passenger_username")
+    val passengerUsername: String,
 
     @Column(name = "price")
     var price: BigDecimal,

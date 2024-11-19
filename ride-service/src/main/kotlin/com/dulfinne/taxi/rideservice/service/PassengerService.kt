@@ -8,9 +8,9 @@ import org.springframework.data.domain.Page
 
 interface PassengerService {
     fun countPrice(request: LocationRequest): CountPriceResponse
-    fun createRide(passengerId: Long, request: LocationRequest): RideResponse
-    fun cancelRide(rideId: Long, passengerId: Long)
-    fun rateDriver(rideId: Long, passengerId: Long, request: RatingRequest)
-    fun getAllPassengerRides(passengerId: Long, offset: Int, limit: Int, sortField: String): Page<RideResponse>
-    fun getRideById(passengerId: Long, rideId: Long): RideResponse
+    fun createRide(passengerUsername: String, request: LocationRequest): RideResponse
+    fun cancelRide(rideId: Long, passengerUsername: String)
+    fun rateDriver(rideId: Long, passengerUsername: String, request: RatingRequest)
+    fun getAllPassengerRides(passengerUsername: String, offset: Int, limit: Int, sortField: String): Page<RideResponse>
+    fun getRideById(passengerUsername: String, rideId: Long): RideResponse
 }

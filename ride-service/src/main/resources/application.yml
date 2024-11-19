@@ -19,4 +19,4 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
 server:
-  port: 8080
+  port: 8093
