@@ -14,6 +14,7 @@
     <module>ride-service</module>
     <module>auth-service</module>
     <module>eureka-server</module>
+    <module>api-gateway</module>
   </modules>
 
   <dependencies>
