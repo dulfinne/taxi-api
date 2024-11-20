@@ -13,6 +13,4 @@ public class ValidationKeys {
 
   public static final String INVALID_FEEDBACK_LENGTH = "invalid-feedback-length";
   public static final String INVALID_PHONE_NUMBER = "invalid-phone-number";
-
-  public static final String PHONE_NUMBER_FORMAT = "^375(33|44|29|25)\\d{7}$";
 }
