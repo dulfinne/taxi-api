@@ -28,11 +28,12 @@ public class DriverRatingServiceImpl implements DriverRatingService {
   @Transactional(readOnly = true)
   @Override
   public Page<DriverRatingResponse> getAllDriverRatings(
-      Long driverId, Integer offset, Integer limit, String sortField) {
+      String username, Integer offset, Integer limit, String sortField) {
 
+    Driver driver = getDriverIfExistByUsername(username);
     Page<DriverRating> driverRatingPage =
         ratingRepository.findByDriverId(
-            driverId, PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField)));
+            driver.getId(), PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField)));
 
     return driverRatingPage.map(driverRatingMapper::toResponse);
   }
@@ -40,9 +41,9 @@ public class DriverRatingServiceImpl implements DriverRatingService {
   @Transactional
   @Override
   public DriverRatingResponse saveDriverRating(
-      Long driverId, DriverRatingRequest driverRatingRequest) {
+      String username, DriverRatingRequest driverRatingRequest) {
 
-    Driver driver = getDriverIfExist(driverId);
+    Driver driver = getDriverIfExistByUsername(username);
     DriverRating driverRating = driverRatingMapper.toEntity(driverRatingRequest);
 
     driverRating.setDriver(driver);
@@ -53,11 +54,10 @@ public class DriverRatingServiceImpl implements DriverRatingService {
     return driverRatingMapper.toResponse(driverRating);
   }
 
-  private Driver getDriverIfExist(Long id) {
+  private Driver getDriverIfExistByUsername(String username) {
     return driverRepository
-        .findById(id)
+        .findByUsername(username)
         .orElseThrow(
-            () ->
-                new EntityNotFoundException(ExceptionKeys.DRIVER_NOT_FOUND_ID, id));
+            () -> new EntityNotFoundException(ExceptionKeys.DRIVER_NOT_FOUND_USERNAME, username));
   }
 }

@@ -3,20 +3,21 @@ package com.dulfinne.taxi.driverservice.service;
 import com.dulfinne.taxi.driverservice.dto.request.DriverRequest;
 import com.dulfinne.taxi.driverservice.dto.response.DriverResponse;
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface DriverService {
 
   Page<DriverResponse> getAllDrivers(Integer offset, Integer limit, String sortField);
 
-  DriverResponse getDriverById(Long id);
+  DriverResponse getDriverByUsername(String username);
 
   DriverResponse saveDriver(String username, DriverRequest driverRequest);
 
-  DriverResponse updateDriver(Long id, DriverRequest driverRequest);
+  DriverResponse updateDriver(String username, DriverRequest driverRequest);
 
-  void deleteDriver(Long id);
+  void deleteDriver(String username);
 
-  DriverResponse assignCarToDriver(Long driverId, Long carId);
+  DriverResponse assignCarToDriver(String username, Long carId);
 
-  DriverResponse removeCarFromDriver(Long driverId, Long carId);
+  DriverResponse removeCarFromDriver(String username, Long carId);
 }

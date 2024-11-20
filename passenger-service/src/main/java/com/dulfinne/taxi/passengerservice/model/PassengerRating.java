@@ -1,6 +1,5 @@
 package com.dulfinne.taxi.passengerservice.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Entity;
@@ -36,7 +35,7 @@ public class PassengerRating {
   @ManyToOne
   @JoinColumn(name = "passenger_id", referencedColumnName = "id")
   @ToString.Exclude
-  private PassengerInfo passengerInfo;
+  private Passenger passenger;
 
   @Column(name = "rating", nullable = false)
   private Integer rating;

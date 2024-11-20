@@ -11,7 +11,7 @@
                  relativeToChangelogFile="true"
                  splitStatements="true"
                  stripComments="true"
-                 path="10-create-passenger-info-table.sql"/>
+                 path="10-create-passenger-table.sql"/>
         <rollback>
             <sqlFile dbms="postgresql"
                      encoding="utf8"
@@ -19,7 +19,7 @@
                      relativeToChangelogFile="true"
                      splitStatements="true"
                      stripComments="true"
-                     path="10-drop-passenger-info-table.sql"/>
+                     path="10-drop-passenger-table.sql"/>
         </rollback>
     </changeSet>
 

@@ -2,13 +2,14 @@ package com.dulfinne.taxi.passengerservice.dto.response;
 
 import com.dulfinne.taxi.passengerservice.model.Payment;
 
-public record PassengerInfoResponse(
+public record PassengerResponse(
     Long id,
-    Long passengerId,
+    String username,
     String firstName,
     String lastName,
     String phoneNumber,
     Payment payment,
     Integer rideCount,
     Double averageRating
-) {}
+) {
+}
