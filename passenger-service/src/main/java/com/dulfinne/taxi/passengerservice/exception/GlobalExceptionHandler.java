@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +58,25 @@ public class GlobalExceptionHandler {
 
       errors.computeIfAbsent(fieldName, k -> new ArrayList<>()).add(message);
     }
+    return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(HandlerMethodValidationException.class)
+  public ResponseEntity<Map<String, String>> handleHandlerMethodValidationException(
+      HandlerMethodValidationException ex) {
+    Map<String, String> errors = new HashMap<>();
+
+    ex.getAllErrors()
+        .forEach(
+            error -> {
+              String fieldName = error.getCodes()[0];
+              String[] parts = fieldName.split("\\.");
+              fieldName = parts[parts.length - 1];
+
+              String errorMessage = error.getDefaultMessage();
+              errors.put(fieldName, errorMessage);
+            });
+
     return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
   }
 
