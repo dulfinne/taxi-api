@@ -3,12 +3,13 @@ package com.dulfinne.taxi.passengerservice.service.impl;
 import static com.dulfinne.taxi.passengerservice.mapper.PassengerRatingMapper.RATING_MAPPER_INSTANCE;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRatingRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
+import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
 import com.dulfinne.taxi.passengerservice.model.Passenger;
 import com.dulfinne.taxi.passengerservice.model.PassengerRating;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRepository;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRatingRepository;
 import com.dulfinne.taxi.passengerservice.service.PassengerRatingService;
-import jakarta.persistence.EntityNotFoundException;
+import com.dulfinne.taxi.passengerservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,7 +57,6 @@ public class PassengerRatingServiceImpl implements PassengerRatingService {
         .findByUsername(username)
         .orElseThrow(
             () ->
-                new EntityNotFoundException(
-                    String.format("Passenger not found: username = %s", username)));
+                new EntityNotFoundException(ExceptionKeys.PASSENGER_NOT_FOUND_USERNAME, username));
   }
 }

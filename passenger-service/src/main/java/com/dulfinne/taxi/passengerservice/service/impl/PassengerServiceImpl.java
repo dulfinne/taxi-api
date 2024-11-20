@@ -3,11 +3,13 @@ package com.dulfinne.taxi.passengerservice.service.impl;
 import static com.dulfinne.taxi.passengerservice.mapper.PassengerMapper.INFO_MAPPER_INSTANCE;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
+import com.dulfinne.taxi.passengerservice.exception.EntityAlreadyExistsException;
+import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
 import com.dulfinne.taxi.passengerservice.model.Passenger;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRepository;
 import com.dulfinne.taxi.passengerservice.service.PassengerService;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
+import com.dulfinne.taxi.passengerservice.util.ExceptionKeys;
+import com.dulfinne.taxi.passengerservice.util.PassengerConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,9 +49,9 @@ public class PassengerServiceImpl implements PassengerService {
 
     Passenger passenger = INFO_MAPPER_INSTANCE.toEntity(request);
     passenger.setUsername(username);
-    passenger.setRideCount(0);
-    passenger.setSumOfRatings(5.0);
-    passenger.setNumberOfRatings(1);
+    passenger.setRideCount(PassengerConstants.START_RIDE_COUNT);
+    passenger.setSumOfRatings(PassengerConstants.START_SUM_OF_RATINGS);
+    passenger.setNumberOfRatings(PassengerConstants.START_NUMBER_OF_RATINGS);
     passengerRepository.save(passenger);
     return INFO_MAPPER_INSTANCE.toResponse(passenger);
   }
@@ -75,15 +77,15 @@ public class PassengerServiceImpl implements PassengerService {
   private void checkPhoneNumberUniqueness(String phoneNumber, String updatedPhoneNumber) {
     if (!updatedPhoneNumber.equals(phoneNumber)
         && passengerRepository.findByPhoneNumber(updatedPhoneNumber).isPresent()) {
-      throw new EntityExistsException(
-          String.format("Passenger already exists: phoneNumber = %s", updatedPhoneNumber));
+      throw new EntityAlreadyExistsException(
+          ExceptionKeys.PASSENGER_EXISTS_PHONE_NUMBER, updatedPhoneNumber);
     }
   }
 
   private void checkPhoneNumberUniqueness(String phoneNumber) {
     if (passengerRepository.findByPhoneNumber(phoneNumber).isPresent()) {
-      throw new EntityExistsException(
-          String.format("Passenger already exists: phoneNumber = %s", phoneNumber));
+      throw new EntityAlreadyExistsException(
+          ExceptionKeys.PASSENGER_EXISTS_PHONE_NUMBER, phoneNumber);
     }
   }
 
@@ -92,14 +94,12 @@ public class PassengerServiceImpl implements PassengerService {
         .findByUsername(username)
         .orElseThrow(
             () ->
-                new EntityNotFoundException(
-                    String.format("Passenger not found: username = %s", username)));
+                new EntityNotFoundException(ExceptionKeys.PASSENGER_NOT_FOUND_USERNAME, username));
   }
 
   private void checkUsernameUniqueness(String username) {
     if (passengerRepository.findByUsername(username).isPresent()) {
-      throw new EntityExistsException(
-          String.format("Passenger already exists: username = %s", username));
+      throw new EntityAlreadyExistsException(ExceptionKeys.PASSENGER_EXISTS_USERNAME, username);
     }
   }
 }
