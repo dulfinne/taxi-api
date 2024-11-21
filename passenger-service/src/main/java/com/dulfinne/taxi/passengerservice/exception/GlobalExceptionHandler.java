@@ -44,6 +44,17 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 
+  @ExceptionHandler(IllegalSortFieldException.class)
+  public ResponseEntity<ErrorResponse> handleIllegalSortFieldException(
+      IllegalSortFieldException ex) {
+
+    String message =
+        exceptionMessageSource.getMessage(
+            ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, message);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Map<String, List<String>>> handleValidationExceptions(
       MethodArgumentNotValidException ex) {

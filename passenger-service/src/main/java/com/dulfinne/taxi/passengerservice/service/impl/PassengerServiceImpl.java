@@ -5,7 +5,9 @@ import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
 import com.dulfinne.taxi.passengerservice.exception.EntityAlreadyExistsException;
 import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
+import com.dulfinne.taxi.passengerservice.exception.IllegalSortFieldException;
 import com.dulfinne.taxi.passengerservice.model.Passenger;
+import com.dulfinne.taxi.passengerservice.model.sort.SortFieldPassenger;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRepository;
 import com.dulfinne.taxi.passengerservice.service.PassengerService;
 import com.dulfinne.taxi.passengerservice.util.ExceptionKeys;
@@ -17,6 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+
 @Service
 @RequiredArgsConstructor
 public class PassengerServiceImpl implements PassengerService {
@@ -26,6 +30,7 @@ public class PassengerServiceImpl implements PassengerService {
   @Transactional(readOnly = true)
   @Override
   public Page<PassengerResponse> getAllPassengers(Integer offset, Integer limit, String sortField) {
+    checkSortFieldIsValid(sortField);
 
     Page<Passenger> passengersPage =
         passengerRepository.findAll(
@@ -100,6 +105,15 @@ public class PassengerServiceImpl implements PassengerService {
   private void checkUsernameUniqueness(String username) {
     if (passengerRepository.findByUsername(username).isPresent()) {
       throw new EntityAlreadyExistsException(ExceptionKeys.PASSENGER_EXISTS_USERNAME, username);
+    }
+  }
+
+  private void checkSortFieldIsValid(String sortField) {
+    boolean isValid =
+        Arrays.stream(SortFieldPassenger.values()).anyMatch(field -> field.getValue().equals(sortField));
+
+    if (!isValid) {
+      throw new IllegalSortFieldException(ExceptionKeys.ILLEGAL_SORT_FIELD, sortField);
     }
   }
 }

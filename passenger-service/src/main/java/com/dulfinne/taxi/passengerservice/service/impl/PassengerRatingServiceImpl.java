@@ -4,8 +4,10 @@ import static com.dulfinne.taxi.passengerservice.mapper.PassengerRatingMapper.RA
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRatingRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
 import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
+import com.dulfinne.taxi.passengerservice.exception.IllegalSortFieldException;
 import com.dulfinne.taxi.passengerservice.model.Passenger;
 import com.dulfinne.taxi.passengerservice.model.PassengerRating;
+import com.dulfinne.taxi.passengerservice.model.sort.SortFieldRating;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRepository;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRatingRepository;
 import com.dulfinne.taxi.passengerservice.service.PassengerRatingService;
@@ -16,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class PassengerRatingServiceImpl implements PassengerRatingService {
   @Override
   public Page<PassengerRatingResponse> getPassengerRatings(
       String username, Integer offset, Integer limit, String sortField) {
+    checkSortFieldIsValid(sortField);
 
     Passenger passenger = getPassengerIfExistsByUsername(username);
     Page<PassengerRating> ratingPage =
@@ -58,5 +63,15 @@ public class PassengerRatingServiceImpl implements PassengerRatingService {
         .orElseThrow(
             () ->
                 new EntityNotFoundException(ExceptionKeys.PASSENGER_NOT_FOUND_USERNAME, username));
+  }
+
+  private void checkSortFieldIsValid(String sortField) {
+    boolean isValid =
+        Arrays.stream(SortFieldRating.values())
+            .anyMatch(field -> field.getValue().equals(sortField));
+
+    if (!isValid) {
+      throw new IllegalSortFieldException(ExceptionKeys.ILLEGAL_SORT_FIELD, sortField);
+    }
   }
 }
