@@ -91,10 +91,8 @@ public class DriverServiceImpl implements DriverService {
 
   @Transactional
   @Override
-  public DriverResponse removeCarFromDriver(String username, Long carId) {
+  public DriverResponse removeCarFromDriver(String username) {
     Driver driver = getDriverIfExistByUsername(username);
-    Car car = getCarIfExist(carId);
-
     driver.setCar(null);
     driverRepository.save(driver);
 

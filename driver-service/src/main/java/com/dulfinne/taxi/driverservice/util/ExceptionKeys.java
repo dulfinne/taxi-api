@@ -12,6 +12,6 @@ public class ExceptionKeys {
   public static final String DRIVER_EXISTS_PHONE_NUMBER = "driver-exists-phone-number";
   public static final String CAR_EXISTS_REGISTRATION_NUMBER = "car-exists-registration-number";
   public static final String CAR_ALREADY_ASSIGNED = "car-already-assigned";
-
+  public static final String ACCESS_DENIED = "access-denied";
   public static final String UNKNOWN_ERROR = "unknown-error";
 }
