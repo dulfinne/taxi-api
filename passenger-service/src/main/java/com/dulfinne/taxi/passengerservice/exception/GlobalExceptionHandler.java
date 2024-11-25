@@ -92,16 +92,6 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler(AuthorizationDeniedException.class)
-  public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
-    String message =
-            exceptionMessageSource.getMessage(
-                    ExceptionKeys.ACCESS_DENIED, null, LocaleContextHolder.getLocale());
-
-    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN, message);
-    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
-  }
-
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
     String message =

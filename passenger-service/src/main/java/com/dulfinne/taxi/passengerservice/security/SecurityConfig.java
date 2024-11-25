@@ -1,7 +1,6 @@
 package com.dulfinne.taxi.passengerservice.security;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -27,8 +26,10 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             authorizeHttpRequests ->
                 authorizeHttpRequests
-                    .requestMatchers("/api/v1/passengers/**")
-                    .hasAnyRole("PASSENGER", "ADMIN")
+                    .requestMatchers("/api/v1/passengers", "/api/v1/passengers/ratings")
+                    .hasRole("PASSENGER")
+                    .requestMatchers("/api/v1/passengers/{username}/**")
+                    .hasRole("ADMIN")
                     .anyRequest()
                     .authenticated())
         .oauth2ResourceServer(

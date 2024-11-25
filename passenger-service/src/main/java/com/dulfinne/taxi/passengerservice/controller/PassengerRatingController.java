@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,8 +27,7 @@ public class PassengerRatingController {
 
   private final PassengerRatingService passengerRatingService;
 
-  @GetMapping("/ratings/{username}")
-  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("/{username}/ratings")
   public ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatingsByUsername(
       @PathVariable String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
@@ -42,20 +40,19 @@ public class PassengerRatingController {
   }
 
   @GetMapping("/ratings")
-  @PreAuthorize("hasRole('PASSENGER')")
   public ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatings(
-          Principal principal,
-          @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
-          @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
-          @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
+      Principal principal,
+      @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
+      @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
+      @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
 
     Page<PassengerRatingResponse> ratingResponsePage =
-            passengerRatingService.getPassengerRatings(principal.getName(), offset, limit, sortField);
+        passengerRatingService.getPassengerRatings(principal.getName(), offset, limit, sortField);
     return ResponseEntity.ok(ratingResponsePage);
   }
 
-  //TODO: Remove endpoint after adding kafka in ride-service
-  @PostMapping("/rate/{username}")
+  // TODO: Remove endpoint after adding kafka in ride-service
+  @PostMapping("/{username}/rate")
   public ResponseEntity<PassengerRatingResponse> savePassengerRating(
       @PathVariable String username,
       @RequestBody @Valid PassengerRatingRequest passengerRatingRequest) {
