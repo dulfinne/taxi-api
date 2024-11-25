@@ -28,11 +28,11 @@ class RideMapper {
         )
     }
 
-    fun toRide(request: LocationRequest, passengerId: Long): Ride {
+    fun toRide(request: LocationRequest, passengerUsername: String): Ride {
         return Ride(
             id = null,
-            driverId = null,
-            passengerId = passengerId,
+            driverUsername = null,
+            passengerUsername = passengerUsername,
             price = BigDecimal.ZERO,
             startPosition = toPoint(request.startPosition),
             endPosition = toPoint(request.endPosition),
@@ -45,14 +45,14 @@ class RideMapper {
     fun toRideResponse(entity: Ride): RideResponse {
         return RideResponse(
             id = entity.id!!,
-            driverId = entity.driverId,
-            passengerId = entity.passengerId,
+            driverUsername = entity.driverUsername,
+            passengerUsername = entity.passengerUsername,
             price = entity.price,
             startPosition = toPointResponse(entity.startPosition),
             endPosition = toPointResponse(entity.endPosition),
             startTime = entity.startTime,
             endTime = entity.endTime,
-            statusId = entity.status
+            status = RideStatus.fromId(entity.status)
         )
     }
 

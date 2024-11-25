@@ -35,7 +35,7 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
     }
 
     @Transactional
-    override fun acceptRide(rideId: Long, driverId: Long): RideResponse {
+    override fun acceptRide(rideId: Long, driverUsername: String): RideResponse {
         val ride = getRideIfExists(rideId)
 
         if (ride.status != RideStatus.SEARCHING.id) {
@@ -43,7 +43,7 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
         }
 
         ride.apply {
-            this.driverId = driverId
+            this.driverUsername = driverUsername
             status = RideStatus.ACCEPTED.id
         }
         repository.save(ride)
@@ -51,9 +51,9 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
     }
 
     @Transactional
-    override fun startRide(rideId: Long, driverId: Long): RideResponse {
+    override fun startRide(rideId: Long, driverUsername: String): RideResponse {
         val ride = getRideIfExists(rideId)
-        validateDriver(ride, driverId)
+        validateDriver(ride, driverUsername)
 
         if (ride.status != RideStatus.ACCEPTED.id) {
             throw ActionNotAllowedException(ExceptionKeys.START_NOT_ALLOWED, RideStatus.fromId(ride.status))
@@ -68,9 +68,9 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
     }
 
     @Transactional
-    override fun finishRide(rideId: Long, driverId: Long): RideResponse {
+    override fun finishRide(rideId: Long, driverUsername: String): RideResponse {
         val ride = getRideIfExists(rideId)
-        validateDriver(ride, driverId)
+        validateDriver(ride, driverUsername)
 
         if (ride.status != RideStatus.IN_PROGRESS.id) {
             throw ActionNotAllowedException(ExceptionKeys.FINISH_NOT_ALLOWED, RideStatus.fromId(ride.status))
@@ -85,9 +85,9 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
     }
 
     @Transactional(readOnly = true)
-    override fun ratePassenger(rideId: Long, driverId: Long, request: RatingRequest) {
+    override fun ratePassenger(rideId: Long, driverUsername: String, request: RatingRequest) {
         val ride = getRideIfExists(rideId)
-        validateDriver(ride, driverId)
+        validateDriver(ride, driverUsername)
 
         if (ride.status != RideStatus.COMPLETED.id) {
             throw ActionNotAllowedException(ExceptionKeys.RATE_NOT_ALLOWED, RideStatus.fromId(ride.status))
@@ -98,18 +98,18 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
     }
 
     @Transactional(readOnly = true)
-    override fun getAllDriverRides(driverId: Long, offset: Int, limit: Int, sortField: String): Page<RideResponse> {
-        val ridesPage = repository.findAllByDriverId(
-            driverId,
+    override fun getAllDriverRides(driverUsername: String, offset: Int, limit: Int, sortField: String): Page<RideResponse> {
+        val ridesPage = repository.findAllByDriverUsername(
+            driverUsername,
             PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField))
         )
         return ridesPage.map(mapper::toRideResponse)
     }
 
     @Transactional(readOnly = true)
-    override fun getRideById(driverId: Long, rideId: Long): RideResponse {
+    override fun getRideById(driverUsername: String, rideId: Long): RideResponse {
         val ride = getRideIfExists(rideId)
-        validateDriver(ride, driverId)
+        validateDriver(ride, driverUsername)
         return mapper.toRideResponse(ride)
     }
 
@@ -120,8 +120,8 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
         }
     }
 
-    private fun validateDriver(ride: Ride, driverId: Long) {
-        if (ride.driverId != driverId) {
+    private fun validateDriver(ride: Ride, driverUsername: String) {
+        if (ride.driverUsername != driverUsername) {
             throw EntityNotFoundException(ExceptionKeys.RIDE_NOT_FOUND_ID, ride.id!!)
         }
     }

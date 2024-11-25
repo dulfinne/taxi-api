@@ -27,56 +27,56 @@ class PassengerController(val service: PassengerService) {
         return ResponseEntity.ok(response)
     }
 
-    // TODO: Get {passengerId} from token
-    @PostMapping("/{passengerId}")
+    // TODO: Get {passengerUsername} from token
+    @PostMapping("/{passengerUsername}")
     fun createRide(
-        @PathVariable passengerId: Long,
+        @PathVariable passengerUsername: String,
         @RequestBody @Valid request: LocationRequest
     ): ResponseEntity<RideResponse> {
 
-        val response = service.createRide(passengerId, request)
+        val response = service.createRide(passengerUsername, request)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
-    // TODO: Get {passengerId} from token
-    @PostMapping("/{passengerId}/cancel/{rideId}")
-    fun cancelRide(@PathVariable rideId: Long, @PathVariable passengerId: Long): ResponseEntity<Void> {
-        service.cancelRide(rideId, passengerId)
+    // TODO: Get {passengerUsername} from token
+    @PostMapping("/{passengerUsername}/cancel/{rideId}")
+    fun cancelRide(@PathVariable rideId: Long, @PathVariable passengerUsername: String): ResponseEntity<Void> {
+        service.cancelRide(rideId, passengerUsername)
         return ResponseEntity.ok().build()
     }
 
-    // TODO: Get {passengerId} from token
-    @PostMapping("/{passengerId}/rate/{rideId}")
+    // TODO: Get {passengerUsername} from token
+    @PostMapping("/{passengerUsername}/rate/{rideId}")
     fun rateDriver(
         @PathVariable rideId: Long,
-        @PathVariable passengerId: Long,
+        @PathVariable passengerUsername: String,
         @RequestBody @Valid request: RatingRequest
     ): ResponseEntity<Void> {
 
-        service.rateDriver(rideId, passengerId, request)
+        service.rateDriver(rideId, passengerUsername, request)
         return ResponseEntity.ok().build()
     }
 
-    // TODO: Get {passengerId} from token
-    @GetMapping("/{passengerId}/rides")
+    // TODO: Get {passengerUsername} from token
+    @GetMapping("/{passengerUsername}/rides")
     fun getAllPassengerRides(
-        @PathVariable passengerId: Long,
+        @PathVariable passengerUsername: String,
         @RequestParam(value = "offset", defaultValue = "0") offset: Int,
         @RequestParam(value = "limit", defaultValue = "10") limit: Int,
         @RequestParam(value = "sort", defaultValue = "id") sortField: String
     ): ResponseEntity<Page<RideResponse>> {
 
-        val ridesResponsePage = service.getAllPassengerRides(passengerId, offset, limit, sortField)
+        val ridesResponsePage = service.getAllPassengerRides(passengerUsername, offset, limit, sortField)
         return ResponseEntity.ok(ridesResponsePage)
     }
 
-    @GetMapping("/{passengerId}/rides/{rideId}")
+    @GetMapping("/{passengerUsername}/rides/{rideId}")
     fun getRideById(
-        @PathVariable passengerId: Long,
+        @PathVariable passengerUsername: String,
         @PathVariable rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.getRideById(passengerId, rideId)
+        val response = service.getRideById(passengerUsername, rideId)
         return ResponseEntity.ok(response)
     }
 }

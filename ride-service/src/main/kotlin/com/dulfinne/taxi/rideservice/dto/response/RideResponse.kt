@@ -1,14 +1,15 @@
 package com.dulfinne.taxi.rideservice.dto.response
 
+import com.dulfinne.taxi.rideservice.model.RideStatus
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class RideResponse(
     var id: Long,
 
-    var driverId: Long?,
+    var driverUsername: String?,
 
-    var passengerId: Long,
+    var passengerUsername: String,
 
     var price: BigDecimal,
 
@@ -20,5 +21,5 @@ data class RideResponse(
 
     var endPosition: PointResponse,
 
-    var statusId: Int
+    var status: RideStatus
 )

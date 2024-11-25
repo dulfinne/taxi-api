@@ -43,8 +43,8 @@ class PassengerServiceImpl(val repository: RideRepository, val mapper: RideMappe
     }
 
     @Transactional
-    override fun createRide(passengerId: Long, request: LocationRequest): RideResponse {
-        val ride = mapper.toRide(request, passengerId)
+    override fun createRide(passengerUsername: String, request: LocationRequest): RideResponse {
+        val ride = mapper.toRide(request, passengerUsername)
         ride.price = countPriceByLocation(ride.startPosition, ride.endPosition)
 
         repository.save(ride)
@@ -52,9 +52,9 @@ class PassengerServiceImpl(val repository: RideRepository, val mapper: RideMappe
     }
 
     @Transactional
-    override fun cancelRide(rideId: Long, passengerId: Long) {
+    override fun cancelRide(rideId: Long, passengerUsername: String) {
         val ride = getRideIfExists(rideId)
-        validatePassenger(ride, passengerId)
+        validatePassenger(ride, passengerUsername)
 
         if (ride.status != RideStatus.SEARCHING.id) {
             throw ActionNotAllowedException(ExceptionKeys.CANCEL_NOT_ALLOWED, RideStatus.fromId(ride.status))
@@ -65,9 +65,9 @@ class PassengerServiceImpl(val repository: RideRepository, val mapper: RideMappe
     }
 
     @Transactional(readOnly = true)
-    override fun rateDriver(rideId: Long, passengerId: Long, request: RatingRequest) {
+    override fun rateDriver(rideId: Long, passengerUsername: String, request: RatingRequest) {
         val ride = getRideIfExists(rideId)
-        validatePassenger(ride, passengerId)
+        validatePassenger(ride, passengerUsername)
 
         if (ride.status != RideStatus.COMPLETED.id) {
             throw ActionNotAllowedException(ExceptionKeys.RATE_NOT_ALLOWED, RideStatus.fromId(ride.status))
@@ -79,23 +79,23 @@ class PassengerServiceImpl(val repository: RideRepository, val mapper: RideMappe
 
     @Transactional(readOnly = true)
     override fun getAllPassengerRides(
-        passengerId: Long,
+        passengerUsername: String,
         offset: Int,
         limit: Int,
         sortField: String
     ): Page<RideResponse> {
 
-        val ridesPage = repository.findAllByPassengerId(
-            passengerId,
+        val ridesPage = repository.findAllByPassengerUsername(
+            passengerUsername,
             PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField))
         )
         return ridesPage.map(mapper::toRideResponse)
     }
 
     @Transactional(readOnly = true)
-    override fun getRideById(passengerId: Long, rideId: Long): RideResponse {
+    override fun getRideById(passengerUsername: String, rideId: Long): RideResponse {
         val ride = getRideIfExists(rideId)
-        validatePassenger(ride, passengerId)
+        validatePassenger(ride, passengerUsername)
         return mapper.toRideResponse(ride)
     }
 
@@ -128,8 +128,8 @@ class PassengerServiceImpl(val repository: RideRepository, val mapper: RideMappe
         }
     }
 
-    private fun validatePassenger(ride: Ride, passengerId: Long) {
-        if (ride.passengerId != passengerId) {
+    private fun validatePassenger(ride: Ride, passengerUsername: String) {
+        if (ride.passengerUsername != passengerUsername) {
             throw EntityNotFoundException(ExceptionKeys.RIDE_NOT_FOUND_ID, ride.id!!)
         }
     }
