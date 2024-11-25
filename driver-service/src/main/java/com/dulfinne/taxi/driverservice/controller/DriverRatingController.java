@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +28,6 @@ public class DriverRatingController {
   private final DriverRatingService ratingService;
 
   @GetMapping("/{username}/ratings")
-  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Page<DriverRatingResponse>> getAllDriverRatingsByUsername(
       @PathVariable String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
@@ -42,7 +40,6 @@ public class DriverRatingController {
   }
 
   @GetMapping("/ratings")
-  @PreAuthorize("hasRole('DRIVER')")
   public ResponseEntity<Page<DriverRatingResponse>> getAllDriverRatings(
       Principal principal,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
@@ -55,7 +52,7 @@ public class DriverRatingController {
   }
 
   //TODO: Remove endpoint after adding kafka in ride-service
-  @PostMapping("/rate/{username}")
+  @PostMapping("{username}/rate")
   public ResponseEntity<DriverRatingResponse> saveDriverRating(
       @PathVariable String username, @RequestBody @Valid DriverRatingRequest driverRatingRequest) {
 

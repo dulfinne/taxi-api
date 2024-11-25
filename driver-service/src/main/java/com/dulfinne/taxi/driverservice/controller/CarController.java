@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +28,6 @@ public class CarController {
   private final CarService carService;
 
   @GetMapping
-  @PreAuthorize("hasAnyRole('ADMIN', 'DRIVER')")
   public ResponseEntity<Page<CarResponse>> getAllCars(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
@@ -40,21 +38,18 @@ public class CarController {
   }
 
   @GetMapping("/{id}")
-  @PreAuthorize("hasAnyRole('ADMIN', 'DRIVER')")
   public ResponseEntity<CarResponse> getCarById(@PathVariable Long id) {
     CarResponse carResponse = carService.getCarById(id);
     return ResponseEntity.ok(carResponse);
   }
 
   @PostMapping
-  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<CarResponse> saveCar(@RequestBody @Valid CarRequest carRequest) {
     CarResponse carResponse = carService.saveCar(carRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(carResponse);
   }
 
   @PutMapping("/{id}")
-  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<CarResponse> updateCar(
       @PathVariable Long id, @RequestBody @Valid CarRequest carRequest) {
 
@@ -63,7 +58,6 @@ public class CarController {
   }
 
   @DeleteMapping("/{id}")
-  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Void> deleteCar(@PathVariable Long id) {
     carService.deleteCar(id);
     return ResponseEntity.noContent().build();

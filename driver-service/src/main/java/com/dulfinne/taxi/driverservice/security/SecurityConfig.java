@@ -3,6 +3,7 @@ package com.dulfinne.taxi.driverservice.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,8 +27,15 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             authorizeHttpRequests ->
                 authorizeHttpRequests
-                    .requestMatchers("/api/v1/drivers/**", "/api/v1/cars/**")
+                    .requestMatchers(HttpMethod.GET, "/api/v1/cars", "/api/v1/cars/{id}")
                     .hasAnyRole("DRIVER", "ADMIN")
+                    .requestMatchers("/api/v1/cars", "/api/v1/cars/{id}")
+                    .hasRole("ADMIN")
+
+                    .requestMatchers("/api/v1/drivers", "/api/v1/drivers/ratings")
+                    .hasRole("DRIVER")
+                    .requestMatchers("/api/v1/drivers/all", "/api/v1/drivers/{username}/**")
+                    .hasRole("ADMIN")
                     .anyRequest()
                     .authenticated())
         .oauth2ResourceServer(

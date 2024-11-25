@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +30,6 @@ public class DriverController {
   private final DriverService driverService;
 
   @GetMapping("/all")
-  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Page<DriverResponse>> getAllDrivers(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
@@ -42,21 +40,18 @@ public class DriverController {
   }
 
   @GetMapping("/{username}")
-  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<DriverResponse> getDriverByUsername(@PathVariable String username) {
     DriverResponse driverResponse = driverService.getDriverByUsername(username);
     return ResponseEntity.ok(driverResponse);
   }
 
   @GetMapping
-  @PreAuthorize("hasRole('DRIVER')")
   public ResponseEntity<DriverResponse> getDriver(Principal principal) {
     DriverResponse driverResponse = driverService.getDriverByUsername(principal.getName());
     return ResponseEntity.ok(driverResponse);
   }
 
   @PostMapping
-  @PreAuthorize("hasRole('DRIVER')")
   public ResponseEntity<DriverResponse> saveDriver(
       Principal principal, @RequestBody @Valid DriverRequest driverRequest) {
 
@@ -65,7 +60,6 @@ public class DriverController {
   }
 
   @PutMapping
-  @PreAuthorize("hasRole('DRIVER')")
   public ResponseEntity<DriverResponse> updateDriver(
       Principal principal, @RequestBody @Valid DriverRequest driverRequest) {
 
@@ -74,14 +68,12 @@ public class DriverController {
   }
 
   @DeleteMapping
-  @PreAuthorize("hasRole('DRIVER')")
   public ResponseEntity<Void> deleteDriver(Principal principal) {
     driverService.deleteDriver(principal.getName());
     return ResponseEntity.noContent().build();
   }
 
   @PutMapping("/{username}/assign-car/{carId}")
-  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<DriverResponse> assignCarToDriver(
       @PathVariable String username, @PathVariable Long carId) {
 
@@ -90,7 +82,6 @@ public class DriverController {
   }
 
   @PutMapping("/{username}/remove-car")
-  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<DriverResponse> removeCarFromDriver(@PathVariable String username) {
     DriverResponse driverResponse = driverService.removeCarFromDriver(username);
     return ResponseEntity.ok(driverResponse);
