@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -22,13 +23,14 @@ public class JwtClaimFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    SecurityContext context = SecurityContextHolder.getContext();
+    Authentication authentication = context.getAuthentication();
     Jwt jwt = ((Jwt) authentication.getPrincipal());
     String username = jwt.getClaimAsString(TokenConstants.USERNAME);
 
     JwtAuthenticationToken modifiedAuth =
         new JwtAuthenticationToken(jwt, authentication.getAuthorities(), username);
-    SecurityContextHolder.getContext().setAuthentication(modifiedAuth);
+    context.setAuthentication(modifiedAuth);
 
     filterChain.doFilter(request, response);
   }

@@ -11,15 +11,18 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 
 public class AuthoritiesConverter {
-    private final JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
+  private final JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
 
-    public Set<GrantedAuthority> convert(Jwt jwt) {
-        Set<GrantedAuthority> authorities = new HashSet<>(converter.convert(jwt));
+  public Set<GrantedAuthority> convert(Jwt jwt) {
+    Set<GrantedAuthority> authorities = new HashSet<>(converter.convert(jwt));
 
-        var realmRoles = jwt.getClaimAsStringList(TokenConstants.ROLES);
-        authorities.addAll(
-                realmRoles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()));
+    var realmRoles = jwt.getClaimAsStringList(TokenConstants.ROLES);
+    Set<GrantedAuthority> grantedAuthorities =
+        realmRoles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toSet());
 
-        return authorities;
-    }
+    authorities.addAll(grantedAuthorities);
+    return authorities;
+  }
 }

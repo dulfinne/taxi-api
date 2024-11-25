@@ -17,9 +17,12 @@ public class AuthoritiesConverter {
     Set<GrantedAuthority> authorities = new HashSet<>(converter.convert(jwt));
 
     var realmRoles = jwt.getClaimAsStringList(TokenConstants.ROLES);
-    authorities.addAll(
-        realmRoles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet()));
+    Set<GrantedAuthority> grantedAuthorities =
+        realmRoles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toSet());
 
+    authorities.addAll(grantedAuthorities);
     return authorities;
   }
 }
