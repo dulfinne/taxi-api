@@ -16,7 +16,7 @@ public class AuthoritiesConverter {
   public Set<GrantedAuthority> convert(Jwt jwt) {
     Set<GrantedAuthority> authorities = new HashSet<>(converter.convert(jwt));
 
-    var realmRoles = jwt.getClaimAsStringList(TokenConstants.ROLES);
+    var realmRoles = jwt.getClaimAsStringList(TokenConstants.ROLES_CLAIM);
     Set<GrantedAuthority> grantedAuthorities =
         realmRoles.stream()
                 .map(SimpleGrantedAuthority::new)

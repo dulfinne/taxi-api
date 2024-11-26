@@ -4,6 +4,6 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class TokenConstants {
-  public static final String ROLES = "spring_sec_roles";
-  public static final String USERNAME = "preferred_username";
+  public static final String ROLES_CLAIM = "spring_sec_roles";
+  public static final String USERNAME_CLAIM = "preferred_username";
 }

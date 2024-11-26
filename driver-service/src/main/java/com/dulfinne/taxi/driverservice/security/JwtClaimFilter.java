@@ -25,7 +25,7 @@ public class JwtClaimFilter extends OncePerRequestFilter {
     SecurityContext context = SecurityContextHolder.getContext();
     Authentication authentication = context.getAuthentication();
     Jwt jwt = ((Jwt) authentication.getPrincipal());
-    String username = jwt.getClaimAsString(TokenConstants.USERNAME);
+    String username = jwt.getClaimAsString(TokenConstants.USERNAME_CLAIM);
 
     JwtAuthenticationToken modifiedAuth =
         new JwtAuthenticationToken(jwt, authentication.getAuthorities(), username);
