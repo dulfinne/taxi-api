@@ -3,6 +3,7 @@ package com.dulfinne.taxi.passengerservice.controller;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
 import com.dulfinne.taxi.passengerservice.service.PassengerService;
+import com.dulfinne.taxi.passengerservice.util.TokenConstants;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +52,7 @@ public class PassengerController {
 
   @GetMapping
   public ResponseEntity<PassengerResponse> getPassenger(Principal principal) {
-    PassengerResponse response = passengerService.getPassengerByUsername(principal.getName());
+    PassengerResponse response = passengerService.getPassengerByUsername(getUsername(principal));
     return ResponseEntity.ok(response);
   }
 
@@ -58,7 +61,7 @@ public class PassengerController {
       Principal principal, @RequestBody @Valid PassengerRequest passengerRequest) {
 
     PassengerResponse infoResponse =
-        passengerService.savePassenger(principal.getName(), passengerRequest);
+        passengerService.savePassenger(getUsername(principal), passengerRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(infoResponse);
   }
 
@@ -67,13 +70,19 @@ public class PassengerController {
       Principal principal, @RequestBody @Valid PassengerRequest passengerRequest) {
 
     PassengerResponse infoResponse =
-        passengerService.updatePassenger(principal.getName(), passengerRequest);
+        passengerService.updatePassenger(getUsername(principal), passengerRequest);
     return ResponseEntity.ok(infoResponse);
   }
 
   @DeleteMapping
   public ResponseEntity<Void> deletePassenger(Principal principal) {
-    passengerService.deletePassenger(principal.getName());
+    passengerService.deletePassenger(getUsername(principal));
     return ResponseEntity.noContent().build();
+  }
+
+  public String getUsername(Principal principal) {
+    Authentication authentication = (Authentication) principal;
+    Jwt jwt = (Jwt) authentication.getPrincipal();
+    return jwt.getClaim(TokenConstants.USERNAME_CLAIM);
   }
 }

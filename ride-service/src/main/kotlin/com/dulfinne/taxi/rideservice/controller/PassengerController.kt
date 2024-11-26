@@ -5,10 +5,13 @@ import com.dulfinne.taxi.rideservice.dto.request.RatingRequest
 import com.dulfinne.taxi.rideservice.dto.response.CountPriceResponse
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
 import com.dulfinne.taxi.rideservice.service.PassengerService
+import com.dulfinne.taxi.rideservice.util.TokenConstants
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
 
 @RestController
 @RequestMapping("/api/v1/rides/passenger")
@@ -27,56 +31,61 @@ class PassengerController(val service: PassengerService) {
         return ResponseEntity.ok(response)
     }
 
-    // TODO: Get {passengerUsername} from token
-    @PostMapping("/{passengerUsername}")
+    @PostMapping
     fun createRide(
-        @PathVariable passengerUsername: String,
+        principal: Principal,
         @RequestBody @Valid request: LocationRequest
     ): ResponseEntity<RideResponse> {
 
-        val response = service.createRide(passengerUsername, request)
+        val response = service.createRide(getUsername(principal), request)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
-    // TODO: Get {passengerUsername} from token
-    @PostMapping("/{passengerUsername}/cancel/{rideId}")
-    fun cancelRide(@PathVariable rideId: Long, @PathVariable passengerUsername: String): ResponseEntity<Void> {
-        service.cancelRide(rideId, passengerUsername)
+    @PostMapping("/cancel/{rideId}")
+    fun cancelRide(
+        principal: Principal, @PathVariable rideId: Long
+    ): ResponseEntity<Void> {
+
+        service.cancelRide(rideId, getUsername(principal))
         return ResponseEntity.ok().build()
     }
 
-    // TODO: Get {passengerUsername} from token
-    @PostMapping("/{passengerUsername}/rate/{rideId}")
+    @PostMapping("/rate/{rideId}")
     fun rateDriver(
+        principal: Principal,
         @PathVariable rideId: Long,
-        @PathVariable passengerUsername: String,
         @RequestBody @Valid request: RatingRequest
     ): ResponseEntity<Void> {
 
-        service.rateDriver(rideId, passengerUsername, request)
+        service.rateDriver(rideId, getUsername(principal), request)
         return ResponseEntity.ok().build()
     }
 
-    // TODO: Get {passengerUsername} from token
-    @GetMapping("/{passengerUsername}/rides")
+    @GetMapping("/rides")
     fun getAllPassengerRides(
-        @PathVariable passengerUsername: String,
+        principal: Principal,
         @RequestParam(value = "offset", defaultValue = "0") offset: Int,
         @RequestParam(value = "limit", defaultValue = "10") limit: Int,
         @RequestParam(value = "sort", defaultValue = "id") sortField: String
     ): ResponseEntity<Page<RideResponse>> {
 
-        val ridesResponsePage = service.getAllPassengerRides(passengerUsername, offset, limit, sortField)
+        val ridesResponsePage = service.getAllPassengerRides(getUsername(principal), offset, limit, sortField)
         return ResponseEntity.ok(ridesResponsePage)
     }
 
-    @GetMapping("/{passengerUsername}/rides/{rideId}")
+    @GetMapping("/rides/{rideId}")
     fun getRideById(
-        @PathVariable passengerUsername: String,
+        principal: Principal,
         @PathVariable rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.getRideById(passengerUsername, rideId)
+        val response = service.getRideById(getUsername(principal), rideId)
         return ResponseEntity.ok(response)
+    }
+
+    fun getUsername(principal: Principal): String {
+        val authentication = principal as Authentication
+        val jwt = authentication.principal as Jwt
+        return jwt.getClaim(TokenConstants.USERNAME_CLAIM)
     }
 }
