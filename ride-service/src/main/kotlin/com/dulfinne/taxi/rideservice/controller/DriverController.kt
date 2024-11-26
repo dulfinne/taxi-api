@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
 
 @RestController
 @RequestMapping("/api/v1/rides/driver")
@@ -29,71 +30,66 @@ class DriverController(val service: DriverService) {
         return ResponseEntity.ok(ridesResponsePage)
     }
 
-    // TODO: Get {driverUsername} from token
-    @PostMapping("/{driverUsername}/accept/{rideId}")
+    @PostMapping("/accept/{rideId}")
     fun acceptRide(
-        @PathVariable("rideId") rideId: Long,
-        @PathVariable("driverUsername") driverUsername: String
+        principal: Principal,
+        @PathVariable("rideId") rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.acceptRide(rideId, driverUsername)
+        val response = service.acceptRide(rideId, principal.name)
         return ResponseEntity.ok(response)
     }
 
-    // TODO: Get {driverUsername} from token
-    @PostMapping("/{driverUsername}/start/{rideId}")
+    @PostMapping("/start/{rideId}")
     fun startRide(
-        @PathVariable("rideId") rideId: Long,
-        @PathVariable("driverUsername") driverUsername: String
+        principal: Principal,
+        @PathVariable("rideId") rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.startRide(rideId, driverUsername)
+        val response = service.startRide(rideId, principal.name)
         return ResponseEntity.ok(response)
     }
 
-    // TODO: Get {driverUsername} from token
-    @PostMapping("/{driverUsername}/finish/{rideId}")
+    @PostMapping("/finish/{rideId}")
     fun finishRide(
-        @PathVariable("rideId") rideId: Long,
-        @PathVariable("driverUsername") driverUsername: String
+        principal: Principal,
+        @PathVariable("rideId") rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.finishRide(rideId, driverUsername)
+        val response = service.finishRide(rideId, principal.name)
         return ResponseEntity.ok(response)
     }
 
-    // TODO: Get {driverUsername} from token
-    @PostMapping("/{driverUsername}/rate/{rideId}")
+    @PostMapping("/rate/{rideId}")
     fun ratePassenger(
+        principal: Principal,
         @PathVariable rideId: Long,
-        @PathVariable driverUsername: String,
         @RequestBody @Valid request: RatingRequest
     ): ResponseEntity<Void> {
 
-        service.ratePassenger(rideId, driverUsername, request)
+        service.ratePassenger(rideId, principal.name, request)
         return ResponseEntity.ok().build()
     }
 
-    // TODO: Get {driverUsername} from token
-    @GetMapping("/{driverUsername}/rides")
+    @GetMapping("/rides")
     fun getAllDriverRides(
-        @PathVariable driverUsername: String,
+        principal: Principal,
         @RequestParam(value = "offset", defaultValue = "0") offset: Int,
         @RequestParam(value = "limit", defaultValue = "10") limit: Int,
         @RequestParam(value = "sort", defaultValue = "id") sortField: String
     ): ResponseEntity<Page<RideResponse>> {
 
-        val ridesResponsePage = service.getAllDriverRides(driverUsername, offset, limit, sortField)
+        val ridesResponsePage = service.getAllDriverRides(principal.name, offset, limit, sortField)
         return ResponseEntity.ok(ridesResponsePage)
     }
 
-    @GetMapping("/{driverUsername}/rides/{rideId}")
+    @GetMapping("/rides/{rideId}")
     fun getRideById(
-        @PathVariable driverUsername: String,
+        principal: Principal,
         @PathVariable rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.getRideById(driverUsername, rideId)
+        val response = service.getRideById(principal.name, rideId)
         return ResponseEntity.ok(response)
     }
 }

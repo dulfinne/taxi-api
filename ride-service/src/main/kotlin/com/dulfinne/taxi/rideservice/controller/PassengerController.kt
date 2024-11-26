@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.security.Principal
 
 @RestController
 @RequestMapping("/api/v1/rides/passenger")
@@ -27,56 +28,55 @@ class PassengerController(val service: PassengerService) {
         return ResponseEntity.ok(response)
     }
 
-    // TODO: Get {passengerUsername} from token
-    @PostMapping("/{passengerUsername}")
+    @PostMapping
     fun createRide(
-        @PathVariable passengerUsername: String,
+        principal: Principal,
         @RequestBody @Valid request: LocationRequest
     ): ResponseEntity<RideResponse> {
 
-        val response = service.createRide(passengerUsername, request)
+        val response = service.createRide(principal.name, request)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
-    // TODO: Get {passengerUsername} from token
-    @PostMapping("/{passengerUsername}/cancel/{rideId}")
-    fun cancelRide(@PathVariable rideId: Long, @PathVariable passengerUsername: String): ResponseEntity<Void> {
-        service.cancelRide(rideId, passengerUsername)
+    @PostMapping("/cancel/{rideId}")
+    fun cancelRide(
+        principal: Principal, @PathVariable rideId: Long
+    ): ResponseEntity<Void> {
+
+        service.cancelRide(rideId, principal.name)
         return ResponseEntity.ok().build()
     }
 
-    // TODO: Get {passengerUsername} from token
-    @PostMapping("/{passengerUsername}/rate/{rideId}")
+    @PostMapping("/rate/{rideId}")
     fun rateDriver(
+        principal: Principal,
         @PathVariable rideId: Long,
-        @PathVariable passengerUsername: String,
         @RequestBody @Valid request: RatingRequest
     ): ResponseEntity<Void> {
 
-        service.rateDriver(rideId, passengerUsername, request)
+        service.rateDriver(rideId, principal.name, request)
         return ResponseEntity.ok().build()
     }
 
-    // TODO: Get {passengerUsername} from token
-    @GetMapping("/{passengerUsername}/rides")
+    @GetMapping("/rides")
     fun getAllPassengerRides(
-        @PathVariable passengerUsername: String,
+        principal: Principal,
         @RequestParam(value = "offset", defaultValue = "0") offset: Int,
         @RequestParam(value = "limit", defaultValue = "10") limit: Int,
         @RequestParam(value = "sort", defaultValue = "id") sortField: String
     ): ResponseEntity<Page<RideResponse>> {
 
-        val ridesResponsePage = service.getAllPassengerRides(passengerUsername, offset, limit, sortField)
+        val ridesResponsePage = service.getAllPassengerRides(principal.name, offset, limit, sortField)
         return ResponseEntity.ok(ridesResponsePage)
     }
 
-    @GetMapping("/{passengerUsername}/rides/{rideId}")
+    @GetMapping("/rides/{rideId}")
     fun getRideById(
-        @PathVariable passengerUsername: String,
+        principal: Principal,
         @PathVariable rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.getRideById(passengerUsername, rideId)
+        val response = service.getRideById(principal.name, rideId)
         return ResponseEntity.ok(response)
     }
 }
