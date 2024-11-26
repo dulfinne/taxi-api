@@ -10,7 +10,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping(path = "/api/v1/passengers")
@@ -19,8 +27,7 @@ public class PassengerRatingController {
 
   private final PassengerRatingService passengerRatingService;
 
-  // For ADMIN
-  @GetMapping("/ratings/{username}/admin")
+  @GetMapping("/{username}/ratings")
   public ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatingsByUsername(
       @PathVariable String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
@@ -32,21 +39,20 @@ public class PassengerRatingController {
     return ResponseEntity.ok(ratingResponsePage);
   }
 
-  // For DRIVER
-  // TODO: Later will get username from token
-  @GetMapping("/ratings/{username}")
+  @GetMapping("/ratings")
   public ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatings(
-          @PathVariable String username,
-          @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
-          @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
-          @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
+      Principal principal,
+      @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
+      @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
+      @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
 
     Page<PassengerRatingResponse> ratingResponsePage =
-            passengerRatingService.getPassengerRatings(username, offset, limit, sortField);
+        passengerRatingService.getPassengerRatings(principal.getName(), offset, limit, sortField);
     return ResponseEntity.ok(ratingResponsePage);
   }
 
-  @PostMapping("/rate/{username}")
+  // TODO: Remove endpoint after adding kafka in ride-service
+  @PostMapping("/{username}/rate")
   public ResponseEntity<PassengerRatingResponse> savePassengerRating(
       @PathVariable String username,
       @RequestBody @Valid PassengerRatingRequest passengerRatingRequest) {

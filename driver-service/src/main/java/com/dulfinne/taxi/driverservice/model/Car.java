@@ -44,8 +44,4 @@ public class Car {
   @Column(name = "car_category")
   @Enumerated(EnumType.STRING)
   private CarCategory carCategory;
-
-  @OneToOne(mappedBy = "car")
-  @ToString.Exclude
-  private Driver driver;
 }

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("api/v1/drivers")
 @RequiredArgsConstructor
@@ -25,8 +27,7 @@ public class DriverRatingController {
 
   private final DriverRatingService ratingService;
 
-  // For ADMIN
-  @GetMapping("/ratings/{username}/admin")
+  @GetMapping("/{username}/ratings")
   public ResponseEntity<Page<DriverRatingResponse>> getAllDriverRatingsByUsername(
       @PathVariable String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
@@ -38,21 +39,20 @@ public class DriverRatingController {
     return ResponseEntity.ok(driverRatingResponsePage);
   }
 
-  // For DRIVER
-  // TODO: Later will get username from token
-  @GetMapping("/ratings/{username}")
+  @GetMapping("/ratings")
   public ResponseEntity<Page<DriverRatingResponse>> getAllDriverRatings(
-      @PathVariable String username,
+      Principal principal,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
 
     Page<DriverRatingResponse> driverRatingResponsePage =
-        ratingService.getAllDriverRatings(username, offset, limit, sortField);
+        ratingService.getAllDriverRatings(principal.getName(), offset, limit, sortField);
     return ResponseEntity.ok(driverRatingResponsePage);
   }
 
-  @PostMapping("/rate/{username}")
+  //TODO: Remove endpoint after adding kafka in ride-service
+  @PostMapping("{username}/rate")
   public ResponseEntity<DriverRatingResponse> saveDriverRating(
       @PathVariable String username, @RequestBody @Valid DriverRatingRequest driverRatingRequest) {
 

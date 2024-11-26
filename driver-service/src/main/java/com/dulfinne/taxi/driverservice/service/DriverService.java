@@ -3,7 +3,6 @@ package com.dulfinne.taxi.driverservice.service;
 import com.dulfinne.taxi.driverservice.dto.request.DriverRequest;
 import com.dulfinne.taxi.driverservice.dto.response.DriverResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface DriverService {
 
@@ -19,5 +18,5 @@ public interface DriverService {
 
   DriverResponse assignCarToDriver(String username, Long carId);
 
-  DriverResponse removeCarFromDriver(String username, Long carId);
+  DriverResponse removeCarFromDriver(String username);
 }
