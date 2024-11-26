@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.apigateway.security;
 
+import com.dulfinne.taxi.apigateway.util.TokenConstants;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -13,7 +14,7 @@ public class AuthenticationConverter implements Converter<Jwt, AbstractAuthentic
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
-        Collection<String> roles = jwt.getClaimAsStringList("spring_sec_roles");
+        Collection<String> roles = jwt.getClaimAsStringList(TokenConstants.ROLES_CLAIM);
 
         Collection<SimpleGrantedAuthority> authorities = roles.stream()
                 .map(SimpleGrantedAuthority::new)
