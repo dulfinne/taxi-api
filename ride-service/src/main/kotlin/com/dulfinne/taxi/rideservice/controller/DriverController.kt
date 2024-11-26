@@ -3,9 +3,12 @@ package com.dulfinne.taxi.rideservice.controller
 import com.dulfinne.taxi.rideservice.dto.request.RatingRequest
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
 import com.dulfinne.taxi.rideservice.service.DriverService
+import com.dulfinne.taxi.rideservice.util.TokenConstants
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -36,7 +39,7 @@ class DriverController(val service: DriverService) {
         @PathVariable("rideId") rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.acceptRide(rideId, principal.name)
+        val response = service.acceptRide(rideId, getUsername(principal))
         return ResponseEntity.ok(response)
     }
 
@@ -46,7 +49,7 @@ class DriverController(val service: DriverService) {
         @PathVariable("rideId") rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.startRide(rideId, principal.name)
+        val response = service.startRide(rideId, getUsername(principal))
         return ResponseEntity.ok(response)
     }
 
@@ -56,7 +59,7 @@ class DriverController(val service: DriverService) {
         @PathVariable("rideId") rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.finishRide(rideId, principal.name)
+        val response = service.finishRide(rideId, getUsername(principal))
         return ResponseEntity.ok(response)
     }
 
@@ -67,7 +70,7 @@ class DriverController(val service: DriverService) {
         @RequestBody @Valid request: RatingRequest
     ): ResponseEntity<Void> {
 
-        service.ratePassenger(rideId, principal.name, request)
+        service.ratePassenger(rideId, getUsername(principal), request)
         return ResponseEntity.ok().build()
     }
 
@@ -79,7 +82,7 @@ class DriverController(val service: DriverService) {
         @RequestParam(value = "sort", defaultValue = "id") sortField: String
     ): ResponseEntity<Page<RideResponse>> {
 
-        val ridesResponsePage = service.getAllDriverRides(principal.name, offset, limit, sortField)
+        val ridesResponsePage = service.getAllDriverRides(getUsername(principal), offset, limit, sortField)
         return ResponseEntity.ok(ridesResponsePage)
     }
 
@@ -89,7 +92,13 @@ class DriverController(val service: DriverService) {
         @PathVariable rideId: Long
     ): ResponseEntity<RideResponse> {
 
-        val response = service.getRideById(principal.name, rideId)
+        val response = service.getRideById(getUsername(principal), rideId)
         return ResponseEntity.ok(response)
+    }
+
+    fun getUsername(principal: Principal): String {
+        val authentication = principal as Authentication
+        val jwt = authentication.principal as Jwt
+        return jwt.getClaim(TokenConstants.USERNAME_CLAIM)
     }
 }
