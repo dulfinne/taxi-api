@@ -3,6 +3,7 @@ package com.dulfinne.taxi.driverservice.controller;
 import com.dulfinne.taxi.driverservice.dto.request.DriverRequest;
 import com.dulfinne.taxi.driverservice.dto.response.DriverResponse;
 import com.dulfinne.taxi.driverservice.service.DriverService;
+import com.dulfinne.taxi.driverservice.util.TokenConstants;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -10,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,7 +51,7 @@ public class DriverController {
 
   @GetMapping
   public ResponseEntity<DriverResponse> getDriver(Principal principal) {
-    DriverResponse driverResponse = driverService.getDriverByUsername(principal.getName());
+    DriverResponse driverResponse = driverService.getDriverByUsername(getUsername(principal));
     return ResponseEntity.ok(driverResponse);
   }
 
@@ -55,7 +59,7 @@ public class DriverController {
   public ResponseEntity<DriverResponse> saveDriver(
       Principal principal, @RequestBody @Valid DriverRequest driverRequest) {
 
-    DriverResponse driverResponse = driverService.saveDriver(principal.getName(), driverRequest);
+    DriverResponse driverResponse = driverService.saveDriver(getUsername(principal), driverRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(driverResponse);
   }
 
@@ -63,13 +67,13 @@ public class DriverController {
   public ResponseEntity<DriverResponse> updateDriver(
       Principal principal, @RequestBody @Valid DriverRequest driverRequest) {
 
-    DriverResponse driverResponse = driverService.updateDriver(principal.getName(), driverRequest);
+    DriverResponse driverResponse = driverService.updateDriver(getUsername(principal), driverRequest);
     return ResponseEntity.ok(driverResponse);
   }
 
   @DeleteMapping
   public ResponseEntity<Void> deleteDriver(Principal principal) {
-    driverService.deleteDriver(principal.getName());
+    driverService.deleteDriver(getUsername(principal));
     return ResponseEntity.noContent().build();
   }
 
@@ -85,5 +89,11 @@ public class DriverController {
   public ResponseEntity<DriverResponse> removeCarFromDriver(@PathVariable String username) {
     DriverResponse driverResponse = driverService.removeCarFromDriver(username);
     return ResponseEntity.ok(driverResponse);
+  }
+
+  public String getUsername(Principal principal) {
+    Authentication authentication = (Authentication) principal;
+    Jwt jwt = (Jwt) authentication.getPrincipal();
+    return jwt.getClaim(TokenConstants.USERNAME_CLAIM);
   }
 }

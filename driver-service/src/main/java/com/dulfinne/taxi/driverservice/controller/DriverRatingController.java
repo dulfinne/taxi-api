@@ -3,6 +3,7 @@ package com.dulfinne.taxi.driverservice.controller;
 import com.dulfinne.taxi.driverservice.dto.request.DriverRatingRequest;
 import com.dulfinne.taxi.driverservice.dto.response.DriverRatingResponse;
 import com.dulfinne.taxi.driverservice.service.DriverRatingService;
+import com.dulfinne.taxi.driverservice.util.TokenConstants;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,11 +50,11 @@ public class DriverRatingController {
       @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
 
     Page<DriverRatingResponse> driverRatingResponsePage =
-        ratingService.getAllDriverRatings(principal.getName(), offset, limit, sortField);
+        ratingService.getAllDriverRatings(getUsername(principal), offset, limit, sortField);
     return ResponseEntity.ok(driverRatingResponsePage);
   }
 
-  //TODO: Remove endpoint after adding kafka in ride-service
+  // TODO: Remove endpoint after adding kafka in ride-service
   @PostMapping("{username}/rate")
   public ResponseEntity<DriverRatingResponse> saveDriverRating(
       @PathVariable String username, @RequestBody @Valid DriverRatingRequest driverRatingRequest) {
@@ -59,5 +62,11 @@ public class DriverRatingController {
     DriverRatingResponse driverRatingResponse =
         ratingService.saveDriverRating(username, driverRatingRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(driverRatingResponse);
+  }
+
+  public String getUsername(Principal principal) {
+    Authentication authentication = (Authentication) principal;
+    Jwt jwt = (Jwt) authentication.getPrincipal();
+    return jwt.getClaim(TokenConstants.USERNAME_CLAIM);
   }
 }
