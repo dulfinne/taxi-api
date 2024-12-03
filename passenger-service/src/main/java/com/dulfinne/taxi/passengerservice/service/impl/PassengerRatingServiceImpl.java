@@ -1,7 +1,8 @@
 package com.dulfinne.taxi.passengerservice.service.impl;
 
 import static com.dulfinne.taxi.passengerservice.mapper.PassengerRatingMapper.RATING_MAPPER_INSTANCE;
-import com.dulfinne.taxi.passengerservice.dto.request.PassengerRatingRequest;
+
+import com.dulfinne.taxi.avro.Rating;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
 import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
 import com.dulfinne.taxi.passengerservice.exception.IllegalSortFieldException;
@@ -44,17 +45,17 @@ public class PassengerRatingServiceImpl implements PassengerRatingService {
 
   @Transactional
   @Override
-  public PassengerRatingResponse savePassengerRating(
-      String username, PassengerRatingRequest request) {
-    Passenger passenger = getPassengerIfExistsByUsername(username);
-    PassengerRating passengerRating = RATING_MAPPER_INSTANCE.toEntity(request);
+  public void savePassengerRating(Rating rating) {
+    Passenger passenger = getPassengerIfExistsByUsername(rating.getUsername());
 
+    PassengerRating passengerRating = new PassengerRating();
     passengerRating.setPassenger(passenger);
+    passengerRating.setRating(rating.getRating());
+    passengerRating.setFeedback(rating.getFeedback());
+
     passenger.setNumberOfRatings(passenger.getNumberOfRatings() + 1);
     passenger.setSumOfRatings(passenger.getSumOfRatings() + passengerRating.getRating());
     passengerRatingRepository.save(passengerRating);
-
-    return RATING_MAPPER_INSTANCE.toResponse(passengerRating);
   }
 
   private Passenger getPassengerIfExistsByUsername(String username) {
