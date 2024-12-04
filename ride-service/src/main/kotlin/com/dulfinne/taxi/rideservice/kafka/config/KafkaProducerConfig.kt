@@ -19,7 +19,7 @@ class KafkaProducerConfig(private val kafkaProperties: KafkaProperties) {
         props[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
         props[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = KafkaAvroSerializer::class.java
         props["schema.registry.url"] = kafkaProperties.schemaRegistryUrl
-
+        props[ProducerConfig.RETRIES_CONFIG] = 3
         return props
     }
 

@@ -79,10 +79,11 @@ class PassengerServiceImpl(
             rating = request.rating
             feedback = request.feedback
         }.build()
-        kafkaService.sendDriversRating(rating)
 
         updateRideStatus(ride)
         repository.save(ride)
+
+        kafkaService.sendDriversRating(rating)
     }
 
     @Transactional(readOnly = true)
