@@ -1,0 +1,11 @@
+{
+  "namespace": "com.dulfinne.taxi.avro",
+  "type": "record",
+  "name": "Rating",
+  "version": "1",
+  "fields": [
+    {"name": "username", "type": "string"},
+    {"name": "rating", "type": "int"},
+    {"name": "feedback", "type": "string"}
+  ]
+}

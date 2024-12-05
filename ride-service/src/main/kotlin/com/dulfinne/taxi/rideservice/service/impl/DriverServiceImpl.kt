@@ -1,9 +1,11 @@
 package com.dulfinne.taxi.rideservice.service.impl
 
+import com.dulfinne.taxi.avro.Rating
 import com.dulfinne.taxi.rideservice.dto.request.RatingRequest
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
 import com.dulfinne.taxi.rideservice.exception.ActionNotAllowedException
 import com.dulfinne.taxi.rideservice.exception.EntityNotFoundException
+import com.dulfinne.taxi.rideservice.kafka.service.KafkaProducerService
 import com.dulfinne.taxi.rideservice.mapper.RideMapper
 import com.dulfinne.taxi.rideservice.model.Ride
 import com.dulfinne.taxi.rideservice.model.RideStatus
@@ -22,7 +24,11 @@ import java.time.ZonedDateTime
 import java.util.TimeZone
 
 @Service
-class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) : DriverService {
+class DriverServiceImpl(
+    val repository: RideRepository,
+    val mapper: RideMapper,
+    val kafkaService: KafkaProducerService
+) : DriverService {
 
     @Transactional(readOnly = true)
     override fun getAvailableRides(offset: Int, limit: Int, sortField: String): Page<RideResponse> {
@@ -84,21 +90,29 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
         return mapper.toRideResponse(ride)
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     override fun ratePassenger(rideId: Long, driverUsername: String, request: RatingRequest) {
-        val ride = getRideIfExists(rideId)
-        validateDriver(ride, driverUsername)
+        val ride = getValidatedRideToRate(rideId, driverUsername)
 
-        if (ride.status != RideStatus.COMPLETED.id) {
-            throw ActionNotAllowedException(ExceptionKeys.RATE_NOT_ALLOWED, RideStatus.fromId(ride.status))
-        }
-        checkRideCanBeRated(ride.endTime!!)
+        val rating = Rating.newBuilder().apply {
+            username = ride.passengerUsername
+            rating = request.rating
+            feedback = request.feedback
+        }.build()
 
-        //TODO: send ratingModel to passenger-service
+        updateRideStatus(ride)
+        repository.save(ride)
+
+        kafkaService.sendPassengersRating(rating)
     }
 
     @Transactional(readOnly = true)
-    override fun getAllDriverRides(driverUsername: String, offset: Int, limit: Int, sortField: String): Page<RideResponse> {
+    override fun getAllDriverRides(
+        driverUsername: String,
+        offset: Int,
+        limit: Int,
+        sortField: String
+    ): Page<RideResponse> {
         val ridesPage = repository.findAllByDriverUsername(
             driverUsername,
             PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField))
@@ -129,6 +143,27 @@ class DriverServiceImpl(val repository: RideRepository, val mapper: RideMapper) 
     private fun getRideIfExists(rideId: Long): Ride {
         return repository.findById(rideId).orElseThrow {
             EntityNotFoundException(ExceptionKeys.RIDE_NOT_FOUND_ID, rideId)
+        }
+    }
+
+    private fun getValidatedRideToRate(rideId: Long, driverUsername: String): Ride {
+        val ride = getRideIfExists(rideId)
+        validateDriver(ride, driverUsername)
+        if (ride.status != RideStatus.COMPLETED.id
+            && ride.status != RideStatus.RATED_BY_PASSENGER.id
+        ) {
+            throw ActionNotAllowedException(ExceptionKeys.RATE_NOT_ALLOWED, RideStatus.fromId(ride.status))
+        }
+
+        checkRideCanBeRated(ride.endTime!!)
+        return ride
+    }
+
+    private fun updateRideStatus(ride: Ride) {
+        ride.status = when (ride.status) {
+            RideStatus.COMPLETED.id -> RideStatus.RATED_BY_DRIVER.id
+            RideStatus.RATED_BY_PASSENGER.id -> RideStatus.RATED.id
+            else -> ride.status
         }
     }
 }

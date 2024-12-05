@@ -2,7 +2,7 @@ spring:
   application:
     name: auth-service
 server:
-  port: 8081
+  port: 8094
 
 app:
   keycloak:
@@ -20,3 +20,5 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost

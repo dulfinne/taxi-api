@@ -1,7 +1,7 @@
 package com.dulfinne.taxi.driverservice.service.impl;
 
+import com.dulfinne.taxi.avro.Rating;
 import com.dulfinne.taxi.driverservice.exception.EntityNotFoundException;
-import com.dulfinne.taxi.driverservice.dto.request.DriverRatingRequest;
 import com.dulfinne.taxi.driverservice.dto.response.DriverRatingResponse;
 import com.dulfinne.taxi.driverservice.mapper.DriverRatingMapper;
 import com.dulfinne.taxi.driverservice.model.Driver;
@@ -40,18 +40,16 @@ public class DriverRatingServiceImpl implements DriverRatingService {
 
   @Transactional
   @Override
-  public DriverRatingResponse saveDriverRating(
-      String username, DriverRatingRequest driverRatingRequest) {
-
-    Driver driver = getDriverIfExistByUsername(username);
-    DriverRating driverRating = driverRatingMapper.toEntity(driverRatingRequest);
-
+  public void saveDriverRating(Rating rating) {
+    Driver driver = getDriverIfExistByUsername(rating.getUsername());
+    DriverRating driverRating = new DriverRating();
     driverRating.setDriver(driver);
+    driverRating.setRating(rating.getRating());
+    driverRating.setFeedback(rating.getFeedback());
+
     driver.setNumberOfRatings(driver.getNumberOfRatings() + 1);
     driver.setSumOfRatings(driver.getSumOfRatings() + driverRating.getRating());
     ratingRepository.save(driverRating);
-
-    return driverRatingMapper.toResponse(driverRating);
   }
 
   private Driver getDriverIfExistByUsername(String username) {

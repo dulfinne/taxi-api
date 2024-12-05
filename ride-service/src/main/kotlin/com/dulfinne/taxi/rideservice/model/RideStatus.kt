@@ -5,7 +5,10 @@ enum class RideStatus(val id: Int) {
     ACCEPTED(2),
     IN_PROGRESS(3),
     COMPLETED(4),
-    CANCELLED(5);
+    CANCELLED(5),
+    RATED_BY_PASSENGER(6),
+    RATED_BY_DRIVER(7),
+    RATED(8);
 
     companion object {
         fun fromId(id: Int): RideStatus {
