@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.rideservice.controller
 
+import com.dulfinne.taxi.rideservice.client.dto.DriverResponse
 import com.dulfinne.taxi.rideservice.dto.request.LocationRequest
 import com.dulfinne.taxi.rideservice.dto.request.RatingRequest
 import com.dulfinne.taxi.rideservice.dto.response.CountPriceResponse
@@ -25,7 +26,7 @@ import java.security.Principal
 @RequestMapping("/api/v1/rides/passenger")
 class PassengerController(val service: PassengerService) {
 
-    @PostMapping("/price")
+    @GetMapping("/price")
     fun countPrice(@RequestBody @Valid request: LocationRequest): ResponseEntity<CountPriceResponse> {
         val response = service.countPrice(request)
         return ResponseEntity.ok(response)
@@ -80,6 +81,16 @@ class PassengerController(val service: PassengerService) {
     ): ResponseEntity<RideResponse> {
 
         val response = service.getRideById(getUsername(principal), rideId)
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/rides/{rideId}/driver-profile")
+    fun getPassengerProfile(
+        principal: Principal,
+        @PathVariable rideId: Long
+    ): ResponseEntity<DriverResponse> {
+
+        val response = service.getDriverProfile(getUsername(principal), rideId)
         return ResponseEntity.ok(response)
     }
 

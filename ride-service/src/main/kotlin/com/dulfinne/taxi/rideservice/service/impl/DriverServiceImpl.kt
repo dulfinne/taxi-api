@@ -1,6 +1,7 @@
 package com.dulfinne.taxi.rideservice.service.impl
 
 import com.dulfinne.taxi.avro.Rating
+import com.dulfinne.taxi.rideservice.client.service.ClientService
 import com.dulfinne.taxi.rideservice.dto.request.RatingRequest
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
 import com.dulfinne.taxi.rideservice.exception.ActionNotAllowedException
@@ -27,7 +28,8 @@ import java.util.TimeZone
 class DriverServiceImpl(
     val repository: RideRepository,
     val mapper: RideMapper,
-    val kafkaService: KafkaProducerService
+    val kafkaService: KafkaProducerService,
+    val clientService: ClientService
 ) : DriverService {
 
     @Transactional(readOnly = true)
@@ -42,8 +44,12 @@ class DriverServiceImpl(
 
     @Transactional
     override fun acceptRide(rideId: Long, driverUsername: String): RideResponse {
-        val ride = getRideIfExists(rideId)
+        val driver = clientService.getDriverByUsername(driverUsername)
+        if (driver.car == null) {
+            throw ActionNotAllowedException(ExceptionKeys.START_NOT_ALLOWED_CAR)
+        }
 
+        val ride = getRideIfExists(rideId)
         if (ride.status != RideStatus.SEARCHING.id) {
             throw ActionNotAllowedException(ExceptionKeys.ACCEPT_NOT_ALLOWED, RideStatus.fromId(ride.status))
         }
