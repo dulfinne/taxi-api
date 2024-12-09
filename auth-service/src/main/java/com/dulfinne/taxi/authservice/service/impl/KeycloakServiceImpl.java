@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.authservice.service.impl;
 
+import com.dulfinne.taxi.authservice.config.KeycloakProperties;
 import com.dulfinne.taxi.authservice.dto.request.LoginRequest;
 import com.dulfinne.taxi.authservice.dto.request.RegistrationRequest;
 import com.dulfinne.taxi.authservice.model.Role;
@@ -19,7 +20,6 @@ import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -31,18 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class KeycloakServiceImpl implements KeycloakService {
   private final RealmResource realmResource;
   private final MessageSource exceptionMessageSource;
-
-  @Value("${app.keycloak.server-url}")
-  private String serverUrl;
-
-  @Value("${app.keycloak.realm}")
-  private String realm;
-
-  @Value("${app.keycloak.client.id}")
-  private String clientId;
-
-  @Value("${app.keycloak.client.secret}")
-  private String clientSecret;
+  private final KeycloakProperties properties;
 
   public void createUser(RegistrationRequest request) {
     UserRepresentation userRepresentation = setUserRepresentation(request);
@@ -59,11 +48,11 @@ public class KeycloakServiceImpl implements KeycloakService {
   public AccessTokenResponse getJwt(LoginRequest request) {
     try (Keycloak userKeycloak =
         KeycloakBuilder.builder()
-            .serverUrl(serverUrl)
-            .realm(realm)
+            .serverUrl(properties.getServerUrl())
+            .realm(properties.getRealm())
             .grantType(OAuth2Constants.PASSWORD)
-            .clientId(clientId)
-            .clientSecret(clientSecret)
+            .clientId(properties.getClientId())
+            .clientSecret(properties.getClientSecret())
             .username(request.getUsername())
             .password(request.getPassword())
             .build()) {
@@ -105,8 +94,6 @@ public class KeycloakServiceImpl implements KeycloakService {
     userRepresentation.setEnabled(true);
     userRepresentation.setUsername(request.getUsername());
     userRepresentation.setEmail(request.getEmail());
-    userRepresentation.setFirstName(request.getFirstName());
-    userRepresentation.setLastName(request.getLastName());
     userRepresentation.setEmailVerified(true);
 
     CredentialRepresentation credentialRepresentation = new CredentialRepresentation();

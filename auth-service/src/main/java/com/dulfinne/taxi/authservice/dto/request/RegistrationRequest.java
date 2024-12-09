@@ -24,12 +24,6 @@ public class RegistrationRequest {
   @Email(message = ValidationKeys.INVALID_EMAIL)
   private String email;
 
-  @NotNull(message = ValidationKeys.FIRST_NAME_REQUIRED)
-  private String firstName;
-
-  @NotNull(message = ValidationKeys.LAST_NAME_REQUIRED)
-  private String lastName;
-
   @NotNull(message = ValidationKeys.ROLE_REQUIRED)
   private Role role;
 }
