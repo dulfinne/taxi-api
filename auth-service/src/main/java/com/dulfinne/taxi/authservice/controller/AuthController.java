@@ -1,9 +1,9 @@
 package com.dulfinne.taxi.authservice.controller;
 
 import com.dulfinne.taxi.authservice.dto.request.LoginRequest;
+import com.dulfinne.taxi.authservice.dto.request.RefreshTokenRequest;
 import com.dulfinne.taxi.authservice.dto.request.RegistrationRequest;
 import com.dulfinne.taxi.authservice.service.AuthService;
-import com.dulfinne.taxi.authservice.service.KeycloakService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.representations.AccessTokenResponse;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
   private final AuthService authService;
-  private final KeycloakService keycloakService;
 
   @PostMapping("/register")
   public ResponseEntity<Void> registerUser(@RequestBody @Valid RegistrationRequest request) {
@@ -36,6 +35,11 @@ public class AuthController {
 
   @PostMapping("/login")
   public ResponseEntity<AccessTokenResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
-    return ResponseEntity.ok(keycloakService.getJwt(loginRequest));
+    return ResponseEntity.ok(authService.login(loginRequest));
+  }
+
+  @PostMapping("/refresh-token")
+  public AccessTokenResponse refreshToken(@RequestBody @Valid RefreshTokenRequest request) {
+    return authService.refreshToken(request);
   }
 }
