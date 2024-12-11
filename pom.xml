@@ -15,6 +15,7 @@
     <module>auth-service</module>
     <module>eureka-server</module>
     <module>api-gateway</module>
+    <module>promocode-service</module>
   </modules>
 
   <dependencies>

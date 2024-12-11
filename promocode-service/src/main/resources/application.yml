@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: promocode-service
+
+  data:
+    mongodb:
+      uri: ${MONGO_URL:mongodb://localhost:27017}/promocode_db
+      auto-index-creation: true
+
+server:
+  port: 8095
