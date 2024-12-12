@@ -26,7 +26,7 @@ import java.security.Principal
 @RequestMapping("/api/v1/rides/passenger")
 class PassengerController(val service: PassengerService) {
 
-    @GetMapping("/price")
+    @PostMapping("/price")
     fun countPrice(@RequestBody @Valid request: LocationRequest): ResponseEntity<CountPriceResponse> {
         val response = service.countPrice(request)
         return ResponseEntity.ok(response)
