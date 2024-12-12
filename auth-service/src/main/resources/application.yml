@@ -6,13 +6,9 @@ server:
 
 app:
   keycloak:
-    jwk-url: http://localhost:8080/realms/taxi/protocol/openid-connect/certs
-    admin:
-      username: admin
-      password: admin
     client:
       id: springsecurity
-      secret: S2MBpMpOceFatgFrWFRgAqHot49WcDCy
+      secret: ${KEYCLOAK_CLIENT_SECRET:egD63JWeQQLVP7OY8P2qAPR5eIwvR5Zp}
     realm: taxi
     server-url: http://localhost:8080
 

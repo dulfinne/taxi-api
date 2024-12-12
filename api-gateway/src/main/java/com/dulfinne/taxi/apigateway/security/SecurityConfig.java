@@ -18,8 +18,11 @@ public class SecurityConfig {
         .authorizeExchange(
             exchange ->
                 exchange
+                    .pathMatchers("/api/v1/auth/admin/**")
+                    .hasRole("ADMIN")
                     .pathMatchers("/api/v1/auth/**")
                     .permitAll()
+
                     .pathMatchers("/api/v1/rides/driver/**")
                     .hasRole("DRIVER")
                     .pathMatchers("/api/v1/rides/passenger/**")

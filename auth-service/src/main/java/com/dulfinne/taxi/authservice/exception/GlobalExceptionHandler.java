@@ -3,6 +3,7 @@ package com.dulfinne.taxi.authservice.exception;
 import com.dulfinne.taxi.authservice.util.ExceptionKeys;
 import java.util.HashMap;
 import java.util.Map;
+import javax.ws.rs.NotAuthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -40,6 +41,25 @@ public class GlobalExceptionHandler {
           validationMessageSource.getMessage(errorMessage, null, LocaleContextHolder.getLocale()));
     }
     return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(InvalidRoleException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidRoleException(InvalidRoleException ex) {
+    String message =
+        exceptionMessageSource.getMessage(
+            ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN, message);
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+  }
+
+  @ExceptionHandler(NotAuthorizedException.class)
+  public ResponseEntity<ErrorResponse> handleNotAuthorizedException(NotAuthorizedException ex) {
+    String message =
+        exceptionMessageSource.getMessage(
+            ExceptionKeys.KEYCLOAK_UNAUTHORIZED, null, LocaleContextHolder.getLocale());
+
+    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, message);
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
   }
 
   @ExceptionHandler(Exception.class)
