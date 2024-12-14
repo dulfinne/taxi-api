@@ -1,4 +1,4 @@
-package com.dulfinne.taxi.passengerservice.service;
+package com.dulfinne.taxi.passengerservice.unit.service;
 
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
