@@ -25,6 +25,7 @@
         <avro.version>1.11.4</avro.version>
         <avro-plugin.version>1.11.1</avro-plugin.version>
         <build-helper.version>3.0.0</build-helper.version>
+        <jupiter.version>5.11.3</jupiter.version>
     </properties>
 
     <repositories>
@@ -122,6 +123,13 @@
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${jupiter.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -5,7 +5,9 @@ import com.dulfinne.taxi.passengerservice.util.RegexPatterns;
 import com.dulfinne.taxi.passengerservice.util.ValidationKeys;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 
+@Builder
 public record PassengerRequest(
     @NotNull(message = ValidationKeys.FIRST_NAME_REQUIRED)
     String firstName,

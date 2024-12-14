@@ -57,7 +57,7 @@ public class PassengerServiceImpl implements PassengerService {
     passenger.setRideCount(PassengerConstants.START_RIDE_COUNT);
     passenger.setSumOfRatings(PassengerConstants.START_SUM_OF_RATINGS);
     passenger.setNumberOfRatings(PassengerConstants.START_NUMBER_OF_RATINGS);
-    passengerRepository.save(passenger);
+    passenger = passengerRepository.save(passenger);
     return INFO_MAPPER_INSTANCE.toResponse(passenger);
   }
 
@@ -68,15 +68,15 @@ public class PassengerServiceImpl implements PassengerService {
     checkPhoneNumberUniqueness(passenger.getPhoneNumber(), request.phoneNumber());
 
     INFO_MAPPER_INSTANCE.updateEntity(request, passenger);
-    passengerRepository.save(passenger);
+    passenger = passengerRepository.save(passenger);
     return INFO_MAPPER_INSTANCE.toResponse(passenger);
   }
 
   @Transactional
   @Override
   public void deletePassenger(String username) {
-    Passenger driver = getPassengerIfExistsByUsername(username);
-    passengerRepository.delete(driver);
+    Passenger passenger = getPassengerIfExistsByUsername(username);
+    passengerRepository.delete(passenger);
   }
 
   private void checkPhoneNumberUniqueness(String phoneNumber, String updatedPhoneNumber) {
@@ -110,7 +110,8 @@ public class PassengerServiceImpl implements PassengerService {
 
   private void checkSortFieldIsValid(String sortField) {
     boolean isValid =
-        Arrays.stream(SortFieldPassenger.values()).anyMatch(field -> field.getValue().equals(sortField));
+        Arrays.stream(SortFieldPassenger.values())
+            .anyMatch(field -> field.getValue().equals(sortField));
 
     if (!isValid) {
       throw new IllegalSortFieldException(ExceptionKeys.ILLEGAL_SORT_FIELD, sortField);
