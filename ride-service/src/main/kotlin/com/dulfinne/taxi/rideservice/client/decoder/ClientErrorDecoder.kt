@@ -9,9 +9,11 @@ import java.lang.Exception
 
 class ClientErrorDecoder : ErrorDecoder {
     override fun decode(methodKey: String?, response: Response?): Exception {
-        if (response!!.status() == HttpStatus.NOT_FOUND.value()) {
-            return EntityNotFoundException(ExceptionKeys.PROFILE_NOT_FOUND)
+        val status = response?.status() ?: throw Exception()
+
+        return when (status) {
+            HttpStatus.NOT_FOUND.value() -> EntityNotFoundException(ExceptionKeys.PROFILE_NOT_FOUND)
+            else -> Exception()
         }
-        return Exception()
     }
 }
