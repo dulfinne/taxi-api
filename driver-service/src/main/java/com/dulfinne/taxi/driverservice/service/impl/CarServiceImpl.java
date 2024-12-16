@@ -47,7 +47,7 @@ public class CarServiceImpl implements CarService {
 
     checkRegistrationNumberUniqueness(car.getRegistrationNumber());
 
-    carRepository.save(car);
+    car = carRepository.save(car);
     return carMapper.toResponse(car);
   }
 

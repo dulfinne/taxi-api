@@ -54,7 +54,7 @@ public class DriverServiceImpl implements DriverService {
     driver.setUsername(username);
     driver.setSumOfRatings(5.0);
     driver.setNumberOfRatings(1);
-    driverRepository.save(driver);
+    driver = driverRepository.save(driver);
     return driverMapper.toResponse(driver);
   }
 
