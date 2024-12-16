@@ -1,7 +1,5 @@
 package com.dulfinne.taxi.driverservice.dto.response;
 
-import com.dulfinne.taxi.driverservice.model.Car;
-
 public record DriverResponse(
     Long id,
     String username,
@@ -9,7 +7,7 @@ public record DriverResponse(
     String lastName,
     String phoneNumber,
     String experience,
-    Car car,
+    CarResponse car,
     Double averageRating
 ) {
 }

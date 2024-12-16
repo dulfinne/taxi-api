@@ -40,5 +40,13 @@ eureka:
   instance:
       hostname: localhost
 
+client:
+  passenger-service:
+    name: passenger-service
+    path: api/v1/passengers
+  driver-service:
+    name: driver-service
+    path: api/v1/drivers
+
 server:
   port: 8093

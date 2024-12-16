@@ -5,6 +5,7 @@ import com.dulfinne.taxi.rideservice.dto.request.PointRequest
 import com.dulfinne.taxi.rideservice.dto.response.CountPriceResponse
 import com.dulfinne.taxi.rideservice.dto.response.PointResponse
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
+import com.dulfinne.taxi.rideservice.model.Payment
 import com.dulfinne.taxi.rideservice.model.Ride
 import com.dulfinne.taxi.rideservice.model.RideStatus
 import org.locationtech.jts.geom.Coordinate
@@ -28,12 +29,13 @@ class RideMapper {
         )
     }
 
-    fun toRide(request: LocationRequest, passengerUsername: String): Ride {
+    fun toRide(request: LocationRequest, passengerUsername: String, payment: Payment): Ride {
         return Ride(
             id = null,
             driverUsername = null,
             passengerUsername = passengerUsername,
             price = BigDecimal.ZERO,
+            payment = payment.id,
             startPosition = toPoint(request.startPosition),
             endPosition = toPoint(request.endPosition),
             startTime = null,
@@ -48,6 +50,7 @@ class RideMapper {
             driverUsername = entity.driverUsername,
             passengerUsername = entity.passengerUsername,
             price = entity.price,
+            payment = Payment.fromId(entity.payment),
             startPosition = toPointResponse(entity.startPosition),
             endPosition = toPointResponse(entity.endPosition),
             startTime = entity.startTime,

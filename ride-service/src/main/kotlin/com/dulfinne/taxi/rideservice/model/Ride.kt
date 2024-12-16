@@ -35,6 +35,9 @@ data class Ride(
     @Column(name = "price")
     var price: BigDecimal,
 
+    @Column(name = "payment")
+    val payment: Int,
+
     @Column(name = "start_time")
     var startTime: ZonedDateTime?,
 
