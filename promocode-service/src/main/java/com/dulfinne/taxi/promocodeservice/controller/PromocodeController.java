@@ -4,12 +4,12 @@ import com.dulfinne.taxi.promocodeservice.dto.request.DiscountRequest;
 import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeRequest;
 import com.dulfinne.taxi.promocodeservice.dto.response.DiscountResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeResponse;
+import com.dulfinne.taxi.promocodeservice.service.PromocodeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,49 +28,43 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class PromocodeController {
 
+  private final PromocodeService service;
+
   @GetMapping
   public ResponseEntity<Page<PromocodeResponse>> getAllPromocodes(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "isActive") String sortField,
-      @RequestParam(value = "order", defaultValue = "ASC") Sort.Direction sortOrder) {
+      @RequestParam(value = "order", defaultValue = "ASC") String sortOrder) {
 
-    // TODO: Impl services
-    Page<PromocodeResponse> promocodeResponsePage = null;
+    Page<PromocodeResponse> promocodeResponsePage =
+        service.getAllPromocodes(offset, limit, sortField, sortOrder);
     return ResponseEntity.ok(promocodeResponsePage);
   }
 
   @GetMapping("/{code}")
   public ResponseEntity<PromocodeResponse> getPromocodeByCode(@PathVariable String code) {
-
-    // TODO: Impl services
-    PromocodeResponse promocodeResponse = null;
+    PromocodeResponse promocodeResponse = service.getPromocodeByCode(code);
     return ResponseEntity.ok(promocodeResponse);
   }
 
   @PostMapping
   public ResponseEntity<PromocodeResponse> createPromocode(
       @RequestBody @Valid PromocodeRequest request) {
-
-    // TODO: Impl services
-    PromocodeResponse promocodeResponse = null;
+    PromocodeResponse promocodeResponse = service.createPromocode(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(promocodeResponse);
   }
 
   @PutMapping("/{code}")
   public ResponseEntity<PromocodeResponse> updatePromocode(
       @PathVariable String code, @RequestBody @Valid PromocodeRequest request) {
-
-    // TODO: Impl services
-    PromocodeResponse promocodeResponse = null;
+    PromocodeResponse promocodeResponse = service.updatePromocode(code, request);
     return ResponseEntity.ok(promocodeResponse);
   }
 
   @PostMapping("/discount")
   public ResponseEntity<DiscountResponse> getDiscount(@RequestBody @Valid DiscountRequest request) {
-
-    // TODO: Impl services
-    DiscountResponse discountResponse = null;
+    DiscountResponse discountResponse = service.getDiscount(request);
     return ResponseEntity.ok(discountResponse);
   }
 }

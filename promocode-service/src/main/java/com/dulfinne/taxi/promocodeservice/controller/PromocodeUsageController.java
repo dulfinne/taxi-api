@@ -2,12 +2,12 @@ package com.dulfinne.taxi.promocodeservice.controller;
 
 import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeUsageRequest;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeUsageResponse;
+import com.dulfinne.taxi.promocodeservice.service.PromocodeUsageService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class PromocodeUsageController {
 
+  private final PromocodeUsageService service;
+
   @GetMapping("/{id}")
   public ResponseEntity<PromocodeUsageResponse> getPromocodeUsageById(@PathVariable String id) {
-
-    // TODO: Impl services
-    PromocodeUsageResponse usageResponse = null;
+    PromocodeUsageResponse usageResponse = service.getPromocodeUsageById(id);
     return ResponseEntity.ok(usageResponse);
   }
 
@@ -38,32 +38,30 @@ public class PromocodeUsageController {
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "promocode") String sortField,
-      @RequestParam(value = "order", defaultValue = "ASC") Sort.Direction sortOrder) {
+      @RequestParam(value = "order", defaultValue = "ASC") String sortOrder) {
 
-    // TODO: Impl services
-    Page<PromocodeUsageResponse> usageResponsePage = null;
+    Page<PromocodeUsageResponse> usageResponsePage =
+        service.getAllPromocodeUsages(offset, limit, sortField, sortOrder);
     return ResponseEntity.ok(usageResponsePage);
   }
 
   @GetMapping("/username/{username}")
-  public ResponseEntity<Page<PromocodeUsageResponse>> getPromocodeUsageByUsername(
+  public ResponseEntity<Page<PromocodeUsageResponse>> getPromocodeUsagesByUsername(
       @PathVariable String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "usageDate") String sortField,
-      @RequestParam(value = "order", defaultValue = "ASC") Sort.Direction sortOrder) {
+      @RequestParam(value = "order", defaultValue = "ASC") String sortOrder) {
 
-    // TODO: Impl services
-    Page<PromocodeUsageResponse> usageResponsePage = null;
+    Page<PromocodeUsageResponse> usageResponsePage =
+        service.getPromocodeUsagesByUsername(username, offset, limit, sortField, sortOrder);
     return ResponseEntity.ok(usageResponsePage);
   }
 
   @PostMapping
   public ResponseEntity<PromocodeUsageResponse> createPromocodeUsage(
       @RequestBody @Valid PromocodeUsageRequest request) {
-
-    // TODO: Impl services
-    PromocodeUsageResponse usageResponse = null;
+    PromocodeUsageResponse usageResponse = service.createPromocodeUsage(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(usageResponse);
   }
 }

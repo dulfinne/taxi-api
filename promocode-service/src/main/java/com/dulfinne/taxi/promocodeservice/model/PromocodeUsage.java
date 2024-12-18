@@ -1,6 +1,7 @@
 package com.dulfinne.taxi.promocodeservice.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 public class PromocodeUsage {
 
   @Id
