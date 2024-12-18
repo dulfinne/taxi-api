@@ -52,7 +52,7 @@ public class PromocodeTestData {
             .build();
   }
 
-  public Promocode getFirst() {
+  public Promocode getFirstPromocode() {
     return Promocode.builder()
         .id(FIRST_ID)
         .code(FIRST_CODE)
@@ -64,7 +64,7 @@ public class PromocodeTestData {
         .build();
   }
 
-  public PromocodeResponse getFirstResponse() {
+  public PromocodeResponse getFirstPromocodeResponse() {
     return PromocodeResponse.builder()
         .id(FIRST_ID)
         .code(FIRST_CODE)
@@ -76,24 +76,12 @@ public class PromocodeTestData {
         .build();
   }
 
-  public Promocode getSecond() {
+  public Promocode getSecondPromocode() {
     return Promocode.builder()
         .id(SECOND_ID)
         .code(SECOND_CODE)
         .discount(SECOND_DISCOUNT)
         .type(SECOND_TYPE.getId())
-        .maxUsages(SECOND_MAX_USAGES)
-        .usageCount(SECOND_USAGE_COUNT)
-        .isActive(SECOND_IS_ACTIVE)
-        .build();
-  }
-
-  public PromocodeResponse getSecondResponse() {
-    return PromocodeResponse.builder()
-        .id(SECOND_ID)
-        .code(SECOND_CODE)
-        .discount(SECOND_DISCOUNT)
-        .type(SECOND_TYPE)
         .maxUsages(SECOND_MAX_USAGES)
         .usageCount(SECOND_USAGE_COUNT)
         .isActive(SECOND_IS_ACTIVE)
@@ -110,7 +98,7 @@ public class PromocodeTestData {
         .build();
   }
 
-  public Promocode getCreated() {
+  public Promocode getCreatedPromocode() {
     return Promocode.builder()
         .id(FIRST_ID)
         .code(FIRST_CODE)
@@ -122,7 +110,7 @@ public class PromocodeTestData {
         .build();
   }
 
-  public PromocodeRequest getSecondRequest() {
+  public PromocodeRequest getUpdateRequest() {
     return PromocodeRequest.builder()
         .code(SECOND_CODE)
         .discount(SECOND_DISCOUNT)
@@ -132,7 +120,7 @@ public class PromocodeTestData {
         .build();
   }
 
-  public Promocode getUpdated() {
+  public Promocode getUpdatedPromocode() {
     return Promocode.builder()
         .id(FIRST_ID)
         .code(SECOND_CODE)
@@ -144,7 +132,7 @@ public class PromocodeTestData {
         .build();
   }
 
-  public PromocodeResponse getUpdatedResponse() {
+  public PromocodeResponse getUpdatedPromocodeResponse() {
     return PromocodeResponse.builder()
         .id(FIRST_ID)
         .code(SECOND_CODE)
@@ -156,7 +144,7 @@ public class PromocodeTestData {
         .build();
   }
 
-  public PromocodeResponse getCreatedResponse() {
+  public PromocodeResponse getCreatedPromocodeResponse() {
     return PromocodeResponse.builder()
         .id(FIRST_ID)
         .code(FIRST_CODE)

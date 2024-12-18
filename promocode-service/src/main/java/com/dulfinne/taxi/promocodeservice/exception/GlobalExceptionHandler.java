@@ -23,9 +23,8 @@ public class GlobalExceptionHandler {
   private final MessageSource validationMessageSource;
   private final MessageSource exceptionMessageSource;
 
-  @ExceptionHandler(ActionNotAllowedException.class)
-  public ResponseEntity<ErrorResponse> handleActionNotAllowedException(
-      ActionNotAllowedException ex) {
+  @ExceptionHandler({ActionNotAllowedException.class, EntityAlreadyExistsException.class})
+  public ResponseEntity<ErrorResponse> handleConflictExceptions(CustomException ex) {
     String message =
         exceptionMessageSource.getMessage(
             ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
@@ -40,16 +39,6 @@ public class GlobalExceptionHandler {
             ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND, message);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-  }
-
-  @ExceptionHandler(EntityAlreadyExistsException.class)
-  public ResponseEntity<ErrorResponse> handleEntityAlreadyExistsException(
-      EntityAlreadyExistsException ex) {
-    String message =
-        exceptionMessageSource.getMessage(
-            ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
-    ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT, message);
-    return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -1,13 +1,13 @@
 package com.dulfinne.taxi.promocodeservice.controller;
 
 import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeUsageRequest;
+import com.dulfinne.taxi.promocodeservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeUsageResponse;
 import com.dulfinne.taxi.promocodeservice.service.PromocodeUsageService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -34,26 +34,26 @@ public class PromocodeUsageController {
   }
 
   @GetMapping
-  public ResponseEntity<Page<PromocodeUsageResponse>> getAllPromocodeUsages(
+  public ResponseEntity<PaginatedResponse<PromocodeUsageResponse>> getAllPromocodeUsages(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "promocode") String sortField,
       @RequestParam(value = "order", defaultValue = "ASC") String sortOrder) {
 
-    Page<PromocodeUsageResponse> usageResponsePage =
+    PaginatedResponse<PromocodeUsageResponse> usagesResponse =
         service.getAllPromocodeUsages(offset, limit, sortField, sortOrder);
-    return ResponseEntity.ok(usageResponsePage);
+    return ResponseEntity.ok(usagesResponse);
   }
 
   @GetMapping("/username/{username}")
-  public ResponseEntity<Page<PromocodeUsageResponse>> getPromocodeUsagesByUsername(
+  public ResponseEntity<PaginatedResponse<PromocodeUsageResponse>> getPromocodeUsagesByUsername(
       @PathVariable String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "usageDate") String sortField,
       @RequestParam(value = "order", defaultValue = "ASC") String sortOrder) {
 
-    Page<PromocodeUsageResponse> usageResponsePage =
+    PaginatedResponse<PromocodeUsageResponse> usageResponsePage =
         service.getPromocodeUsagesByUsername(username, offset, limit, sortField, sortOrder);
     return ResponseEntity.ok(usageResponsePage);
   }

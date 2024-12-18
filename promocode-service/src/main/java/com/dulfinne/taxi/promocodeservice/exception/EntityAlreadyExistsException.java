@@ -1,15 +1,7 @@
 package com.dulfinne.taxi.promocodeservice.exception;
 
-import lombok.Getter;
-
-@Getter
-public class EntityAlreadyExistsException extends RuntimeException {
-
-  private final String messageKey;
-  private final Object[] params;
-
+public class EntityAlreadyExistsException extends CustomException {
   public EntityAlreadyExistsException(String messageKey, Object... params) {
-    this.messageKey = messageKey;
-    this.params = params;
+    super(messageKey, params);
   }
 }

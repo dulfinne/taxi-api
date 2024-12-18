@@ -1,8 +1,10 @@
 package com.dulfinne.taxi.promocodeservice.unit.service;
 
 import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeUsageRequest;
+import com.dulfinne.taxi.promocodeservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeUsageResponse;
 import com.dulfinne.taxi.promocodeservice.exception.EntityNotFoundException;
+import com.dulfinne.taxi.promocodeservice.mapper.PaginatedMapper;
 import com.dulfinne.taxi.promocodeservice.mapper.PromocodeUsageMapper;
 import com.dulfinne.taxi.promocodeservice.model.Promocode;
 import com.dulfinne.taxi.promocodeservice.model.PromocodeUsage;
@@ -36,24 +38,31 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class PromocodeUsageTest {
 
-  @InjectMocks private PromocodeUsageServiceImpl service;
+  @InjectMocks
+  private PromocodeUsageServiceImpl service;
 
-  @Mock private PromocodeUsageRepository usageRepository;
-  @Mock private PromocodeRepository promocodeRepository;
-  @Spy private PromocodeUsageMapper mapper = Mappers.getMapper(PromocodeUsageMapper.class);
+  @Mock
+  private PromocodeUsageRepository usageRepository;
+  @Mock
+  private PromocodeRepository promocodeRepository;
+  @Spy
+  private PromocodeUsageMapper mapper = Mappers.getMapper(PromocodeUsageMapper.class);
+  @Spy
+  private PaginatedMapper paginatedMapper = new PaginatedMapper();
 
   @Test
   void getAllPromocodeUsages_whenValidParams_thenReturnUsageResponsePage() {
     PromocodeUsage usage = UsageTestData.getUsage();
     Page<PromocodeUsage> usagePage = new PageImpl<>(List.of(usage, usage));
-    PromocodeUsageResponse response = UsageTestData.getResponse();
-    Page<PromocodeUsageResponse> expectedPage = new PageImpl<>(List.of(response, response));
+    PromocodeUsageResponse response = UsageTestData.getUsageResponse();
+    PaginatedResponse<PromocodeUsageResponse> expected =
+        PaginationTestData.getPaginatedResponse(List.of(response, response));
 
     // Arrange
     when(usageRepository.findAll(any(Pageable.class))).thenReturn(usagePage);
 
     // Act
-    Page<PromocodeUsageResponse> resultPage =
+    PaginatedResponse<PromocodeUsageResponse> result =
         service.getAllPromocodeUsages(
             PaginationTestData.DEFAULT_OFFSET,
             PaginationTestData.DEFAULT_LIMIT,
@@ -61,12 +70,13 @@ public class PromocodeUsageTest {
             PaginationTestData.SORT_ORDER);
 
     // Assert
-    assertEquals(expectedPage, resultPage);
-    assertEquals(expectedPage.getTotalElements(), resultPage.getTotalElements());
-    assertEquals(expectedPage.getContent(), resultPage.getContent());
+    assertEquals(expected, result);
+    assertEquals(expected.totalElements(), result.totalElements());
+    assertEquals(expected.content(), result.content());
 
     verify(usageRepository, times(1)).findAll(any(Pageable.class));
-    verify(mapper, times(expectedPage.getNumberOfElements())).toResponse(any(PromocodeUsage.class));
+    verify(paginatedMapper, times(1)).toPaginatedResponse(any(Page.class));
+    verify(mapper, times(expected.content().size())).toResponse(any(PromocodeUsage.class));
   }
 
   @Test
@@ -74,15 +84,16 @@ public class PromocodeUsageTest {
     String username = PromocodeTestData.USERNAME;
     PromocodeUsage usage = UsageTestData.getUsage();
     Page<PromocodeUsage> usagePage = new PageImpl<>(List.of(usage, usage));
-    PromocodeUsageResponse response = UsageTestData.getResponse();
-    Page<PromocodeUsageResponse> expectedPage = new PageImpl<>(List.of(response, response));
+    PromocodeUsageResponse response = UsageTestData.getUsageResponse();
+    PaginatedResponse<PromocodeUsageResponse> expected =
+        PaginationTestData.getPaginatedResponse(List.of(response, response));
 
     // Arrange
     when(usageRepository.findByUsername(any(String.class), any(Pageable.class)))
         .thenReturn(usagePage);
 
     // Act
-    Page<PromocodeUsageResponse> resultPage =
+    PaginatedResponse<PromocodeUsageResponse> resultPage =
         service.getPromocodeUsagesByUsername(
             username,
             PaginationTestData.DEFAULT_OFFSET,
@@ -91,19 +102,20 @@ public class PromocodeUsageTest {
             PaginationTestData.SORT_ORDER);
 
     // Assert
-    assertEquals(expectedPage, resultPage);
-    assertEquals(expectedPage.getTotalElements(), resultPage.getTotalElements());
-    assertEquals(expectedPage.getContent(), resultPage.getContent());
+    assertEquals(expected, resultPage);
+    assertEquals(expected.totalElements(), resultPage.totalElements());
+    assertEquals(expected.content(), resultPage.content());
 
     verify(usageRepository, times(1)).findByUsername(any(String.class), any(Pageable.class));
-    verify(mapper, times(expectedPage.getNumberOfElements())).toResponse(any(PromocodeUsage.class));
+    verify(paginatedMapper, times(1)).toPaginatedResponse(any(Page.class));
+    verify(mapper, times(expected.content().size())).toResponse(any(PromocodeUsage.class));
   }
 
   @Test
   void getPromocodeUsageById_whenValidRequest_thenReturnUsageResponse() {
     PromocodeUsage usage = UsageTestData.getUsage();
     String usageId = usage.getId();
-    PromocodeUsageResponse expected = UsageTestData.getResponse();
+    PromocodeUsageResponse expected = UsageTestData.getUsageResponse();
 
     // Arrange
     when(usageRepository.findById(any(String.class))).thenReturn(Optional.of(usage));
@@ -132,9 +144,9 @@ public class PromocodeUsageTest {
   @Test
   void createPromocodeUsage_whenValidRequest_thenReturnUsageResponse() {
     PromocodeUsage usage = UsageTestData.getUsage();
-    PromocodeUsageRequest request = UsageTestData.getRequest();
-    PromocodeUsageResponse expected = UsageTestData.getResponse();
-    Promocode promocode = PromocodeTestData.getFirst();
+    PromocodeUsageRequest request = UsageTestData.getUsageRequest();
+    PromocodeUsageResponse expected = UsageTestData.getUsageResponse();
+    Promocode promocode = PromocodeTestData.getFirstPromocode();
     Integer expectedUsageCount = promocode.getUsageCount() + 1;
 
     // Arrange
@@ -155,9 +167,9 @@ public class PromocodeUsageTest {
   @Test
   void createPromocodeUsage_whenLastPromocodeUsage_thenMakePromocodeDisabled() {
     PromocodeUsage usage = UsageTestData.getUsage();
-    PromocodeUsageRequest request = UsageTestData.getRequest();
-    PromocodeUsageResponse expected = UsageTestData.getResponse();
-    Promocode promocode = PromocodeTestData.getFirst();
+    PromocodeUsageRequest request = UsageTestData.getUsageRequest();
+    PromocodeUsageResponse expected = UsageTestData.getUsageResponse();
+    Promocode promocode = PromocodeTestData.getFirstPromocode();
     promocode.setUsageCount(promocode.getMaxUsages() - 1);
     Integer expectedUsageCount = promocode.getMaxUsages();
     boolean expectedIsActive = false;
@@ -180,14 +192,14 @@ public class PromocodeUsageTest {
 
   @Test
   void createPromocodeUsage_whenPromocodeNotFound_thenEntityNotFoundException() {
-    PromocodeUsageRequest request = UsageTestData.getRequest();
+    PromocodeUsageRequest request = UsageTestData.getUsageRequest();
     PromocodeUsage usage = UsageTestData.getUsage();
 
     // Arrange
     when(usageRepository.save(any(PromocodeUsage.class))).thenReturn(usage);
     when(promocodeRepository.findByCode(any(String.class))).thenReturn(Optional.empty());
 
-    // Act
+    // Act & Assert
     assertThrows(EntityNotFoundException.class, () -> service.createPromocodeUsage(request));
   }
 }

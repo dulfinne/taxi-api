@@ -3,10 +3,12 @@ package com.dulfinne.taxi.promocodeservice.service.impl;
 import com.dulfinne.taxi.promocodeservice.dto.request.DiscountRequest;
 import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeRequest;
 import com.dulfinne.taxi.promocodeservice.dto.response.DiscountResponse;
+import com.dulfinne.taxi.promocodeservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeResponse;
 import com.dulfinne.taxi.promocodeservice.exception.ActionNotAllowedException;
 import com.dulfinne.taxi.promocodeservice.exception.EntityAlreadyExistsException;
 import com.dulfinne.taxi.promocodeservice.exception.EntityNotFoundException;
+import com.dulfinne.taxi.promocodeservice.mapper.PaginatedMapper;
 import com.dulfinne.taxi.promocodeservice.mapper.PromocodeMapper;
 import com.dulfinne.taxi.promocodeservice.model.DiscountType;
 import com.dulfinne.taxi.promocodeservice.model.Promocode;
@@ -30,17 +32,17 @@ public class PromocodeServiceImpl implements PromocodeService {
   private final PromocodeRepository promocodeRepository;
   private final PromocodeUsageRepository usageRepository;
   private final PromocodeMapper mapper;
+  private final PaginatedMapper paginatedMapper;
 
   @Transactional(readOnly = true)
   @Override
-  public Page<PromocodeResponse> getAllPromocodes(
+  public PaginatedResponse<PromocodeResponse> getAllPromocodes(
       Integer offset, Integer limit, String sortField, String sortOrder) {
 
     Sort.Direction direction = Sort.Direction.fromString(sortOrder);
     Page<Promocode> promocodes =
         promocodeRepository.findAll(PageRequest.of(offset, limit, Sort.by(direction, sortField)));
-
-    return promocodes.map(mapper::toResponse);
+    return paginatedMapper.toPaginatedResponse(promocodes.map(mapper::toResponse));
   }
 
   @Transactional(readOnly = true)
@@ -54,9 +56,8 @@ public class PromocodeServiceImpl implements PromocodeService {
   @Override
   public PromocodeResponse createPromocode(PromocodeRequest request) {
     Promocode promocode = mapper.toEntity(request);
-
     checkCodeUniquiness(promocode.getCode());
-    promocode.setUsageCount(0);
+
     promocode = promocodeRepository.save(promocode);
     return mapper.toResponse(promocode);
   }

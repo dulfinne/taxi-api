@@ -1,8 +1,10 @@
 package com.dulfinne.taxi.promocodeservice.service.impl;
 
 import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeUsageRequest;
+import com.dulfinne.taxi.promocodeservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeUsageResponse;
 import com.dulfinne.taxi.promocodeservice.exception.EntityNotFoundException;
+import com.dulfinne.taxi.promocodeservice.mapper.PaginatedMapper;
 import com.dulfinne.taxi.promocodeservice.mapper.PromocodeUsageMapper;
 import com.dulfinne.taxi.promocodeservice.model.Promocode;
 import com.dulfinne.taxi.promocodeservice.model.PromocodeUsage;
@@ -26,6 +28,7 @@ public class PromocodeUsageServiceImpl implements PromocodeUsageService {
   private final PromocodeUsageRepository usageRepository;
   private final PromocodeRepository promocodeRepository;
   private final PromocodeUsageMapper mapper;
+  private final PaginatedMapper paginatedMapper;
 
   @Transactional(readOnly = true)
   @Override
@@ -36,25 +39,25 @@ public class PromocodeUsageServiceImpl implements PromocodeUsageService {
 
   @Transactional(readOnly = true)
   @Override
-  public Page<PromocodeUsageResponse> getAllPromocodeUsages(
+  public PaginatedResponse<PromocodeUsageResponse> getAllPromocodeUsages(
       Integer offset, Integer limit, String sortField, String sortOrder) {
 
     Sort.Direction direction = Sort.Direction.fromString(sortOrder);
     Page<PromocodeUsage> usages =
         usageRepository.findAll(PageRequest.of(offset, limit, Sort.by(direction, sortField)));
-    return usages.map(mapper::toResponse);
+    return paginatedMapper.toPaginatedResponse(usages.map(mapper::toResponse));
   }
 
   @Transactional(readOnly = true)
   @Override
-  public Page<PromocodeUsageResponse> getPromocodeUsagesByUsername(
+  public PaginatedResponse<PromocodeUsageResponse> getPromocodeUsagesByUsername(
       String username, Integer offset, Integer limit, String sortField, String sortOrder) {
 
     Sort.Direction direction = Sort.Direction.fromString(sortOrder);
     Page<PromocodeUsage> usages =
         usageRepository.findByUsername(
             username, PageRequest.of(offset, limit, Sort.by(direction, sortOrder)));
-    return usages.map(mapper::toResponse);
+    return paginatedMapper.toPaginatedResponse(usages.map(mapper::toResponse));
   }
 
   @Transactional

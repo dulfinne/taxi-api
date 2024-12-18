@@ -3,10 +3,12 @@ package com.dulfinne.taxi.promocodeservice.unit.service;
 import com.dulfinne.taxi.promocodeservice.dto.request.DiscountRequest;
 import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeRequest;
 import com.dulfinne.taxi.promocodeservice.dto.response.DiscountResponse;
+import com.dulfinne.taxi.promocodeservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeResponse;
 import com.dulfinne.taxi.promocodeservice.exception.ActionNotAllowedException;
 import com.dulfinne.taxi.promocodeservice.exception.EntityAlreadyExistsException;
 import com.dulfinne.taxi.promocodeservice.exception.EntityNotFoundException;
+import com.dulfinne.taxi.promocodeservice.mapper.PaginatedMapper;
 import com.dulfinne.taxi.promocodeservice.mapper.PromocodeMapper;
 import com.dulfinne.taxi.promocodeservice.model.Promocode;
 import com.dulfinne.taxi.promocodeservice.repository.PromocodeRepository;
@@ -38,23 +40,31 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class PromocodeServiceTest {
 
-  @InjectMocks private PromocodeServiceImpl service;
-  @Mock private PromocodeRepository promocodeRepository;
-  @Mock private PromocodeUsageRepository usageRepository;
-  @Spy private PromocodeMapper mapper = Mappers.getMapper(PromocodeMapper.class);
+  @InjectMocks
+  private PromocodeServiceImpl service;
+  
+  @Mock 
+  private PromocodeRepository promocodeRepository;
+  @Mock
+  private PromocodeUsageRepository usageRepository;
+  @Spy
+  private PromocodeMapper mapper = Mappers.getMapper(PromocodeMapper.class);
+  @Spy
+  private PaginatedMapper paginatedMapper = new PaginatedMapper();
 
   @Test
-  void getAllPromocodes_whenValidParams_thenReturnAllPromocodeResponsePage() {
-    Promocode promocode = PromocodeTestData.getFirst();
+  void getAllPromocodes_whenValidParams_thenReturnAllPaginatedResponsePage() {
+    Promocode promocode = PromocodeTestData.getFirstPromocode();
     Page<Promocode> promocodesPage = new PageImpl<>(List.of(promocode, promocode));
-    PromocodeResponse response = PromocodeTestData.getFirstResponse();
-    Page<PromocodeResponse> expectedPage = new PageImpl<>(List.of(response, response));
+    PromocodeResponse response = PromocodeTestData.getFirstPromocodeResponse();
+    PaginatedResponse<PromocodeResponse> expected =
+        PaginationTestData.getPaginatedResponse(List.of(response, response));
 
     // Arrange
     when(promocodeRepository.findAll(any(Pageable.class))).thenReturn(promocodesPage);
 
     // Act
-    Page<PromocodeResponse> resultPage =
+    PaginatedResponse<PromocodeResponse> result =
         service.getAllPromocodes(
             PaginationTestData.DEFAULT_OFFSET,
             PaginationTestData.DEFAULT_LIMIT,
@@ -62,18 +72,19 @@ public class PromocodeServiceTest {
             PaginationTestData.SORT_ORDER);
 
     // Assert
-    assertEquals(expectedPage, resultPage);
-    assertEquals(expectedPage.getTotalElements(), resultPage.getTotalElements());
-    assertEquals(expectedPage.getContent(), resultPage.getContent());
+    assertEquals(expected, result);
+    assertEquals(expected.totalElements(), result.totalElements());
+    assertEquals(expected.content(), result.content());
 
     verify(promocodeRepository, times(1)).findAll(any(Pageable.class));
-    verify(mapper, times(expectedPage.getNumberOfElements())).toResponse(any(Promocode.class));
+    verify(paginatedMapper, times(1)).toPaginatedResponse(any(Page.class));
+    verify(mapper, times(expected.content().size())).toResponse(any(Promocode.class));
   }
 
   @Test
   void getPromocodeByCode_whenValidParams_thenReturnPromocodeResponse() {
-    Promocode promocode = PromocodeTestData.getFirst();
-    PromocodeResponse expected = PromocodeTestData.getFirstResponse();
+    Promocode promocode = PromocodeTestData.getFirstPromocode();
+    PromocodeResponse expected = PromocodeTestData.getFirstPromocodeResponse();
 
     // Arrange
     when(promocodeRepository.findByCode(any(String.class))).thenReturn(Optional.of(promocode));
@@ -102,8 +113,8 @@ public class PromocodeServiceTest {
   @Test
   void createPromocode_whenValidParams_thenReturnPromocodeResponse() {
     PromocodeRequest request = PromocodeTestData.getCreateRequest();
-    Promocode createdPromocode = PromocodeTestData.getCreated();
-    PromocodeResponse expected = PromocodeTestData.getCreatedResponse();
+    Promocode createdPromocode = PromocodeTestData.getCreatedPromocode();
+    PromocodeResponse expected = PromocodeTestData.getCreatedPromocodeResponse();
     // Arrange
     when(promocodeRepository.findByCode(any(String.class))).thenReturn(Optional.empty());
     when(promocodeRepository.save(any(Promocode.class))).thenReturn(createdPromocode);
@@ -122,7 +133,7 @@ public class PromocodeServiceTest {
   @Test
   void createPromocode_whenNotUniqueCode_thenThrowEntityAlreadyExistsException() {
     PromocodeRequest request = PromocodeTestData.getCreateRequest();
-    Promocode createdPromocode = PromocodeTestData.getCreated();
+    Promocode createdPromocode = PromocodeTestData.getCreatedPromocode();
 
     // Arrange
     when(promocodeRepository.findByCode(any(String.class)))
@@ -136,8 +147,8 @@ public class PromocodeServiceTest {
   void updatePromocode_whenUpdateToSameFieldsValid_thenReturnPromocodeResponse() {
     String code = PromocodeTestData.FIRST_CODE;
     PromocodeRequest request = PromocodeTestData.getCreateRequest();
-    Promocode promocode = PromocodeTestData.getFirst();
-    PromocodeResponse expected = PromocodeTestData.getFirstResponse();
+    Promocode promocode = PromocodeTestData.getFirstPromocode();
+    PromocodeResponse expected = PromocodeTestData.getFirstPromocodeResponse();
 
     // Arrange
     when(promocodeRepository.findByCode(any(String.class))).thenReturn(Optional.of(promocode));
@@ -156,7 +167,7 @@ public class PromocodeServiceTest {
   void updatePromocode_whenUsageCountExceedMaxUsages_thenThrowActionNotAllowedException() {
     String code = PromocodeTestData.FIRST_CODE;
     PromocodeRequest request = PromocodeTestData.getCreateRequest();
-    Promocode promocode = PromocodeTestData.getFirst();
+    Promocode promocode = PromocodeTestData.getFirstPromocode();
     promocode.setUsageCount(promocode.getMaxUsages());
 
     // Arrange
@@ -181,10 +192,10 @@ public class PromocodeServiceTest {
   @Test
   void updatePromocode_whenUpdateToOtherFieldsValid_thenReturnPromocodeResponse() {
     String code = PromocodeTestData.FIRST_CODE;
-    PromocodeRequest request = PromocodeTestData.getSecondRequest();
-    Promocode promocode = PromocodeTestData.getFirst();
-    Promocode updatedPromocode = PromocodeTestData.getUpdated();
-    PromocodeResponse expected = PromocodeTestData.getUpdatedResponse();
+    PromocodeRequest request = PromocodeTestData.getUpdateRequest();
+    Promocode promocode = PromocodeTestData.getFirstPromocode();
+    Promocode updatedPromocode = PromocodeTestData.getUpdatedPromocode();
+    PromocodeResponse expected = PromocodeTestData.getUpdatedPromocodeResponse();
 
     // Arrange
     when(promocodeRepository.findByCode(code)).thenReturn(Optional.of(promocode));
@@ -203,7 +214,7 @@ public class PromocodeServiceTest {
   @Test
   void getDiscount_whenValidAndTypePercentage_thenReturnDiscountResponse() {
     DiscountRequest request = PromocodeTestData.getPercentageDiscountRequest();
-    Promocode promocode = PromocodeTestData.getFirst();
+    Promocode promocode = PromocodeTestData.getFirstPromocode();
     DiscountResponse expected = new DiscountResponse(PromocodeTestData.PERCENTAGE_DISCOUNT);
 
     // Arrange
@@ -221,7 +232,7 @@ public class PromocodeServiceTest {
   @Test
   void getDiscount_whenValidAndTypeFixedAmount_thenReturnDiscountResponse() {
     DiscountRequest request = PromocodeTestData.getFixedAmountDiscountRequest();
-    Promocode promocode = PromocodeTestData.getSecond();
+    Promocode promocode = PromocodeTestData.getSecondPromocode();
     DiscountResponse expected = new DiscountResponse(PromocodeTestData.FIXED_DISCOUNT);
 
     // Arrange
@@ -239,13 +250,13 @@ public class PromocodeServiceTest {
   @Test
   void getDiscount_whenOtherDiscountType_thenReturnZeroDiscountResponse() {
     DiscountRequest request = PromocodeTestData.getFixedAmountDiscountRequest();
-    Promocode promocode = PromocodeTestData.getSecond();
+    Promocode promocode = PromocodeTestData.getSecondPromocode();
     DiscountResponse expected = new DiscountResponse(PromocodeTestData.FIXED_DISCOUNT);
 
     // Arrange
     when(promocodeRepository.findByCode(any(String.class))).thenReturn(Optional.of(promocode));
     when(usageRepository.existsByUsernameAndCode(request.username(), promocode.getCode()))
-            .thenReturn(false);
+        .thenReturn(false);
     // Act
     DiscountResponse result = service.getDiscount(request);
 
@@ -268,7 +279,7 @@ public class PromocodeServiceTest {
   @Test
   void getDiscount_whenPersonAlreadyUsedPromocode_thenThrowActionNotAllowedException() {
     DiscountRequest request = PromocodeTestData.getPercentageDiscountRequest();
-    Promocode promocode = PromocodeTestData.getFirst();
+    Promocode promocode = PromocodeTestData.getFirstPromocode();
 
     // Arrange
     when(promocodeRepository.findByCode(any(String.class))).thenReturn(Optional.of(promocode));
@@ -282,7 +293,7 @@ public class PromocodeServiceTest {
   @Test
   void getDiscount_whenNotActivePromocode_thenThrowActionNotAllowedException() {
     DiscountRequest request = PromocodeTestData.getPercentageDiscountRequest();
-    Promocode promocode = PromocodeTestData.getFirst();
+    Promocode promocode = PromocodeTestData.getFirstPromocode();
     promocode.setIsActive(false);
 
     // Arrange

@@ -14,12 +14,12 @@ public class UsageTestData {
   public static final String USAGE_ID = "6759f65c37b3e1256f49a5c9";
   public static final int USAGE_RIDE_ID = 1;
 
-  public PromocodeUsageRequest getRequest() {
+  public PromocodeUsageRequest getUsageRequest() {
     return PromocodeUsageRequest.builder()
-            .code(PromocodeTestData.FIRST_CODE)
-            .username(PromocodeTestData.USERNAME)
-            .rideId(USAGE_RIDE_ID)
-            .build();
+        .code(PromocodeTestData.FIRST_CODE)
+        .username(PromocodeTestData.USERNAME)
+        .rideId(USAGE_RIDE_ID)
+        .build();
   }
 
   public PromocodeUsage getUsage() {
@@ -32,7 +32,7 @@ public class UsageTestData {
         .build();
   }
 
-  public PromocodeUsageResponse getResponse() {
+  public PromocodeUsageResponse getUsageResponse() {
     return PromocodeUsageResponse.builder()
         .id(USAGE_ID)
         .code(PromocodeTestData.FIRST_CODE)
