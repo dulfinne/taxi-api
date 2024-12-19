@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PromocodeUsageRepository extends MongoRepository<PromocodeUsage, String> {
   Page<PromocodeUsage> findByUsername(String username, Pageable pageable);
+  boolean existsByUsernameAndCode(String username, String code);
 }

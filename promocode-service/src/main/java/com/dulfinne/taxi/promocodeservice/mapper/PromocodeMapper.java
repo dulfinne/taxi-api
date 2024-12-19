@@ -17,6 +17,7 @@ public interface PromocodeMapper {
   PromocodeResponse toResponse(Promocode promocode);
 
   @Mapping(source = "type", target = "type", qualifiedByName = "getPromocodeTypeId")
+  @Mapping(target = "usageCount", constant = "0")
   Promocode toEntity(PromocodeRequest request);
 
   @Mapping(source = "type", target = "type", qualifiedByName = "getPromocodeTypeId")

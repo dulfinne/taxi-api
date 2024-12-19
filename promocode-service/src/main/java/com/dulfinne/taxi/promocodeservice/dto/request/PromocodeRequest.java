@@ -1,29 +1,32 @@
 package com.dulfinne.taxi.promocodeservice.dto.request;
 
 import com.dulfinne.taxi.promocodeservice.model.DiscountType;
+import com.dulfinne.taxi.promocodeservice.util.ValidationKeys;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 
+@Builder
 public record PromocodeRequest(
-    @NotNull(message = "Please enter code")
-    @Size(min = 3, max = 10, message = "Code must be between 3 and 10 characters")
+    @NotNull(message = ValidationKeys.CODE_REQUIRED)
+    @Size(min = 3, max = 10, message = ValidationKeys.INVALID_CODE)
     String code,
 
-    @NotNull(message = "Please enter discount")
-    @Positive(message = "Discount must be positive")
+    @NotNull(message = ValidationKeys.DISCOUNT_REQUIRED)
+    @Positive(message = ValidationKeys.INVALID_DISCOUNT)
     BigDecimal discount,
 
-    @NotNull(message = "Please enter is promocode active(true) or not(false)")
+    @NotNull(message = ValidationKeys.IS_ACTIVE_REQUIRED)
     Boolean isActive,
 
-    @NotNull(message = "Please enter the max usage number")
-    @Positive(message = "Discount must be positive")
+    @NotNull(message = ValidationKeys.MAX_USAGE_REQUIRED)
+    @Positive(message = ValidationKeys.INVALID_MAX_USAGE)
     Integer maxUsages,
 
-    @NotNull(message = "Please enter the type")
+    @NotNull(message = ValidationKeys.TYPE_REQUIRED)
     DiscountType type
 ) {
 }
