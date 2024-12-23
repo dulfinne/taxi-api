@@ -1,5 +1,7 @@
 package com.dulfinne.taxi.driverservice.dto.response;
 
+import lombok.Builder;
+
 @Builder
 public record DriverResponse(
     Long id,
