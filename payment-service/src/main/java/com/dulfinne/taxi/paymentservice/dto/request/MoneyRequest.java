@@ -1,11 +1,11 @@
 package com.dulfinne.taxi.paymentservice.dto.request;
 
-import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
 public record MoneyRequest(
-        @DecimalMin(value = "0")
+        @Positive
         BigDecimal amount
 ) {
 }
