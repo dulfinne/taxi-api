@@ -1,0 +1,3 @@
+ALTER TABLE wallet DROP CONSTRAINT IF EXISTS unique_username;
+
+DROP TABLE IF EXISTS wallet
