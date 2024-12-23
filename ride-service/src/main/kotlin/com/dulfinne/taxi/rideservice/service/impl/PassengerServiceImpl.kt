@@ -1,6 +1,9 @@
 package com.dulfinne.taxi.rideservice.service.impl
 
 import com.dulfinne.taxi.avro.Rating
+import com.dulfinne.taxi.rideservice.client.dto.DriverResponse
+import com.dulfinne.taxi.rideservice.client.dto.PassengerResponse
+import com.dulfinne.taxi.rideservice.client.service.ClientService
 import com.dulfinne.taxi.rideservice.dto.request.LocationRequest
 import com.dulfinne.taxi.rideservice.dto.request.RatingRequest
 import com.dulfinne.taxi.rideservice.dto.response.CountPriceResponse
@@ -37,7 +40,8 @@ import kotlin.math.sqrt
 class PassengerServiceImpl(
     val repository: RideRepository,
     val mapper: RideMapper,
-    val kafkaService: KafkaProducerService
+    val kafkaService: KafkaProducerService,
+    val clientService: ClientService
 ) : PassengerService {
 
     override fun countPrice(request: LocationRequest): CountPriceResponse {
@@ -50,7 +54,9 @@ class PassengerServiceImpl(
 
     @Transactional
     override fun createRide(passengerUsername: String, request: LocationRequest): RideResponse {
-        val ride = mapper.toRide(request, passengerUsername)
+        val passenger: PassengerResponse = clientService.getPassengerByUsername(passengerUsername)
+
+        val ride = mapper.toRide(request, passengerUsername, passenger.payment)
         ride.price = countPriceByLocation(ride.startPosition, ride.endPosition)
 
         repository.save(ride)
@@ -108,6 +114,21 @@ class PassengerServiceImpl(
         return mapper.toRideResponse(ride)
     }
 
+    @Transactional(readOnly = true)
+    override fun getDriverProfile(passengerUsername: String, rideId: Long): DriverResponse {
+        val ride = getRideIfExists(rideId)
+        validatePassenger(ride, passengerUsername)
+
+        when {
+            ride.status == RideStatus.ACCEPTED.id -> return clientService.getDriverByUsername(ride.driverUsername!!)
+            ride.startTime != null -> checkDriverCanBeViewed(ride.startTime!!)
+            else -> throw ActionNotAllowedException(
+                ExceptionKeys.VIEW_DRIVER_NOT_ALLOWED, RideStatus.fromId(ride.status)
+            )
+        }
+        return clientService.getDriverByUsername(ride.driverUsername!!)
+    }
+
     private fun countPriceByLocation(startPosition: Point, endPosition: Point): BigDecimal {
         val basePrice = RideConstants.BASE_PRICE
         val pricePerKm = RideConstants.PRICE_PER_KM
@@ -123,7 +144,8 @@ class PassengerServiceImpl(
         val diffLat = Math.toRadians(lat2 - lat1)
         val diffLon = Math.toRadians(lon2 - lon1)
 
-        val a = sin(diffLat / 2).pow(2.0) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(diffLon / 2).pow(2.0)
+        val a =
+            sin(diffLat / 2).pow(2.0) + cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) * sin(diffLon / 2).pow(2.0)
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
         val distanceKm = earthRadiusKm * c
@@ -133,7 +155,17 @@ class PassengerServiceImpl(
     private fun checkRideCanBeRated(endTime: ZonedDateTime) {
         val duration = Duration.between(endTime, ZonedDateTime.now(ZoneId.of(TimeZone.getDefault().id))).toDays()
         if (duration > RideConstants.RATE_TIME_LIMIT_DAYS) {
-            throw ActionNotAllowedException(ExceptionKeys.RATE_TIME_IS_OVER)
+            throw ActionNotAllowedException(ExceptionKeys.RATE_TIME_IS_OVER, RideConstants.RATE_TIME_LIMIT_DAYS)
+        }
+    }
+
+    private fun checkDriverCanBeViewed(startTime: ZonedDateTime) {
+        val duration = Duration.between(startTime, ZonedDateTime.now(ZoneId.of(TimeZone.getDefault().id))).toDays()
+        if (duration > RideConstants.VIEW_PROFILE_LIMIT_DAYS) {
+            throw ActionNotAllowedException(
+                ExceptionKeys.VIEW_DRIVER_TIME_IS_OVER,
+                RideConstants.VIEW_PROFILE_LIMIT_DAYS
+            )
         }
     }
 
