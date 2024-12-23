@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.paymentservice.config;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +24,7 @@ public class LocalizationConfig {
     ReloadableResourceBundleMessageSource messageSource =
         new ReloadableResourceBundleMessageSource();
     messageSource.setBasename("classpath:localization/exception/exception");
-    messageSource.setDefaultEncoding("ISO-8859-1");
+    messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
     return messageSource;
   }
 }
