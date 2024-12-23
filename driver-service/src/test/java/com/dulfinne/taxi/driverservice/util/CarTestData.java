@@ -4,10 +4,12 @@ import com.dulfinne.taxi.driverservice.dto.request.CarRequest;
 import com.dulfinne.taxi.driverservice.dto.response.CarResponse;
 import com.dulfinne.taxi.driverservice.model.Car;
 import com.dulfinne.taxi.driverservice.model.CarCategory;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
 
-@UtilityClass
-public class CarTestData {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CarTestData {
 
   public static final Long ID = 1L;
   public static final String NAME = "BMW";
@@ -20,51 +22,46 @@ public class CarTestData {
   public static final CarCategory UPDATED_CAR_CATEGORY = CarCategory.COMFORT;
   public static final String UPDATED_COLOR = "Velvet";
 
-  public Car getCar() {
+  public static Car.CarBuilder getCar() {
     return Car.builder()
-            .id(ID)
-            .name(NAME)
-            .registrationNumber(REGISTRATION_NUMBER)
-            .carCategory(CAR_CATEGORY)
-            .color(COLOR)
-            .build();
+        .id(ID)
+        .name(NAME)
+        .registrationNumber(REGISTRATION_NUMBER)
+        .carCategory(CAR_CATEGORY)
+        .color(COLOR);
   }
 
-  public CarRequest getRequest() {
+  public static CarRequest.CarRequestBuilder getRequest() {
     return CarRequest.builder()
-            .name(NAME)
-            .registrationNumber(REGISTRATION_NUMBER)
-            .carCategory(CAR_CATEGORY)
-            .color(COLOR)
-            .build();
+        .name(NAME)
+        .registrationNumber(REGISTRATION_NUMBER)
+        .carCategory(CAR_CATEGORY)
+        .color(COLOR);
   }
 
-  public CarRequest getUpdateRequest() {
+  public static CarRequest.CarRequestBuilder getUpdateRequest() {
     return CarRequest.builder()
-            .name(UPDATED_NAME)
-            .registrationNumber(UPDATED_REGISTRATION_NUMBER)
-            .carCategory(UPDATED_CAR_CATEGORY)
-            .color(UPDATED_COLOR)
-            .build();
+        .name(UPDATED_NAME)
+        .registrationNumber(UPDATED_REGISTRATION_NUMBER)
+        .carCategory(UPDATED_CAR_CATEGORY)
+        .color(UPDATED_COLOR);
   }
 
-  public CarResponse getResponse() {
+  public static CarResponse.CarResponseBuilder getResponse() {
     return CarResponse.builder()
-            .id(ID)
-            .name(NAME)
-            .registrationNumber(REGISTRATION_NUMBER)
-            .carCategory(CAR_CATEGORY)
-            .color(COLOR)
-            .build();
+        .id(ID)
+        .name(NAME)
+        .registrationNumber(REGISTRATION_NUMBER)
+        .carCategory(CAR_CATEGORY)
+        .color(COLOR);
   }
 
-  public CarResponse getUpdateResponse() {
+  public static CarResponse.CarResponseBuilder getUpdateResponse() {
     return CarResponse.builder()
-            .id(ID)
-            .name(UPDATED_NAME)
-            .registrationNumber(UPDATED_REGISTRATION_NUMBER)
-            .carCategory(UPDATED_CAR_CATEGORY)
-            .color(UPDATED_COLOR)
-            .build();
+        .id(ID)
+        .name(UPDATED_NAME)
+        .registrationNumber(UPDATED_REGISTRATION_NUMBER)
+        .carCategory(UPDATED_CAR_CATEGORY)
+        .color(UPDATED_COLOR);
   }
 }

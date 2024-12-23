@@ -32,15 +32,20 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class CarServiceTest {
-  @InjectMocks private CarServiceImpl carService;
-  @Mock private CarRepository carRepository;
-  @Spy private CarMapper carMapper = Mappers.getMapper(CarMapper.class);
+class CarServiceTest {
+
+  @InjectMocks
+  private CarServiceImpl carService;
+
+  @Mock
+  private CarRepository carRepository;
+  @Spy
+  private CarMapper carMapper = Mappers.getMapper(CarMapper.class);
 
   @Test
   void getAllCars_whenValidRequest_thenReturnCarResponsePage() {
-    Car car = CarTestData.getCar();
-    CarResponse carResponse = CarTestData.getResponse();
+    Car car = CarTestData.getCar().build();
+    CarResponse carResponse = CarTestData.getResponse().build();
     Page<Car> carPage = new PageImpl<>(List.of(car, car));
     Page<CarResponse> expectedPage = new PageImpl<>(List.of(carResponse, carResponse));
 
@@ -48,36 +53,36 @@ public class CarServiceTest {
     when(carRepository.findAll(any(Pageable.class))).thenReturn(carPage);
 
     // Act
-    Page<CarResponse> resultPage =
+    Page<CarResponse> actualPage =
         carService.getAllCars(
             PaginationTestData.DEFAULT_OFFSET,
             PaginationTestData.DEFAULT_LIMIT,
             PaginationTestData.CAR_SORT_FIELD);
 
     // Assert
-    assertEquals(expectedPage, resultPage);
-    assertEquals(expectedPage.getTotalElements(), resultPage.getTotalElements());
-    assertEquals(expectedPage.getContent(), resultPage.getContent());
-    verify(carRepository, times(1)).findAll(any(Pageable.class));
-    verify(carMapper, times(expectedPage.getNumberOfElements())).toResponse(any(Car.class));
+    assertEquals(expectedPage, actualPage);
+    assertEquals(expectedPage.getTotalElements(), actualPage.getTotalElements());
+    assertEquals(expectedPage.getContent(), actualPage.getContent());
+    verify(carRepository).findAll(any(Pageable.class));
+    verify(carMapper, times(2)).toResponse(any(Car.class));
   }
 
   @Test
   void getCarById_whenValidRequest_thenReturnCarResponse() {
     Long carId = CarTestData.ID;
-    Car car = CarTestData.getCar();
-    CarResponse expected = CarTestData.getResponse();
+    Car car = CarTestData.getCar().build();
+    CarResponse expected = CarTestData.getResponse().build();
 
     // Arrange
     when(carRepository.findById(any(Long.class))).thenReturn(Optional.of(car));
 
     // Act
-    CarResponse carResponse = carService.getCarById(carId);
+    CarResponse actual = carService.getCarById(carId);
 
     // Assert
-    assertEquals(expected, carResponse);
-    verify(carRepository, times(1)).findById(any(Long.class));
-    verify(carMapper, times(1)).toResponse(any(Car.class));
+    assertEquals(expected, actual);
+    verify(carRepository).findById(any(Long.class));
+    verify(carMapper).toResponse(any(Car.class));
   }
 
   @Test
@@ -90,34 +95,34 @@ public class CarServiceTest {
     // Act & Assert
     assertThrows(EntityNotFoundException.class, () -> carService.getCarById(carId));
 
-    verify(carRepository, times(1)).findById(any(Long.class));
+    verify(carRepository).findById(any(Long.class));
   }
 
   @Test
   void saveCar_whenValidRequest_thenReturnCarResponse() {
-    CarRequest request = CarTestData.getRequest();
-    Car car = CarTestData.getCar();
-    CarResponse expected = CarTestData.getResponse();
+    CarRequest request = CarTestData.getRequest().build();
+    Car car = CarTestData.getCar().build();
+    CarResponse expected = CarTestData.getResponse().build();
 
     // Arrange
     when(carRepository.findByRegistrationNumber(any(String.class))).thenReturn(Optional.empty());
     when(carRepository.save(any(Car.class))).thenReturn(car);
 
     // Act
-    CarResponse result = carService.saveCar(request);
+    CarResponse actual = carService.saveCar(request);
 
     // Assert
-    assertEquals(expected, result);
-    verify(carRepository, times(1)).findByRegistrationNumber(any(String.class));
-    verify(carRepository, times(1)).save(any(Car.class));
-    verify(carMapper, times(1)).toResponse(any(Car.class));
-    verify(carMapper, times(1)).toEntity(any(CarRequest.class));
+    assertEquals(expected, actual);
+    verify(carRepository).findByRegistrationNumber(any(String.class));
+    verify(carRepository).save(any(Car.class));
+    verify(carMapper).toResponse(any(Car.class));
+    verify(carMapper).toEntity(any(CarRequest.class));
   }
 
   @Test
   void saveCar_whenRegistrationNumberNotUnique_thenThrowEntityAlreadyExistsException() {
-    CarRequest request = CarTestData.getRequest();
-    Car car = CarTestData.getCar();
+    CarRequest request = CarTestData.getRequest().build();
+    Car car = CarTestData.getCar().build();
 
     // Arrange
     when(carRepository.findByRegistrationNumber(any(String.class))).thenReturn(Optional.of(car));
@@ -129,30 +134,30 @@ public class CarServiceTest {
   @Test
   void updateCar_whenUpdateToSameFields_thenReturnCarResponse() {
     Long carId = CarTestData.ID;
-    CarRequest request = CarTestData.getRequest();
-    Car car = CarTestData.getCar();
-    CarResponse expected = CarTestData.getResponse();
+    CarRequest request = CarTestData.getRequest().build();
+    Car car = CarTestData.getCar().build();
+    CarResponse expected = CarTestData.getResponse().build();
 
     // Arrange
     when(carRepository.findById(any(Long.class))).thenReturn(Optional.of(car));
     when(carRepository.save(any(Car.class))).thenReturn(car);
 
     // Act
-    CarResponse result = carService.updateCar(carId, request);
+    CarResponse actual = carService.updateCar(carId, request);
 
     // Assert
-    assertEquals(expected, result);
-    verify(carRepository, times(1)).save(any(Car.class));
-    verify(carMapper, times(1)).toResponse(any(Car.class));
-    verify(carMapper, times(1)).updateEntity(any(CarRequest.class), any(Car.class));
+    assertEquals(expected, actual);
+    verify(carRepository).save(any(Car.class));
+    verify(carMapper).toResponse(any(Car.class));
+    verify(carMapper).updateEntity(any(CarRequest.class), any(Car.class));
   }
 
   @Test
   void updateCar_whenUpdateToOtherFields_thenReturnCarResponse() {
     Long carId = CarTestData.ID;
-    CarRequest request = CarTestData.getUpdateRequest();
-    Car car = CarTestData.getCar();
-    CarResponse expected = CarTestData.getUpdateResponse();
+    CarRequest request = CarTestData.getUpdateRequest().build();
+    Car car = CarTestData.getCar().build();
+    CarResponse expected = CarTestData.getUpdateResponse().build();
 
     // Arrange
     when(carRepository.findById(any(Long.class))).thenReturn(Optional.of(car));
@@ -160,22 +165,22 @@ public class CarServiceTest {
     when(carRepository.save(any(Car.class))).thenReturn(car);
 
     // Act
-    CarResponse result = carService.updateCar(carId, request);
+    CarResponse actual = carService.updateCar(carId, request);
 
     // Assert
-    assertEquals(expected, result);
-    verify(carRepository, times(1)).findByRegistrationNumber(any(String.class));
-    verify(carRepository, times(1)).save(any(Car.class));
-    verify(carMapper, times(1)).toResponse(any(Car.class));
-    verify(carMapper, times(1)).updateEntity(any(CarRequest.class), any(Car.class));
+    assertEquals(expected, actual);
+    verify(carRepository).findByRegistrationNumber(any(String.class));
+    verify(carRepository).save(any(Car.class));
+    verify(carMapper).toResponse(any(Car.class));
+    verify(carMapper).updateEntity(any(CarRequest.class), any(Car.class));
   }
 
   @Test
   void
       updateCar_whenUpdateToOtherFieldsAndRegistrationNumberExists_thenThrowEntityAlreadyExistsException() {
     Long carId = CarTestData.ID;
-    CarRequest request = CarTestData.getUpdateRequest();
-    Car car = CarTestData.getCar();
+    CarRequest request = CarTestData.getUpdateRequest().build();
+    Car car = CarTestData.getCar().build();
 
     // Arrange
     when(carRepository.findById(any(Long.class))).thenReturn(Optional.of(car));
@@ -184,14 +189,14 @@ public class CarServiceTest {
     // Act & Assert
     assertThrows(EntityAlreadyExistsException.class, () -> carService.updateCar(carId, request));
 
-    verify(carRepository, times(1)).findByRegistrationNumber(any(String.class));
-    verify(carRepository, times(1)).findById(any(Long.class));
+    verify(carRepository).findByRegistrationNumber(any(String.class));
+    verify(carRepository).findById(any(Long.class));
   }
 
   @Test
   void updateCar_whenCarNotFound_thenThrowEntityNotFoundException() {
     Long carId = CarTestData.ID;
-    CarRequest request = CarTestData.getUpdateRequest();
+    CarRequest request = CarTestData.getUpdateRequest().build();
 
     // Arrange
     when(carRepository.findById(any(Long.class))).thenReturn(Optional.empty());
@@ -199,13 +204,13 @@ public class CarServiceTest {
     // Act & Assert
     assertThrows(EntityNotFoundException.class, () -> carService.updateCar(carId, request));
 
-    verify(carRepository, times(1)).findById(any(Long.class));
+    verify(carRepository).findById(any(Long.class));
   }
 
   @Test
   void deleteCar_whenValidParams_thenDeleteCar() {
     Long carId = CarTestData.ID;
-    Car car = CarTestData.getCar();
+    Car car = CarTestData.getCar().build();
 
     // Arrange
     when(carRepository.findById(any(Long.class))).thenReturn(Optional.of(car));
@@ -214,7 +219,7 @@ public class CarServiceTest {
     carService.deleteCar(carId);
 
     // Assert
-    verify(carRepository, times(1)).findById(any(Long.class));
+    verify(carRepository).findById(any(Long.class));
   }
 
   @Test
@@ -227,6 +232,6 @@ public class CarServiceTest {
     // Act & Assert
     assertThrows(EntityNotFoundException.class, () -> carService.deleteCar(carId));
 
-    verify(carRepository, times(1)).findById(any(Long.class));
+    verify(carRepository).findById(any(Long.class));
   }
 }

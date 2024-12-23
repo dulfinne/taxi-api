@@ -57,8 +57,7 @@ public class PassengerServiceImpl implements PassengerService {
     passenger.setRideCount(PassengerConstants.START_RIDE_COUNT);
     passenger.setSumOfRatings(PassengerConstants.START_SUM_OF_RATINGS);
     passenger.setNumberOfRatings(PassengerConstants.START_NUMBER_OF_RATINGS);
-    passenger = passengerRepository.save(passenger);
-    return INFO_MAPPER_INSTANCE.toResponse(passenger);
+    return INFO_MAPPER_INSTANCE.toResponse(passengerRepository.save(passenger));
   }
 
   @Transactional

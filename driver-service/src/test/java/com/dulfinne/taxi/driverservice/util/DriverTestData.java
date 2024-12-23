@@ -3,10 +3,12 @@ package com.dulfinne.taxi.driverservice.util;
 import com.dulfinne.taxi.driverservice.dto.request.DriverRequest;
 import com.dulfinne.taxi.driverservice.dto.response.DriverResponse;
 import com.dulfinne.taxi.driverservice.model.Driver;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
 
-@UtilityClass
-public class DriverTestData {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DriverTestData {
 
   public static final Long ID = 1L;
   public static final String USERNAME = "anna123";
@@ -27,7 +29,7 @@ public class DriverTestData {
   public static final Integer START_NUMBER_OF_RATINGS = 1;
   public static final Double START_AVERAGE_RATING = START_SUM_OF_RATINGS / START_NUMBER_OF_RATINGS;
 
-  public Driver getDriver() {
+  public static Driver.DriverBuilder getDriver() {
     return Driver.builder()
         .id(ID)
         .username(USERNAME)
@@ -36,38 +38,10 @@ public class DriverTestData {
         .phoneNumber(PHONE_NUMBER)
         .experience(EXPERIENCE)
         .sumOfRatings(SUM_OF_RATINGS)
-        .numberOfRatings(NUMBER_OF_RATINGS)
-        .build();
+        .numberOfRatings(NUMBER_OF_RATINGS);
   }
 
-  public DriverResponse getDriverWithCarResponse() {
-    return DriverResponse.builder()
-            .id(ID)
-            .username(USERNAME)
-            .firstName(FIRST_NAME)
-            .lastName(LAST_NAME)
-            .phoneNumber(PHONE_NUMBER)
-            .experience(EXPERIENCE.toString())
-            .averageRating(AVERAGE_RATING)
-            .car(CarTestData.getResponse())
-            .build();
-  }
-
-  public Driver getDriverWithCar() {
-    return Driver.builder()
-            .id(ID)
-            .username(USERNAME)
-            .firstName(FIRST_NAME)
-            .lastName(LAST_NAME)
-            .phoneNumber(PHONE_NUMBER)
-            .experience(EXPERIENCE)
-            .sumOfRatings(SUM_OF_RATINGS)
-            .numberOfRatings(NUMBER_OF_RATINGS)
-            .car(CarTestData.getCar())
-            .build();
-  }
-
-  public DriverResponse getResponse() {
+  public static DriverResponse.DriverResponseBuilder getResponse() {
     return DriverResponse.builder()
         .id(ID)
         .username(USERNAME)
@@ -75,62 +49,33 @@ public class DriverTestData {
         .lastName(LAST_NAME)
         .phoneNumber(PHONE_NUMBER)
         .experience(EXPERIENCE.toString())
-        .averageRating(AVERAGE_RATING)
-        .build();
+        .averageRating(AVERAGE_RATING);
   }
 
-  public DriverRequest getCreateRequest() {
+  public static DriverRequest.DriverRequestBuilder getCreateRequest() {
     return DriverRequest.builder()
         .firstName(FIRST_NAME)
         .lastName(LAST_NAME)
         .experience(EXPERIENCE)
-        .phoneNumber(PHONE_NUMBER)
-        .build();
+        .phoneNumber(PHONE_NUMBER);
   }
 
-  public DriverRequest getUpdateRequest() {
+  public static DriverRequest.DriverRequestBuilder getUpdateRequest() {
     return DriverRequest.builder()
-            .firstName(UPDATED_FIRST_NAME)
-            .lastName(UPDATED_LAST_NAME)
-            .experience(UPDATED_EXPERIENCE)
-            .phoneNumber(UPDATED_PHONE_NUMBER)
-            .build();
+        .firstName(UPDATED_FIRST_NAME)
+        .lastName(UPDATED_LAST_NAME)
+        .experience(UPDATED_EXPERIENCE)
+        .phoneNumber(UPDATED_PHONE_NUMBER);
   }
 
-  public Driver getCreatedDriver() {
-    return Driver.builder()
-        .id(ID)
-        .username(USERNAME)
-        .firstName(FIRST_NAME)
-        .lastName(LAST_NAME)
-        .phoneNumber(PHONE_NUMBER)
-        .experience(EXPERIENCE)
-        .sumOfRatings(START_SUM_OF_RATINGS)
-        .numberOfRatings(START_NUMBER_OF_RATINGS)
-        .build();
-  }
-
-  public DriverResponse getCreatedResponse() {
+  public static DriverResponse.DriverResponseBuilder getUpdatedResponse() {
     return DriverResponse.builder()
         .id(ID)
         .username(USERNAME)
-        .firstName(FIRST_NAME)
-        .lastName(LAST_NAME)
-        .phoneNumber(PHONE_NUMBER)
-        .experience(EXPERIENCE.toString())
-        .averageRating(START_AVERAGE_RATING)
-        .build();
-  }
-
-  public DriverResponse getUpdatedResponse() {
-    return DriverResponse.builder()
-            .id(ID)
-            .username(USERNAME)
-            .firstName(UPDATED_FIRST_NAME)
-            .lastName(UPDATED_LAST_NAME)
-            .phoneNumber(UPDATED_PHONE_NUMBER)
-            .experience(UPDATED_EXPERIENCE.toString())
-            .averageRating(START_AVERAGE_RATING)
-            .build();
+        .firstName(UPDATED_FIRST_NAME)
+        .lastName(UPDATED_LAST_NAME)
+        .phoneNumber(UPDATED_PHONE_NUMBER)
+        .experience(UPDATED_EXPERIENCE.toString())
+        .averageRating(START_AVERAGE_RATING);
   }
 }

@@ -1,13 +1,14 @@
 package com.dulfinne.taxi.passengerservice.util;
 
-import lombok.experimental.UtilityClass;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@UtilityClass
-public class PaginationTestData {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PaginationTestData {
 
-  public final Integer DEFAULT_OFFSET = 0;
-  public final Integer DEFAULT_LIMIT = 10;
-  public final String PASSENGER_SORT_FIELD = "username";
-  public final String INVALID_SORT_FIELD = "invalidField";
-  public final String RATING_SORT_FIELD = "rating";
+  public static final Integer DEFAULT_OFFSET = 0;
+  public static final Integer DEFAULT_LIMIT = 10;
+  public static final String PASSENGER_SORT_FIELD = "username";
+  public static final String INVALID_SORT_FIELD = "invalidField";
+  public static final String RATING_SORT_FIELD = "rating";
 }

@@ -34,19 +34,24 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class DriverRatingServiceTest {
+class DriverRatingServiceTest {
 
-  @InjectMocks private DriverRatingServiceImpl ratingService;
-  @Mock private DriverRatingRepository ratingRepository;
-  @Mock private DriverRepository driverRepository;
-  @Spy private DriverRatingMapper ratingMapper = Mappers.getMapper(DriverRatingMapper.class);
+  @InjectMocks
+  private DriverRatingServiceImpl ratingService;
+
+  @Mock
+  private DriverRatingRepository ratingRepository;
+  @Mock
+  private DriverRepository driverRepository;
+  @Spy
+  private DriverRatingMapper ratingMapper = Mappers.getMapper(DriverRatingMapper.class);
 
   @Test
   void getAllDriverRatings_whenValidRequest_thenReturnDriverRatingsPage() {
     String username = DriverTestData.USERNAME;
-    Driver driver = DriverTestData.getDriver();
-    DriverRating rating = RatingTestData.getRating();
-    DriverRatingResponse response = RatingTestData.getResponse();
+    Driver driver = DriverTestData.getDriver().build();
+    DriverRating rating = RatingTestData.getRating().build();
+    DriverRatingResponse response = RatingTestData.getResponse().build();
     Page<DriverRating> ratingsPage = new PageImpl<>(List.of(rating, rating));
     Page<DriverRatingResponse> expectedPage = new PageImpl<>(List.of(response, response));
 
@@ -56,7 +61,7 @@ public class DriverRatingServiceTest {
         .thenReturn(ratingsPage);
 
     // Act
-    Page<DriverRatingResponse> resultPage =
+    Page<DriverRatingResponse> actualPage =
         ratingService.getAllDriverRatings(
             username,
             PaginationTestData.DEFAULT_OFFSET,
@@ -64,15 +69,14 @@ public class DriverRatingServiceTest {
             PaginationTestData.RATING_SORT_FIELD);
 
     // Assert
-    assertEquals(expectedPage.getTotalPages(), resultPage.getTotalPages());
-    assertEquals(expectedPage.getSize(), resultPage.getSize());
-    assertEquals(expectedPage.getNumberOfElements(), resultPage.getNumberOfElements());
-    assertEquals(expectedPage.getContent(), resultPage.getContent());
+    assertEquals(expectedPage.getTotalPages(), actualPage.getTotalPages());
+    assertEquals(expectedPage.getSize(), actualPage.getSize());
+    assertEquals(expectedPage.getNumberOfElements(), actualPage.getNumberOfElements());
+    assertEquals(expectedPage.getContent(), actualPage.getContent());
 
-    verify(driverRepository, times(1)).findByUsername(any(String.class));
-    verify(ratingRepository, times(1)).findByDriverId(any(Long.class), any(Pageable.class));
-    verify(ratingMapper, times(expectedPage.getNumberOfElements()))
-        .toResponse(any(DriverRating.class));
+    verify(driverRepository).findByUsername(any(String.class));
+    verify(ratingRepository).findByDriverId(any(Long.class), any(Pageable.class));
+    verify(ratingMapper, times(2)).toResponse(any(DriverRating.class));
   }
 
   @Test
@@ -92,13 +96,13 @@ public class DriverRatingServiceTest {
                 PaginationTestData.DEFAULT_LIMIT,
                 PaginationTestData.RATING_SORT_FIELD));
 
-    verify(driverRepository, times(1)).findByUsername(any(String.class));
+    verify(driverRepository).findByUsername(any(String.class));
   }
 
   @Test
   void saveDriverRating_whenValidParams_thenSaveDriverRating() {
-    Driver driver = DriverTestData.getDriver();
-    Rating ratingFromKafka = RatingTestData.getKafkaRating();
+    Driver driver = DriverTestData.getDriver().build();
+    Rating ratingFromKafka = RatingTestData.getKafkaRating().build();
     Double expectedSum = driver.getSumOfRatings() + ratingFromKafka.getRating();
     Integer expectedRatingCount = driver.getNumberOfRatings() + 1;
 
@@ -112,13 +116,13 @@ public class DriverRatingServiceTest {
     assertEquals(expectedSum, driver.getSumOfRatings());
     assertEquals(expectedRatingCount, driver.getNumberOfRatings());
 
-    verify(driverRepository, times(1)).findByUsername(any(String.class));
-    verify(ratingRepository, times(1)).save(any(DriverRating.class));
+    verify(driverRepository).findByUsername(any(String.class));
+    verify(ratingRepository).save(any(DriverRating.class));
   }
 
   @Test
   void saveDriverRating_whenDriverNotFoundByUsername_thenThrowEntityNotFoundException() {
-    Rating ratingFromKafka = RatingTestData.getKafkaRating();
+    Rating ratingFromKafka = RatingTestData.getKafkaRating().build();
 
     // Arrange
     when(driverRepository.findByUsername(any(String.class))).thenReturn(Optional.empty());
@@ -127,6 +131,6 @@ public class DriverRatingServiceTest {
     assertThrows(
         EntityNotFoundException.class, () -> ratingService.saveDriverRating(ratingFromKafka));
 
-    verify(driverRepository, times(1)).findByUsername(any(String.class));
+    verify(driverRepository).findByUsername(any(String.class));
   }
 }

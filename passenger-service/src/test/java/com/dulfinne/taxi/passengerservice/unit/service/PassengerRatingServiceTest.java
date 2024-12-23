@@ -27,23 +27,24 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class PassengerRatingServiceTest {
+class PassengerRatingServiceTest {
 
-  @InjectMocks private PassengerRatingServiceImpl ratingService;
+  @InjectMocks
+  private PassengerRatingServiceImpl ratingService;
 
-  @Mock private PassengerRatingRepository ratingRepository;
-
-  @Mock private PassengerRepository passengerRepository;
+  @Mock
+  private PassengerRatingRepository ratingRepository;
+  @Mock
+  private PassengerRepository passengerRepository;
 
   @Test
-  public void getPassengerRatings_whenValidParams_thenReturnRatingsPage() {
+  void getPassengerRatings_whenValidParams_thenReturnRatingsPage() {
     String username = PassengerTestData.FIRST_USERNAME;
-    Passenger passenger = PassengerTestData.getFirst();
+    Passenger passenger = PassengerTestData.getFirst().build();
 
     Page<PassengerRating> ratingsPage = new PageImpl<>(RatingTestData.getRatingList());
     List<PassengerRatingResponse> expectedContent = RatingTestData.getResponseList();
@@ -54,7 +55,7 @@ public class PassengerRatingServiceTest {
         .thenReturn(ratingsPage);
 
     // Act
-    Page<PassengerRatingResponse> result =
+    Page<PassengerRatingResponse> actualPage =
         ratingService.getPassengerRatings(
             username,
             PaginationTestData.DEFAULT_OFFSET,
@@ -62,13 +63,13 @@ public class PassengerRatingServiceTest {
             PaginationTestData.RATING_SORT_FIELD);
 
     // Assert
-    assertEquals(ratingsPage.getTotalElements(), result.getTotalElements());
-    assertEquals(ratingsPage.getNumber(), result.getNumber());
-    assertEquals(ratingsPage.getSize(), result.getSize());
-    assertEquals(expectedContent, result.getContent());
+    assertEquals(ratingsPage.getTotalElements(), actualPage.getTotalElements());
+    assertEquals(ratingsPage.getNumber(), actualPage.getNumber());
+    assertEquals(ratingsPage.getSize(), actualPage.getSize());
+    assertEquals(expectedContent, actualPage.getContent());
 
-    verify(passengerRepository, times(1)).findByUsername(any(String.class));
-    verify(ratingRepository, times(1)).findByPassengerId(any(Long.class), any(Pageable.class));
+    verify(passengerRepository).findByUsername(any(String.class));
+    verify(ratingRepository).findByPassengerId(any(Long.class), any(Pageable.class));
   }
 
   @Test
@@ -87,7 +88,7 @@ public class PassengerRatingServiceTest {
   }
 
   @Test
-  public void getPassengerRatings_whenPassengerNotFound_thenThrowEntityNotFoundException() {
+  void getPassengerRatings_whenPassengerNotFound_thenThrowEntityNotFoundException() {
     String username = PassengerTestData.FIRST_USERNAME;
 
     // Arrange
@@ -105,9 +106,9 @@ public class PassengerRatingServiceTest {
   }
 
   @Test
-  public void savePassengerRating_whenValidParams_thenSavePassengerRating() {
-    Passenger passenger = PassengerTestData.getFirst();
-    Rating ratingFromKafka = RatingTestData.getKafkaRating();
+  void savePassengerRating_whenValidParams_thenSavePassengerRating() {
+    Passenger passenger = PassengerTestData.getFirst().build();
+    Rating ratingFromKafka = RatingTestData.getKafkaRating().build();
     Double expectedSum = passenger.getSumOfRatings() + ratingFromKafka.getRating();
     Integer expectedRatingCount = passenger.getNumberOfRatings() + 1;
 
@@ -121,13 +122,13 @@ public class PassengerRatingServiceTest {
     assertEquals(expectedSum, passenger.getSumOfRatings());
     assertEquals(expectedRatingCount, passenger.getNumberOfRatings());
 
-    verify(passengerRepository, times(1)).findByUsername(any(String.class));
-    verify(ratingRepository, times(1)).save(any(PassengerRating.class));
+    verify(passengerRepository).findByUsername(any(String.class));
+    verify(ratingRepository).save(any(PassengerRating.class));
   }
 
   @Test
-  public void savePassengerRating_whenPassengerNotFound_thenThrowEntityNotFoundException() {
-    Rating ratingFromKafka = RatingTestData.getKafkaRating();
+  void savePassengerRating_whenPassengerNotFound_thenThrowEntityNotFoundException() {
+    Rating ratingFromKafka = RatingTestData.getKafkaRating().build();
 
     // Act & Assert
     assertThrows(
