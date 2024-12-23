@@ -14,6 +14,7 @@ import com.dulfinne.taxi.paymentservice.repository.WalletRepository;
 import com.dulfinne.taxi.paymentservice.service.TransactionService;
 import com.dulfinne.taxi.paymentservice.service.WalletService;
 import com.dulfinne.taxi.paymentservice.util.ExceptionKeys;
+import com.dulfinne.taxi.paymentservice.util.PaymentConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +34,7 @@ public class WalletServiceImpl implements WalletService {
 
   @Transactional(readOnly = true)
   @Override
-    public PaginatedResponse<WalletResponse> getAllWallets(
+  public PaginatedResponse<WalletResponse> getAllWallets(
       Integer offset, Integer limit, String sort, String order) {
     Sort.Direction direction = Sort.Direction.fromString(order);
 
@@ -64,10 +65,11 @@ public class WalletServiceImpl implements WalletService {
   @Transactional
   @Override
   public WalletResponse creditMoney(String username, MoneyRequest request) {
-    Wallet wallet = getWalletIfExists(username);
-
-    BigDecimal currentBalance = wallet.getBalance();
     BigDecimal requestedAmount = request.amount();
+    checkAmountLimits(request.amount());
+
+    Wallet wallet = getWalletIfExists(username);
+    BigDecimal currentBalance = wallet.getBalance();
     BigDecimal newBalance = currentBalance.add(requestedAmount);
     wallet.setBalance(newBalance);
 
@@ -79,10 +81,11 @@ public class WalletServiceImpl implements WalletService {
   @Transactional
   @Override
   public WalletResponse debitMoney(String username, MoneyRequest request) {
-    Wallet wallet = getWalletIfExists(username);
-
-    BigDecimal currentBalance = wallet.getBalance();
     BigDecimal requestedAmount = request.amount();
+    checkAmountLimits(requestedAmount);
+
+    Wallet wallet = getWalletIfExists(username);
+    BigDecimal currentBalance = wallet.getBalance();
     checkCanDebit(currentBalance, request.amount());
 
     BigDecimal newBalance = currentBalance.subtract(request.amount());
@@ -132,6 +135,16 @@ public class WalletServiceImpl implements WalletService {
   private void checkCanDebit(BigDecimal currentBalance, BigDecimal debitingAmount) {
     if (currentBalance.compareTo(debitingAmount) < 0) {
       throw new ActionNotAllowedException(ExceptionKeys.NOT_ENOUGH_MONEY_DEBIT, currentBalance);
+    }
+  }
+
+  private void checkAmountLimits(BigDecimal amount) {
+    if (!(amount.compareTo(PaymentConstants.MIN_AMOUNT_LIMIT) >= 0
+        && amount.compareTo(PaymentConstants.MAX_AMOUNT_LIMIT) <= 0)) {
+      throw new ActionNotAllowedException(
+          ExceptionKeys.INVALID_MONEY_AMOUNT_LIMITS,
+          PaymentConstants.MIN_AMOUNT_LIMIT,
+          PaymentConstants.MAX_AMOUNT_LIMIT);
     }
   }
 
