@@ -3,6 +3,7 @@ CREATE TABLE transaction_history
     id               BIGSERIAL PRIMARY KEY,
     wallet_id        BIGINT                   NOT NULL,
     amount           DECIMAL(19, 2)           NOT NULL,
+    description      VARCHAR(255),
     transaction_time TIMESTAMP WITH TIME ZONE NOT NULL
 );
 

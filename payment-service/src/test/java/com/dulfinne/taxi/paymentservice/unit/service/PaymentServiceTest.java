@@ -65,7 +65,7 @@ public class PaymentServiceTest {
     verify(walletRepository, times(2)).findByUsername(any(String.class));
     verify(walletRepository, times(2)).save(any(Wallet.class));
     verify(transactionService, times(2))
-        .createTransaction(any(Wallet.class), any(BigDecimal.class));
+        .createTransaction(any(Wallet.class), any(BigDecimal.class), any(String.class));
   }
 
   @Test
@@ -100,7 +100,7 @@ public class PaymentServiceTest {
     verify(walletRepository, times(2)).findByUsername(any(String.class));
     verify(walletRepository, times(2)).save(any(Wallet.class));
     verify(transactionService, times(2))
-        .createTransaction(any(Wallet.class), any(BigDecimal.class));
+        .createTransaction(any(Wallet.class), any(BigDecimal.class), any(String.class));
   }
 
   @Test

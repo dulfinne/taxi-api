@@ -43,6 +43,9 @@ public class Transaction {
   @Column(nullable = false)
   private BigDecimal amount;
 
+  @Column
+  private String description;
+
   @Column(nullable = false)
   private ZonedDateTime transactionTime;
 

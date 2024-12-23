@@ -10,6 +10,7 @@ public record TransactionResponse(
     Long id,
     String username,
     BigDecimal amount,
+    String description,
     ZonedDateTime transactionTime
 ) {
 }

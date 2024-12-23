@@ -6,6 +6,7 @@ import com.dulfinne.taxi.paymentservice.model.Wallet;
 import com.dulfinne.taxi.paymentservice.repository.WalletRepository;
 import com.dulfinne.taxi.paymentservice.service.PaymentService;
 import com.dulfinne.taxi.paymentservice.service.TransactionService;
+import com.dulfinne.taxi.paymentservice.util.DescriptionConstants;
 import com.dulfinne.taxi.paymentservice.util.ExceptionKeys;
 import com.dulfinne.taxi.paymentservice.util.PaymentConstants;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +33,20 @@ public class PaymentServiceImpl implements PaymentService {
     BigDecimal currentBalance = passengerWallet.getBalance();
     BigDecimal paymentAmount = request.price();
 
+    String description;
+
     if (currentBalance.compareTo(paymentAmount) < 0) {
       passengerWallet.setDebt(paymentAmount);
+      description = DescriptionConstants.NOT_ENOUGH_MONEY;
     } else {
+
       passengerWallet.setBalance(currentBalance.subtract(paymentAmount));
+      description = DescriptionConstants.RIDE_PAYMENT;
     }
 
     walletRepository.save(passengerWallet);
-    transactionService.createTransaction(passengerWallet, paymentAmount.negate());
+    description = String.format(description, request.rideId());
+    transactionService.createTransaction(passengerWallet, paymentAmount.negate(), description);
   }
 
   private void processDriverEarnings(PaymentRequest request) {
@@ -49,7 +56,8 @@ public class PaymentServiceImpl implements PaymentService {
     driverWallet.setBalance(driverWallet.getBalance().add(earnings));
 
     walletRepository.save(driverWallet);
-    transactionService.createTransaction(driverWallet, earnings);
+    String description = String.format(DescriptionConstants.RIDE_PAYOUT, request.rideId());
+    transactionService.createTransaction(driverWallet, earnings, description);
   }
 
   private Wallet getWalletIfExists(String username) {

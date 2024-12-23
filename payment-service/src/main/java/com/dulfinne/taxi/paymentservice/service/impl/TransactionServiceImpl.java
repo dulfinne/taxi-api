@@ -54,10 +54,11 @@ public class TransactionServiceImpl implements TransactionService {
 
   @Transactional
   @Override
-  public void createTransaction(Wallet wallet, BigDecimal amount) {
+  public void createTransaction(Wallet wallet, BigDecimal amount, String description) {
     Transaction transaction = new Transaction();
     transaction.setWallet(wallet);
     transaction.setAmount(amount);
+    transaction.setDescription(description);
     repository.save(transaction);
   }
 

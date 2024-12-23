@@ -14,5 +14,5 @@ public interface TransactionService {
   PaginatedResponse<TransactionResponse> getTransactionsByUsername(
       String username, Integer offset, Integer limit, String sort, String order);
 
-  void createTransaction(Wallet wallet, BigDecimal amount);
+  void createTransaction(Wallet wallet, BigDecimal amount, String description);
 }

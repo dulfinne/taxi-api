@@ -10,6 +10,7 @@ import com.dulfinne.taxi.paymentservice.model.Wallet;
 import com.dulfinne.taxi.paymentservice.repository.TransactionRepository;
 import com.dulfinne.taxi.paymentservice.repository.WalletRepository;
 import com.dulfinne.taxi.paymentservice.service.impl.TransactionServiceImpl;
+import com.dulfinne.taxi.paymentservice.util.DescriptionConstants;
 import com.dulfinne.taxi.paymentservice.util.PaginationTestData;
 import com.dulfinne.taxi.paymentservice.util.TransactionTestData;
 import com.dulfinne.taxi.paymentservice.util.WalletTestData;
@@ -135,7 +136,7 @@ public class TransactionServiceTest {
     BigDecimal amount = TransactionTestData.TRANSACTION_AMOUNT;
 
     // Act
-    service.createTransaction(wallet, amount);
+    service.createTransaction(wallet, amount, DescriptionConstants.WALLET_CREDIT);
 
     // Assert
     verify(transactionRepository, times(1)).save(any(Transaction.class));

@@ -13,6 +13,7 @@ import com.dulfinne.taxi.paymentservice.model.Wallet;
 import com.dulfinne.taxi.paymentservice.repository.WalletRepository;
 import com.dulfinne.taxi.paymentservice.service.TransactionService;
 import com.dulfinne.taxi.paymentservice.service.WalletService;
+import com.dulfinne.taxi.paymentservice.util.DescriptionConstants;
 import com.dulfinne.taxi.paymentservice.util.ExceptionKeys;
 import com.dulfinne.taxi.paymentservice.util.PaymentConstants;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +75,8 @@ public class WalletServiceImpl implements WalletService {
     wallet.setBalance(newBalance);
 
     repository.save(wallet);
-    transactionService.createTransaction(wallet, requestedAmount);
+    transactionService.createTransaction(
+        wallet, requestedAmount, DescriptionConstants.WALLET_CREDIT);
     return mapper.toResponse(wallet);
   }
 
@@ -92,7 +94,8 @@ public class WalletServiceImpl implements WalletService {
     wallet.setBalance(newBalance);
 
     repository.save(wallet);
-    transactionService.createTransaction(wallet, requestedAmount.negate());
+    transactionService.createTransaction(
+        wallet, requestedAmount.negate(), DescriptionConstants.WALLET_DEBIT);
     return mapper.toResponse(wallet);
   }
 
@@ -109,7 +112,7 @@ public class WalletServiceImpl implements WalletService {
     wallet.setDebt(BigDecimal.ZERO);
 
     repository.save(wallet);
-    transactionService.createTransaction(wallet, debt.negate());
+    transactionService.createTransaction(wallet, debt.negate(), DescriptionConstants.DEBT_REPAYMENT);
     return mapper.toResponse(wallet);
   }
 

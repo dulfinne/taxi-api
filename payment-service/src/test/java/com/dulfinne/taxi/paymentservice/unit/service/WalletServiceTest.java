@@ -14,6 +14,7 @@ import com.dulfinne.taxi.paymentservice.repository.WalletRepository;
 
 import com.dulfinne.taxi.paymentservice.service.impl.TransactionServiceImpl;
 import com.dulfinne.taxi.paymentservice.service.impl.WalletServiceImpl;
+import com.dulfinne.taxi.paymentservice.util.DescriptionConstants;
 import com.dulfinne.taxi.paymentservice.util.PaginationTestData;
 import com.dulfinne.taxi.paymentservice.util.WalletTestData;
 import org.junit.jupiter.api.Test;
@@ -157,7 +158,8 @@ public class WalletServiceTest {
     assertEquals(expected, result);
     verify(repository, times(1)).findByUsername(username);
     verify(repository, times(1)).save(any(Wallet.class));
-    verify(transactionService, times(1)).createTransaction(wallet, request.amount());
+    verify(transactionService, times(1))
+        .createTransaction(wallet, request.amount(), DescriptionConstants.WALLET_CREDIT);
     verify(walletMapper, times(1)).toResponse(any(Wallet.class));
   }
 
@@ -190,7 +192,8 @@ public class WalletServiceTest {
     assertEquals(expected, result);
     verify(repository, times(1)).findByUsername(username);
     verify(repository, times(1)).save(any(Wallet.class));
-    verify(transactionService, times(1)).createTransaction(wallet, request.amount().negate());
+    verify(transactionService, times(1))
+        .createTransaction(wallet, request.amount().negate(), DescriptionConstants.WALLET_DEBIT);
     verify(walletMapper, times(1)).toResponse(any(Wallet.class));
   }
 
@@ -237,7 +240,8 @@ public class WalletServiceTest {
     assertEquals(expected, result);
     verify(repository, times(1)).findByUsername(username);
     verify(repository, times(1)).save(any(Wallet.class));
-    verify(transactionService, times(1)).createTransaction(wallet, debt.negate());
+    verify(transactionService, times(1))
+        .createTransaction(wallet, debt.negate(), DescriptionConstants.DEBT_REPAYMENT);
     verify(walletMapper, times(1)).toResponse(any(Wallet.class));
   }
 

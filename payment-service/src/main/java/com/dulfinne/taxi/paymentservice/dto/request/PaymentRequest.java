@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 @Builder
 public record PaymentRequest(
+    Long rideId,
     String passengerUsername,
     String driverUsername,
     BigDecimal price
