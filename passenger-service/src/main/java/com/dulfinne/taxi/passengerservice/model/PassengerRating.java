@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.ManyToOne;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,6 +26,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class PassengerRating {
 
   @Id

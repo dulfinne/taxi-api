@@ -4,7 +4,9 @@ import com.dulfinne.taxi.driverservice.model.CarCategory;
 import com.dulfinne.taxi.driverservice.util.ValidationKeys;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 
+@Builder
 public record CarRequest(
     @NotNull(message = ValidationKeys.CAR_NAME_REQUIRED)
     String name,
