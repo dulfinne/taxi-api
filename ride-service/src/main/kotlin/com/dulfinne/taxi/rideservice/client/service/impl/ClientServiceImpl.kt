@@ -5,6 +5,7 @@ import com.dulfinne.taxi.rideservice.client.PassengerClient
 import com.dulfinne.taxi.rideservice.client.dto.DriverResponse
 import com.dulfinne.taxi.rideservice.client.dto.PassengerResponse
 import com.dulfinne.taxi.rideservice.client.service.ClientService
+import com.dulfinne.taxi.rideservice.dto.response.PointResponse
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,5 +20,9 @@ class ClientServiceImpl(
 
     override fun getDriverByUsername(username: String): DriverResponse {
         return driverClient.getDriverByUsername(username)
+    }
+
+    override fun getDriverLocation(username: String): PointResponse {
+        return driverClient.getDriverLocationByUsername(username)
     }
 }

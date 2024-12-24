@@ -3,6 +3,7 @@ package com.dulfinne.taxi.rideservice.service.impl
 import com.dulfinne.taxi.avro.Rating
 import com.dulfinne.taxi.rideservice.client.service.ClientService
 import com.dulfinne.taxi.rideservice.dto.request.RatingRequest
+import com.dulfinne.taxi.rideservice.dto.response.AvailableRideResponse
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
 import com.dulfinne.taxi.rideservice.exception.ActionNotAllowedException
 import com.dulfinne.taxi.rideservice.exception.EntityNotFoundException
@@ -33,13 +34,10 @@ class DriverServiceImpl(
 ) : DriverService {
 
     @Transactional(readOnly = true)
-    override fun getAvailableRides(offset: Int, limit: Int, sortField: String): Page<RideResponse> {
-        val ridesPage = repository.findAllByStatus(
-            RideStatus.SEARCHING.id,
-            PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField))
-        )
-
-        return ridesPage.map(mapper::toRideResponse)
+    override fun getAvailableRides(username: String, radius: Int): List<AvailableRideResponse> {
+        val point = mapper.toPoint(clientService.getDriverLocation(username))
+        val list = repository.findByStatusAndRadius(RideStatus.SEARCHING.id, point, radius)
+        return list.map(mapper::toAvailableRideResponse)
     }
 
     @Transactional

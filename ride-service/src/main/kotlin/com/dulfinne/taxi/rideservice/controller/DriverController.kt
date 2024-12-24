@@ -1,6 +1,7 @@
 package com.dulfinne.taxi.rideservice.controller
 
 import com.dulfinne.taxi.rideservice.dto.request.RatingRequest
+import com.dulfinne.taxi.rideservice.dto.response.AvailableRideResponse
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
 import com.dulfinne.taxi.rideservice.service.DriverService
 import com.dulfinne.taxi.rideservice.util.TokenConstants
@@ -8,6 +9,7 @@ import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.CurrentSecurityContext
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -24,12 +26,11 @@ class DriverController(val service: DriverService) {
 
     @GetMapping("/available-rides")
     fun getAvailableRides(
-        @RequestParam(value = "offset", defaultValue = "0") offset: Int,
-        @RequestParam(value = "limit", defaultValue = "10") limit: Int,
-        @RequestParam(value = "sort", defaultValue = "id") sortField: String
-    ): ResponseEntity<Page<RideResponse>> {
+        @CurrentSecurityContext(expression="authentication.name") username: String,
+        @RequestParam(value = "radius", defaultValue = "700") radius: Int,
+    ): ResponseEntity<List<AvailableRideResponse>> {
 
-        val ridesResponsePage = service.getAvailableRides(offset, limit, sortField)
+        val ridesResponsePage = service.getAvailableRides(username, radius)
         return ResponseEntity.ok(ridesResponsePage)
     }
 

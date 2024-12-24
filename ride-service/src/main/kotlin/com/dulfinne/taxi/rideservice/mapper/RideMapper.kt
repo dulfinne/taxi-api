@@ -2,6 +2,7 @@ package com.dulfinne.taxi.rideservice.mapper
 
 import com.dulfinne.taxi.rideservice.dto.request.LocationRequest
 import com.dulfinne.taxi.rideservice.dto.request.PointRequest
+import com.dulfinne.taxi.rideservice.dto.response.AvailableRideResponse
 import com.dulfinne.taxi.rideservice.dto.response.CountPriceResponse
 import com.dulfinne.taxi.rideservice.dto.response.PointResponse
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
@@ -59,8 +60,23 @@ class RideMapper {
         )
     }
 
+    fun toAvailableRideResponse(entity: Ride): AvailableRideResponse {
+        return AvailableRideResponse(
+            id = entity.id!!,
+            passengerUsername = entity.passengerUsername,
+            startPosition = toPointResponse(entity.startPosition),
+            endPosition = toPointResponse(entity.endPosition),
+            status = RideStatus.fromId(entity.status)
+        )
+    }
+
     fun toPoint(requestPoint: PointRequest): Point {
         val coordinate = Coordinate(requestPoint.longitude.toDouble(), requestPoint.latitude.toDouble())
+        return geometryFactory.createPoint(coordinate)
+    }
+
+    fun toPoint(pointResponse: PointResponse): Point {
+        val coordinate = Coordinate(pointResponse.longitude.toDouble(), pointResponse.latitude.toDouble())
         return geometryFactory.createPoint(coordinate)
     }
 
