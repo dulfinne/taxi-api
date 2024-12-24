@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.locationtech.jts.geom.Point;
 
 import java.util.List;
 
@@ -58,6 +59,9 @@ public class Driver {
 
   @Column(name = "number_of_ratings")
   private Integer numberOfRatings;
+
+  @Column(name = "current_location")
+  private Point currentLocation;
 
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "car_id", referencedColumnName = "id")

@@ -1,0 +1,5 @@
+CREATE
+EXTENSION IF NOT EXISTS postgis;
+
+ALTER TABLE driver
+    ADD COLUMN current_location GEOGRAPHY(Point, 4326);
