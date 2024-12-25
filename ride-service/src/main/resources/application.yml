@@ -26,6 +26,8 @@ spring:
     topics:
       rate-passenger: rate-passenger-topic
       rate-driver: rate-driver-topic
+      promocode-usage: promocode-usage-topic
+      ride-payment: ride-payment-topic
 
   security:
     oauth2:
@@ -50,6 +52,9 @@ client:
   payment-service:
     name: payment-service
     path: api/v1/payments
+  promocode-service:
+    name: promocode-service
+    path: api/v1/promocodes
 
 server:
   port: 8093

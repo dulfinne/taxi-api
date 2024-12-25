@@ -1,5 +1,7 @@
 package com.dulfinne.taxi.rideservice.kafka.service
 
+import com.dulfinne.taxi.avro.PaymentRequest
+import com.dulfinne.taxi.avro.PromocodeUsageRequest
 import com.dulfinne.taxi.avro.Rating
 import com.dulfinne.taxi.rideservice.kafka.config.KafkaProperties
 import org.springframework.kafka.core.KafkaTemplate
@@ -14,5 +16,13 @@ class KafkaProducerService(val kafkaTemplate: KafkaTemplate<String, Any>, val ka
 
     fun sendDriversRating(rating: Rating) {
         kafkaTemplate.send(kafkaProperties.rateDriverTopic, rating.username, rating)
+    }
+
+    fun sendPromocodeUsage(usage: PromocodeUsageRequest) {
+        kafkaTemplate.send(kafkaProperties.promocodeUsageTopic, usage.username, usage)
+    }
+
+    fun sendRidePayment(payment: PaymentRequest) {
+        kafkaTemplate.send(kafkaProperties.ridePaymentTopic, payment.passengerUsername, payment)
     }
 }

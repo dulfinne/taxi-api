@@ -24,18 +24,23 @@ import org.springframework.web.bind.annotation.RestController
 class PassengerController(val service: PassengerService) {
 
     @PostMapping("/price")
-    fun countPrice(@RequestBody @Valid request: LocationRequest): ResponseEntity<CountPriceResponse> {
-        val response = service.countPrice(request)
+    fun countPrice(
+        @CurrentSecurityContext(expression = "authentication.name") username: String,
+        @RequestBody @Valid request: LocationRequest,
+        @RequestParam(defaultValue = "") promocode: String
+    ): ResponseEntity<CountPriceResponse> {
+        val response = service.countPrice(username, request, promocode)
         return ResponseEntity.ok(response)
     }
 
     @PostMapping
     fun createRide(
         @CurrentSecurityContext(expression = "authentication.name") username: String,
-        @RequestBody @Valid request: LocationRequest
+        @RequestBody @Valid request: LocationRequest,
+        @RequestParam(defaultValue = "") promocode: String
     ): ResponseEntity<RideResponse> {
 
-        val response = service.createRide(username, request)
+        val response = service.createRide(username, request, promocode)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 

@@ -1,6 +1,8 @@
 package com.dulfinne.taxi.rideservice.service.impl
 
+import com.dulfinne.taxi.avro.PromocodeUsageRequest
 import com.dulfinne.taxi.avro.Rating
+import com.dulfinne.taxi.rideservice.client.dto.request.DiscountRequest
 import com.dulfinne.taxi.rideservice.client.dto.DriverResponse
 import com.dulfinne.taxi.rideservice.client.dto.PassengerResponse
 import com.dulfinne.taxi.rideservice.client.service.ClientService
@@ -45,24 +47,28 @@ class PassengerServiceImpl(
     val clientService: ClientService
 ) : PassengerService {
 
-    override fun countPrice(request: LocationRequest): CountPriceResponse {
+    override fun countPrice(username: String, request: LocationRequest, promocode: String): CountPriceResponse {
         val startPosition = mapper.toPoint(request.startPosition)
         val endPosition = mapper.toPoint(request.endPosition)
-        val price = countPriceByLocation(startPosition, endPosition)
+        var price = countPriceByLocation(startPosition, endPosition)
+
+        price = applyPromocodeDiscount(username, promocode, price)
 
         return mapper.toCountPriceResponse(request, price)
     }
 
     @Transactional
-    override fun createRide(passengerUsername: String, request: LocationRequest): RideResponse {
+    override fun createRide(passengerUsername: String, request: LocationRequest, promocode: String): RideResponse {
         val passenger: PassengerResponse = clientService.getPassengerByUsername(passengerUsername)
         val payment = passenger.payment
         validatePaymentType(payment, passengerUsername)
 
         val ride = mapper.toRide(request, passengerUsername, payment)
-        ride.price = countPriceByLocation(ride.startPosition, ride.endPosition)
-
+        val price = countPriceByLocation(ride.startPosition, ride.endPosition)
+        ride.price = applyPromocodeDiscount(passengerUsername, promocode, price)
         repository.save(ride)
+
+        processPromocodeUsage(promocode, ride)
         return mapper.toRideResponse(ride)
     }
 
@@ -210,6 +216,30 @@ class PassengerServiceImpl(
             !clientService.canPayWithCard(username).canPayByCard
         ) {
             throw ActionNotAllowedException(ExceptionKeys.CARD_PAYMENT_NOT_AVAILABLE)
+        }
+    }
+
+    private fun applyPromocodeDiscount(username: String, promocode: String, price: BigDecimal): BigDecimal {
+        if (promocode.isNotEmpty()) {
+            val discountRequest = DiscountRequest(username, promocode, price)
+            var discountedPrice = price.subtract(clientService.getDiscount(discountRequest).discount)
+            if (discountedPrice < BigDecimal.ZERO) {
+                discountedPrice = BigDecimal.ZERO
+            }
+            return discountedPrice
+        }
+        return price
+    }
+
+    private fun processPromocodeUsage(promocode: String, ride: Ride) {
+        if (promocode.isNotEmpty()) {
+            val id = ride.id ?: throw Exception()
+            val usage = PromocodeUsageRequest.newBuilder().apply {
+                code = promocode
+                username = ride.passengerUsername
+                rideId = id
+            }.build()
+            kafkaService.sendPromocodeUsage(usage)
         }
     }
 }

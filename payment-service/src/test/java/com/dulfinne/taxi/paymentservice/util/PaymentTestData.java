@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.paymentservice.util;
 
-import com.dulfinne.taxi.paymentservice.dto.request.PaymentRequest;
+import com.dulfinne.taxi.avro.PaymentRequest;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
@@ -13,10 +13,10 @@ public class PaymentTestData {
   public static final BigDecimal PAYMENT_AMOUNT = BigDecimal.valueOf(77);
 
   public static PaymentRequest getPaymentRequest() {
-    return PaymentRequest.builder()
-            .passengerUsername(PASSENGER_USERNAME)
-            .driverUsername(DRIVER_USERNAME)
-            .price(PAYMENT_AMOUNT)
+    return PaymentRequest.newBuilder()
+            .setPassengerUsername(PASSENGER_USERNAME)
+            .setDriverUsername(DRIVER_USERNAME)
+            .setPrice(PAYMENT_AMOUNT.toString())
             .build();
   }
 }

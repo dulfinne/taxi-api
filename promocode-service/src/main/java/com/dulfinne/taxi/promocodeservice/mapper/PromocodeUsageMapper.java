@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.promocodeservice.mapper;
 
-import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeUsageRequest;
+import com.dulfinne.taxi.avro.PromocodeUsageRequest;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeUsageResponse;
 import com.dulfinne.taxi.promocodeservice.model.PromocodeUsage;
 import org.mapstruct.Mapper;

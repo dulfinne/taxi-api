@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.paymentservice.unit.service;
 
-import com.dulfinne.taxi.paymentservice.dto.request.PaymentRequest;
+import com.dulfinne.taxi.avro.PaymentRequest;
 import com.dulfinne.taxi.paymentservice.exception.EntityNotFoundException;
 import com.dulfinne.taxi.paymentservice.model.Wallet;
 import com.dulfinne.taxi.paymentservice.repository.WalletRepository;
@@ -42,11 +42,12 @@ public class PaymentServiceTest {
     Wallet passengerWallet = WalletTestData.getWallet();
     Wallet driverWallet = WalletTestData.getCreatedWallet();
 
-    BigDecimal expectedPassengerBalance = passengerWallet.getBalance().subtract(request.price());
+    BigDecimal price = new BigDecimal(request.getPrice());
+    BigDecimal expectedPassengerBalance = passengerWallet.getBalance().subtract(price);
     BigDecimal expectedDriverBalance =
         driverWallet
             .getBalance()
-            .add(request.price())
+            .add(price)
             .multiply(PaymentConstants.DRIVER_PAYOUT_RATE);
     BigDecimal expectedDebt = passengerWallet.getDebt();
 
@@ -77,13 +78,14 @@ public class PaymentServiceTest {
     Wallet passengerWallet = WalletTestData.getCreatedWallet();
     Wallet driverWallet = WalletTestData.getCreatedWallet();
 
+    BigDecimal price = new BigDecimal(request.getPrice());
     BigDecimal expectedPassengerBalance = passengerWallet.getBalance();
     BigDecimal expectedDriverBalance =
         driverWallet
             .getBalance()
-            .add(request.price())
+            .add(price)
             .multiply(PaymentConstants.DRIVER_PAYOUT_RATE);
-    BigDecimal expectedDebt = request.price();
+    BigDecimal expectedDebt = price;
 
     // Arrange
     when(walletRepository.findByUsername(passengerUsername))

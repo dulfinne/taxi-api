@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.rideservice.service.impl
 
+import com.dulfinne.taxi.avro.PaymentRequest
 import com.dulfinne.taxi.avro.Rating
 import com.dulfinne.taxi.rideservice.client.service.ClientService
 import com.dulfinne.taxi.rideservice.dto.request.RatingRequest
@@ -9,6 +10,7 @@ import com.dulfinne.taxi.rideservice.exception.ActionNotAllowedException
 import com.dulfinne.taxi.rideservice.exception.EntityNotFoundException
 import com.dulfinne.taxi.rideservice.kafka.service.KafkaProducerService
 import com.dulfinne.taxi.rideservice.mapper.RideMapper
+import com.dulfinne.taxi.rideservice.model.Payment
 import com.dulfinne.taxi.rideservice.model.Ride
 import com.dulfinne.taxi.rideservice.model.RideStatus
 import com.dulfinne.taxi.rideservice.repository.RideRepository
@@ -91,6 +93,8 @@ class DriverServiceImpl(
             status = RideStatus.COMPLETED.id
         }
         repository.save(ride)
+
+        processRidePayment(ride)
         return mapper.toRideResponse(ride)
     }
 
@@ -168,6 +172,19 @@ class DriverServiceImpl(
             RideStatus.COMPLETED.id -> RideStatus.RATED_BY_DRIVER.id
             RideStatus.RATED_BY_PASSENGER.id -> RideStatus.RATED.id
             else -> ride.status
+        }
+    }
+
+    private fun processRidePayment(ride: Ride) {
+        if (ride.payment == Payment.CARD.id) {
+            val id = ride.id ?: throw Exception()
+            val payment = PaymentRequest.newBuilder().apply {
+                this.rideId = id
+                passengerUsername = ride.passengerUsername
+                this.driverUsername = ride.driverUsername
+                price = ride.price.toString()
+            }.build()
+            kafkaService.sendRidePayment(payment)
         }
     }
 }

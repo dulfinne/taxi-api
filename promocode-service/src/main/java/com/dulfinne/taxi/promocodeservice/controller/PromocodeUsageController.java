@@ -1,20 +1,15 @@
 package com.dulfinne.taxi.promocodeservice.controller;
 
-import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeUsageRequest;
 import com.dulfinne.taxi.promocodeservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeUsageResponse;
 import com.dulfinne.taxi.promocodeservice.service.PromocodeUsageService;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,12 +51,5 @@ public class PromocodeUsageController {
     PaginatedResponse<PromocodeUsageResponse> usageResponsePage =
         service.getPromocodeUsagesByUsername(username, offset, limit, sortField, sortOrder);
     return ResponseEntity.ok(usageResponsePage);
-  }
-
-  @PostMapping
-  public ResponseEntity<PromocodeUsageResponse> createPromocodeUsage(
-      @RequestBody @Valid PromocodeUsageRequest request) {
-    PromocodeUsageResponse usageResponse = service.createPromocodeUsage(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(usageResponse);
   }
 }

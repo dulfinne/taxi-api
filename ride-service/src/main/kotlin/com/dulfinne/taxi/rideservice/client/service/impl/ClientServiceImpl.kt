@@ -3,7 +3,10 @@ package com.dulfinne.taxi.rideservice.client.service.impl
 import com.dulfinne.taxi.rideservice.client.DriverClient
 import com.dulfinne.taxi.rideservice.client.PassengerClient
 import com.dulfinne.taxi.rideservice.client.PaymentClient
+import com.dulfinne.taxi.rideservice.client.PromocodeClient
+import com.dulfinne.taxi.rideservice.client.dto.request.DiscountRequest
 import com.dulfinne.taxi.rideservice.client.dto.CanPayByCardResponse
+import com.dulfinne.taxi.rideservice.client.dto.DiscountResponse
 import com.dulfinne.taxi.rideservice.client.dto.DriverResponse
 import com.dulfinne.taxi.rideservice.client.dto.PassengerResponse
 import com.dulfinne.taxi.rideservice.client.service.ClientService
@@ -14,7 +17,8 @@ import org.springframework.stereotype.Service
 class ClientServiceImpl(
     val passengerClient: PassengerClient,
     val driverClient: DriverClient,
-    val paymentClient: PaymentClient
+    val paymentClient: PaymentClient,
+    val promocodeClient: PromocodeClient
 ) : ClientService {
 
     override fun getPassengerByUsername(username: String): PassengerResponse {
@@ -31,5 +35,9 @@ class ClientServiceImpl(
 
     override fun canPayWithCard(username: String): CanPayByCardResponse {
         return paymentClient.canPayWithCard(username)
+    }
+
+    override fun getDiscount(request: DiscountRequest): DiscountResponse {
+        return promocodeClient.getDiscount(request)
     }
 }

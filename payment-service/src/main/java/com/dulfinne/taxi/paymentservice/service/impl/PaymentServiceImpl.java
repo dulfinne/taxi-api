@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.paymentservice.service.impl;
 
-import com.dulfinne.taxi.paymentservice.dto.request.PaymentRequest;
+import com.dulfinne.taxi.avro.PaymentRequest;
 import com.dulfinne.taxi.paymentservice.exception.EntityNotFoundException;
 import com.dulfinne.taxi.paymentservice.model.Wallet;
 import com.dulfinne.taxi.paymentservice.repository.WalletRepository;
@@ -29,9 +29,9 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   private void processPassengerPayment(PaymentRequest request) {
-    Wallet passengerWallet = getWalletIfExists(request.passengerUsername());
+    Wallet passengerWallet = getWalletIfExists(request.getPassengerUsername());
     BigDecimal currentBalance = passengerWallet.getBalance();
-    BigDecimal paymentAmount = request.price();
+    BigDecimal paymentAmount = new BigDecimal(request.getPrice());
 
     String description;
 
@@ -45,18 +45,19 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     walletRepository.save(passengerWallet);
-    description = String.format(description, request.rideId());
+    description = String.format(description, request.getRideId());
     transactionService.createTransaction(passengerWallet, paymentAmount.negate(), description);
   }
 
   private void processDriverEarnings(PaymentRequest request) {
-    Wallet driverWallet = getWalletIfExists(request.driverUsername());
-    BigDecimal earnings = request.price().multiply(PaymentConstants.DRIVER_PAYOUT_RATE);
+    Wallet driverWallet = getWalletIfExists(request.getDriverUsername());
+    BigDecimal price = new BigDecimal(request.getPrice());
+    BigDecimal earnings = price.multiply(PaymentConstants.DRIVER_PAYOUT_RATE);
 
     driverWallet.setBalance(driverWallet.getBalance().add(earnings));
 
     walletRepository.save(driverWallet);
-    String description = String.format(DescriptionConstants.RIDE_PAYOUT, request.rideId());
+    String description = String.format(DescriptionConstants.RIDE_PAYOUT, request.getRideId());
     transactionService.createTransaction(driverWallet, earnings, description);
   }
 

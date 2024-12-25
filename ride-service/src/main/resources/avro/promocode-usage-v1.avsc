@@ -1,0 +1,11 @@
+{
+  "namespace": "com.dulfinne.taxi.avro",
+  "type": "record",
+  "name": "PromocodeUsageRequest",
+  "version": "1",
+  "fields": [
+    {"name": "code", "type": "string"},
+    {"name": "username", "type": "string"},
+    {"name": "rideId", "type": "long"}
+  ]
+}

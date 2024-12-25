@@ -10,6 +10,6 @@ public record PromocodeUsageResponse(
     String code,
     String username,
     Instant usageDate,
-    Integer rideId
+    Long rideId
 ) {
 }
