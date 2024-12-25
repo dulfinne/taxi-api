@@ -12,6 +12,7 @@ import com.dulfinne.taxi.rideservice.exception.ActionNotAllowedException
 import com.dulfinne.taxi.rideservice.exception.EntityNotFoundException
 import com.dulfinne.taxi.rideservice.kafka.service.KafkaProducerService
 import com.dulfinne.taxi.rideservice.mapper.RideMapper
+import com.dulfinne.taxi.rideservice.model.Payment
 import com.dulfinne.taxi.rideservice.model.Ride
 import com.dulfinne.taxi.rideservice.model.RideStatus
 import com.dulfinne.taxi.rideservice.repository.RideRepository
@@ -55,8 +56,10 @@ class PassengerServiceImpl(
     @Transactional
     override fun createRide(passengerUsername: String, request: LocationRequest): RideResponse {
         val passenger: PassengerResponse = clientService.getPassengerByUsername(passengerUsername)
+        val payment = passenger.payment
+        validatePaymentType(payment, passengerUsername)
 
-        val ride = mapper.toRide(request, passengerUsername, passenger.payment)
+        val ride = mapper.toRide(request, passengerUsername, payment)
         ride.price = countPriceByLocation(ride.startPosition, ride.endPosition)
 
         repository.save(ride)
@@ -199,6 +202,14 @@ class PassengerServiceImpl(
             RideStatus.COMPLETED.id -> RideStatus.RATED_BY_PASSENGER.id
             RideStatus.RATED_BY_DRIVER.id -> RideStatus.RATED.id
             else -> ride.status
+        }
+    }
+
+    private fun validatePaymentType(payment: Payment, username: String) {
+        if (payment == Payment.CARD &&
+            !clientService.canPayWithCard(username).canPayByCard
+        ) {
+            throw ActionNotAllowedException(ExceptionKeys.CARD_PAYMENT_NOT_AVAILABLE)
         }
     }
 }

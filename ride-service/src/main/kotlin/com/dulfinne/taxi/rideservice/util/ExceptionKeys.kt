@@ -13,6 +13,7 @@ object ExceptionKeys {
     const val RATE_TIME_IS_OVER = "rate-time-is-over"
     const val VIEW_DRIVER_TIME_IS_OVER = "view-driver-time-is-over"
     const val PROFILE_NOT_FOUND = "profile-not-found"
+    const val CARD_PAYMENT_NOT_AVAILABLE = "card-payment-not-available"
 
     const val UNKNOWN_ERROR = "unknown-error"
 }

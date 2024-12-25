@@ -47,6 +47,9 @@ client:
   driver-service:
     name: driver-service
     path: api/v1/drivers
+  payment-service:
+    name: payment-service
+    path: api/v1/payments
 
 server:
   port: 8093

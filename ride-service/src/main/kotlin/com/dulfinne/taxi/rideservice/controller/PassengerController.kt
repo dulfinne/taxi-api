@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.annotation.CurrentSecurityContext
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -34,11 +35,11 @@ class PassengerController(val service: PassengerService) {
 
     @PostMapping
     fun createRide(
-        principal: Principal,
+        @CurrentSecurityContext(expression = "authentication.name") username: String,
         @RequestBody @Valid request: LocationRequest
     ): ResponseEntity<RideResponse> {
 
-        val response = service.createRide(getUsername(principal), request)
+        val response = service.createRide(username, request)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
