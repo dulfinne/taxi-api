@@ -5,7 +5,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 
+@Builder
 public record DriverRequest(
     @NotNull(message = ValidationKeys.FIRST_NAME_REQUIRED)
     String firstName,

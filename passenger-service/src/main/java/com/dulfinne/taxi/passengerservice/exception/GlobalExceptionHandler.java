@@ -1,17 +1,17 @@
 package com.dulfinne.taxi.passengerservice.exception;
 
 import com.dulfinne.taxi.passengerservice.util.ExceptionKeys;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,26 +70,20 @@ public class GlobalExceptionHandler {
 
       errors.computeIfAbsent(fieldName, k -> new ArrayList<>()).add(message);
     }
-    return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
 
-  @ExceptionHandler(HandlerMethodValidationException.class)
-  public ResponseEntity<Map<String, String>> handleHandlerMethodValidationException(
-      HandlerMethodValidationException ex) {
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<Map<String, String>> handleConstraintViolationException(
+      ConstraintViolationException ex) {
     Map<String, String> errors = new HashMap<>();
+    for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
+      String fieldName = violation.getPropertyPath().toString();
+      String errorMessage = violation.getMessage();
 
-    ex.getAllErrors()
-        .forEach(
-            error -> {
-              String fieldName = error.getCodes()[0];
-              String[] parts = fieldName.split("\\.");
-              fieldName = parts[parts.length - 1];
-
-              String errorMessage = error.getDefaultMessage();
-              errors.put(fieldName, errorMessage);
-            });
-
-    return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+      errors.put(fieldName, errorMessage);
+    }
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
 
   @ExceptionHandler(Exception.class)

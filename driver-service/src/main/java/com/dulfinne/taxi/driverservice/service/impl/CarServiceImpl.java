@@ -44,11 +44,8 @@ public class CarServiceImpl implements CarService {
   @Override
   public CarResponse saveCar(CarRequest request) {
     Car car = carMapper.toEntity(request);
-
     checkRegistrationNumberUniqueness(car.getRegistrationNumber());
-
-    carRepository.save(car);
-    return carMapper.toResponse(car);
+    return carMapper.toResponse(carRepository.save(car));
   }
 
   @Transactional
