@@ -25,6 +25,7 @@
         <avro.version>1.11.4</avro.version>
         <avro-plugin.version>1.11.1</avro-plugin.version>
         <build-helper.version>3.0.0</build-helper.version>
+        <jupiter.version>5.11.3</jupiter.version>
     </properties>
 
     <repositories>
