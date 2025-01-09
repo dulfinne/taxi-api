@@ -6,6 +6,7 @@ import com.dulfinne.taxi.paymentservice.service.SchedulerService;
 import com.dulfinne.taxi.paymentservice.service.TransactionService;
 import com.dulfinne.taxi.paymentservice.util.DescriptionConstants;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,10 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     @Override
     @Scheduled(cron = "${scheduler.debt-repayment.cron}")
+    @SchedulerLock(
+            name = "debtRepaymentTask",
+            lockAtLeastFor = "PT5M", lockAtMostFor = "PT10M"
+    )
     public void scheduleDebtRepayment() {
         List<Wallet> wallets = repository.findAllByDebtGreaterThan(BigDecimal.ZERO);
 
