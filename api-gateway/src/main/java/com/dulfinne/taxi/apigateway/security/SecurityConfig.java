@@ -34,7 +34,7 @@ public class SecurityConfig {
                     .hasAnyRole("DRIVER", "ADMIN")
                     .pathMatchers("/api/v1/cars", "/api/v1/cars/{id}")
                     .hasRole("ADMIN")
-                    .pathMatchers("/api/v1/drivers", "/api/v1/drivers/ratings")
+                    .pathMatchers("/api/v1/drivers", "/api/v1/drivers/ratings", "/api/v1/drivers/location")
                     .hasRole("DRIVER")
                     .pathMatchers("/api/v1/drivers/all", "/api/v1/drivers/{username}/**")
                     .hasRole("ADMIN")
@@ -43,6 +43,19 @@ public class SecurityConfig {
                     .hasRole("PASSENGER")
                     .pathMatchers("/api/v1/passengers/{username}/**")
                     .hasRole("ADMIN")
+
+                    .pathMatchers("/api/v1/payments/wallets")
+                    .hasAnyRole("PASSENGER", "DRIVER")
+                    .pathMatchers("/api/v1/payments/wallets/{username}/**")
+                    .hasRole("ADMIN")
+                    .pathMatchers("/api/v1/payments/transactions")
+                    .hasAnyRole("PASSENGER", "DRIVER")
+                    .pathMatchers("/api/v1/payments/transactions/{username}/**")
+                    .hasRole("ADMIN")
+
+                    .pathMatchers("/api/v1/promocodes/**")
+                    .hasRole("ADMIN")
+
                     .anyExchange()
                     .authenticated())
         .oauth2ResourceServer(

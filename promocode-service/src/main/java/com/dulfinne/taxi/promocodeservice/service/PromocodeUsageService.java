@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.promocodeservice.service;
 
-import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeUsageRequest;
+import com.dulfinne.taxi.avro.PromocodeUsageRequest;
 import com.dulfinne.taxi.promocodeservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeUsageResponse;
 

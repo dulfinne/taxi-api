@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.promocodeservice.unit.service;
 
-import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeUsageRequest;
+import com.dulfinne.taxi.avro.PromocodeUsageRequest;
 import com.dulfinne.taxi.promocodeservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeUsageResponse;
 import com.dulfinne.taxi.promocodeservice.exception.EntityNotFoundException;
@@ -151,7 +151,7 @@ public class PromocodeUsageTest {
 
     // Arrange
     when(usageRepository.save(any(PromocodeUsage.class))).thenReturn(usage);
-    when(promocodeRepository.findByCode(request.code())).thenReturn(Optional.of(promocode));
+    when(promocodeRepository.findByCode(request.getCode())).thenReturn(Optional.of(promocode));
 
     // Act
     PromocodeUsageResponse response = service.createPromocodeUsage(request);
@@ -176,7 +176,7 @@ public class PromocodeUsageTest {
 
     // Arrange
     when(usageRepository.save(any(PromocodeUsage.class))).thenReturn(usage);
-    when(promocodeRepository.findByCode(request.code())).thenReturn(Optional.of(promocode));
+    when(promocodeRepository.findByCode(request.getCode())).thenReturn(Optional.of(promocode));
 
     // Act
     PromocodeUsageResponse response = service.createPromocodeUsage(request);

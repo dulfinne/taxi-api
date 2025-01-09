@@ -1,0 +1,6 @@
+ALTER TABLE driver
+DROP
+COLUMN IF EXISTS current_location;
+
+DROP
+EXTENSION IF EXISTS postgis;

@@ -32,4 +32,20 @@ class KafkaTopicConfig(private val kafkaProperties: KafkaProperties) {
             .replicas(kafkaProperties.replicasNumber)
             .build()
     }
+
+    @Bean
+    fun promocodeUsageTopic(): NewTopic {
+        return TopicBuilder.name(kafkaProperties.promocodeUsageTopic)
+            .partitions(kafkaProperties.partitionNumber)
+            .replicas(kafkaProperties.replicasNumber)
+            .build()
+    }
+
+    @Bean
+    fun ridePaymentTopic(): NewTopic {
+        return TopicBuilder.name(kafkaProperties.ridePaymentTopic)
+            .partitions(kafkaProperties.partitionNumber)
+            .replicas(kafkaProperties.replicasNumber)
+            .build()
+    }
 }

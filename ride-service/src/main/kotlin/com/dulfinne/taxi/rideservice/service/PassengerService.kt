@@ -8,8 +8,8 @@ import com.dulfinne.taxi.rideservice.dto.response.RideResponse
 import org.springframework.data.domain.Page
 
 interface PassengerService {
-    fun countPrice(request: LocationRequest): CountPriceResponse
-    fun createRide(passengerUsername: String, request: LocationRequest): RideResponse
+    fun countPrice(username: String, request: LocationRequest, promocode: String): CountPriceResponse
+    fun createRide(passengerUsername: String, request: LocationRequest, promocode: String): RideResponse
     fun cancelRide(rideId: Long, passengerUsername: String)
     fun rateDriver(rideId: Long, passengerUsername: String, request: RatingRequest)
     fun getAllPassengerRides(passengerUsername: String, offset: Int, limit: Int, sortField: String): Page<RideResponse>

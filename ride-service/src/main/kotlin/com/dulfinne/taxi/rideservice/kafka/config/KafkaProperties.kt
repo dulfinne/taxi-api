@@ -18,6 +18,12 @@ class KafkaProperties {
     @Value("\${spring.kafka.topics.rate-driver}")
     lateinit var rateDriverTopic: String
 
+    @Value("\${spring.kafka.topics.promocode-usage}")
+    lateinit var promocodeUsageTopic: String
+
+    @Value("\${spring.kafka.topics.ride-payment}")
+    lateinit var ridePaymentTopic: String
+
     @Value("\${spring.kafka.partition-number}")
     var partitionNumber: Int = 1
 

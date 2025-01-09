@@ -26,5 +26,5 @@ public class PromocodeUsage {
   private String code;
   private String username;
   private Instant usageDate;
-  private Integer rideId;
+  private Long rideId;
 }

@@ -1,0 +1,12 @@
+{
+  "namespace": "com.dulfinne.taxi.avro",
+  "type": "record",
+  "name": "PaymentRequest",
+  "version": "1",
+  "fields": [
+    {"name": "rideId", "type": "long"},
+    {"name": "passengerUsername", "type": "string"},
+    {"name": "driverUsername", "type": "string"},
+    {"name": "price", "type": "string"}
+  ]
+}

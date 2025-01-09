@@ -7,5 +7,27 @@ spring:
       uri: ${MONGO_URL:mongodb://localhost:27017}/promocode_db
       auto-index-creation: true
 
+  kafka:
+    bootstrap-servers: localhost:29092
+    schema-registry:
+      url: http://localhost:8081
+    groups:
+      promocode-usage: promocode-usage-group
+    topics:
+      promocode-usage: promocode-usage-topic
+    consumers-number: 3
+    error-handler:
+      backoff:
+        min-interval: 1000
+        max-interval: 10000
+        multiplier: 2.0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+
 server:
   port: 8095

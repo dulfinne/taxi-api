@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.promocodeservice.service.impl;
 
-import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeUsageRequest;
+import com.dulfinne.taxi.avro.PromocodeUsageRequest;
 import com.dulfinne.taxi.promocodeservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeUsageResponse;
 import com.dulfinne.taxi.promocodeservice.exception.EntityNotFoundException;

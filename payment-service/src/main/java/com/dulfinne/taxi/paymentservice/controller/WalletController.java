@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class WalletController {
   private final WalletService service;
 
-  @GetMapping
+  @GetMapping("/all")
   public ResponseEntity<PaginatedResponse<WalletResponse>> getAllWallets(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
@@ -37,48 +38,45 @@ public class WalletController {
     return ResponseEntity.ok(walletsResponse);
   }
 
-  // For ADMIN
-  // TODO: Change path to "/{username}"
-  @GetMapping("/username/{username}")
+  @GetMapping("/{username}")
   public ResponseEntity<WalletResponse> getWalletByUsername(@PathVariable String username) {
     WalletResponse response = service.getWalletByUsername(username);
     return ResponseEntity.ok(response);
   }
 
-  // For USER
-  // TODO: Later will get 'username' from token
-  @GetMapping("/{username}")
-  public ResponseEntity<WalletResponse> getWallet(@PathVariable String username) {
+  @GetMapping
+  public ResponseEntity<WalletResponse> getWallet(
+      @CurrentSecurityContext(expression = "authentication.name") String username) {
     WalletResponse response = service.getWalletByUsername(username);
     return ResponseEntity.ok(response);
   }
 
-  // TODO: Later will get 'username' from token
-  @PostMapping("/{username}")
-  public ResponseEntity<WalletResponse> createWallet(@PathVariable String username) {
+  @PostMapping
+  public ResponseEntity<WalletResponse> createWallet(
+      @CurrentSecurityContext(expression = "authentication.name") String username) {
     WalletResponse response = service.createWallet(username);
     return ResponseEntity.ok(response);
   }
 
-  // TODO: Later will get 'username' from token
-  @PostMapping("/{username}/credit")
+  @PostMapping("/credit")
   public ResponseEntity<WalletResponse> creditMoney(
-      @PathVariable String username, @RequestBody @Valid MoneyRequest request) {
+      @CurrentSecurityContext(expression = "authentication.name") String username,
+      @RequestBody @Valid MoneyRequest request) {
     WalletResponse response = service.creditMoney(username, request);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  // TODO: Later will get 'username' from token
-  @PostMapping("/{username}/debit")
+  @PostMapping("/debit")
   public ResponseEntity<WalletResponse> debitMoney(
-      @PathVariable String username, @RequestBody @Valid MoneyRequest request) {
+      @CurrentSecurityContext(expression = "authentication.name") String username,
+      @RequestBody @Valid MoneyRequest request) {
     WalletResponse response = service.debitMoney(username, request);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  // TODO: Later will get 'username' from token
-  @PostMapping("/{username}/repay-debt")
-  public ResponseEntity<WalletResponse> repayDebt(@PathVariable String username) {
+  @PostMapping("/repay-debt")
+  public ResponseEntity<WalletResponse> repayDebt(
+      @CurrentSecurityContext(expression = "authentication.name") String username) {
     WalletResponse response = service.repayDebt(username);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }

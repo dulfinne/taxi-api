@@ -17,5 +17,33 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/taxi/protocol/openid-connect/certs
+
+  kafka:
+    bootstrap-servers: localhost:29092
+    schema-registry:
+      url: http://localhost:8081
+    groups:
+      ride-payment: ride-payment-group
+    topics:
+      ride-payment: ride-payment-topic
+    consumers-number: 3
+    error-handler:
+      backoff:
+        min-interval: 1000
+        max-interval: 10000
+        multiplier: 2.0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+
 server:
   port: 8096

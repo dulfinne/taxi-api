@@ -1,10 +1,13 @@
 package com.dulfinne.taxi.driverservice.service.impl;
 
+import com.dulfinne.taxi.driverservice.dto.request.PointRequest;
+import com.dulfinne.taxi.driverservice.dto.response.PointResponse;
 import com.dulfinne.taxi.driverservice.exception.EntityNotFoundException;
 import com.dulfinne.taxi.driverservice.exception.EntityAlreadyExistsException;
 import com.dulfinne.taxi.driverservice.dto.request.DriverRequest;
 import com.dulfinne.taxi.driverservice.dto.response.DriverResponse;
 import com.dulfinne.taxi.driverservice.mapper.DriverMapper;
+import com.dulfinne.taxi.driverservice.mapper.PointMapper;
 import com.dulfinne.taxi.driverservice.model.Car;
 import com.dulfinne.taxi.driverservice.model.Driver;
 import com.dulfinne.taxi.driverservice.repository.CarRepository;
@@ -12,6 +15,7 @@ import com.dulfinne.taxi.driverservice.repository.DriverRepository;
 import com.dulfinne.taxi.driverservice.service.DriverService;
 import com.dulfinne.taxi.driverservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,6 +29,7 @@ public class DriverServiceImpl implements DriverService {
   private final DriverRepository driverRepository;
   private final CarRepository carRepository;
   private final DriverMapper driverMapper;
+  private final PointMapper pointMapper;
 
   @Transactional(readOnly = true)
   @Override
@@ -96,6 +101,26 @@ public class DriverServiceImpl implements DriverService {
     driverRepository.save(driver);
 
     return driverMapper.toResponse(driver);
+  }
+
+  @Override
+  public PointResponse getDriverLocation(String username) {
+    Driver driver = getDriverIfExistByUsername(username);
+    Point location = driver.getCurrentLocation();
+    if (location == null) {
+      throw new EntityNotFoundException(ExceptionKeys.LOCATION_NOT_FOUND);
+    }
+    return pointMapper.toResponse(location);
+  }
+
+  @Override
+  public PointResponse updateDriverLocation(String username, PointRequest request) {
+    Driver driver = getDriverIfExistByUsername(username);
+    Point location = pointMapper.toPoint(request);
+
+    driver.setCurrentLocation(location);
+    driverRepository.save(driver);
+    return pointMapper.toResponse(location);
   }
 
   private Driver getDriverIfExistByUsername(String username) {

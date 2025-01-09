@@ -1587,14 +1587,34 @@
           }
         },
         {
+          "id": "5e2323cc-664e-4105-8304-fc1f0bfe57f8",
+          "name": "name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "aggregate.attrs": "false",
+            "introspection.token.claim": "true",
+            "multivalued": "false",
+            "userinfo.token.claim": "true",
+            "user.attribute": "username",
+            "id.token.claim": "true",
+            "lightweight.claim": "false",
+            "access.token.claim": "true",
+            "claim.name": "sub",
+            "jsonType.label": "String"
+          }
+        },
+        {
           "id": "97a73332-1bee-470c-8fd8-4bfea19611b8",
           "name": "sub",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-sub-mapper",
           "consentRequired": false,
           "config": {
-            "introspection.token.claim": "true",
-            "access.token.claim": "true"
+            "lightweight.claim": "false",
+            "introspection.token.claim": "false",
+            "access.token.claim": "false"
           }
         }
       ]

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
@@ -23,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/v1/passengers")
@@ -42,7 +41,6 @@ public class PassengerController {
 
     Page<PassengerResponse> infoResponsePage =
         passengerService.getAllPassengers(offset, limit, sortField);
-
     return ResponseEntity.ok(infoResponsePage);
   }
 
@@ -53,38 +51,32 @@ public class PassengerController {
   }
 
   @GetMapping
-  public ResponseEntity<PassengerResponse> getPassenger(Principal principal) {
-    PassengerResponse response = passengerService.getPassengerByUsername(getUsername(principal));
+  public ResponseEntity<PassengerResponse> getPassenger(
+      @CurrentSecurityContext(expression = "authentication.name") String username) {
+    PassengerResponse response = passengerService.getPassengerByUsername(username);
     return ResponseEntity.ok(response);
   }
 
   @PostMapping
   public ResponseEntity<PassengerResponse> savePassenger(
-      Principal principal, @RequestBody @Valid PassengerRequest passengerRequest) {
-
-    PassengerResponse infoResponse =
-        passengerService.savePassenger(getUsername(principal), passengerRequest);
+      @CurrentSecurityContext(expression = "authentication.name") String username,
+      @RequestBody @Valid PassengerRequest passengerRequest) {
+    PassengerResponse infoResponse = passengerService.savePassenger(username, passengerRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(infoResponse);
   }
 
   @PutMapping
   public ResponseEntity<PassengerResponse> updatePassenger(
-      Principal principal, @RequestBody @Valid PassengerRequest passengerRequest) {
-
-    PassengerResponse infoResponse =
-        passengerService.updatePassenger(getUsername(principal), passengerRequest);
+      @CurrentSecurityContext(expression = "authentication.name") String username,
+      @RequestBody @Valid PassengerRequest passengerRequest) {
+    PassengerResponse infoResponse = passengerService.updatePassenger(username, passengerRequest);
     return ResponseEntity.ok(infoResponse);
   }
 
   @DeleteMapping
-  public ResponseEntity<Void> deletePassenger(Principal principal) {
-    passengerService.deletePassenger(getUsername(principal));
+  public ResponseEntity<Void> deletePassenger(
+      @CurrentSecurityContext(expression = "authentication.name") String username) {
+    passengerService.deletePassenger(username);
     return ResponseEntity.noContent().build();
-  }
-
-  public String getUsername(Principal principal) {
-    Authentication authentication = (Authentication) principal;
-    Jwt jwt = (Jwt) authentication.getPrincipal();
-    return jwt.getClaim(TokenConstants.USERNAME_CLAIM);
   }
 }
