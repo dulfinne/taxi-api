@@ -19,24 +19,24 @@ import java.time.ZonedDateTime
         Index(name = "idx_driver_username", columnList = "driver_username")
     ]
 )
-data class Ride(
+class Ride(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    val id: Long?,
+    var id: Long?,
 
     @Column(name = "driver_username")
     var driverUsername: String?,
 
     @Column(name = "passenger_username")
-    val passengerUsername: String,
+    var passengerUsername: String,
 
     @Column(name = "price")
     var price: BigDecimal,
 
     @Column(name = "payment")
-    val payment: Int,
+    var payment: Int,
 
     @Column(name = "start_time")
     var startTime: ZonedDateTime?,
@@ -45,10 +45,10 @@ data class Ride(
     var endTime: ZonedDateTime?,
 
     @Column(name = "start_position", columnDefinition = "geography(Point, 4326)")
-    val startPosition: Point,
+    var startPosition: Point,
 
     @Column(name = "end_position", columnDefinition = "geography(Point, 4326)")
-    val endPosition: Point,
+    var endPosition: Point,
 
     @Column(name = "status")
     var status: Int
