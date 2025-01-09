@@ -1,19 +1,22 @@
 package com.dulfinne.taxi.rideservice.client.decoder
 
-import com.dulfinne.taxi.rideservice.exception.EntityNotFoundException
+import com.dulfinne.taxi.rideservice.exception.ClientException
 import com.dulfinne.taxi.rideservice.util.ExceptionKeys
+import com.fasterxml.jackson.databind.ObjectMapper
 import feign.Response
 import feign.codec.ErrorDecoder
-import org.springframework.http.HttpStatus
 import java.lang.Exception
 
 class ClientErrorDecoder : ErrorDecoder {
+
+    private val objectMapper = ObjectMapper()
+
     override fun decode(methodKey: String?, response: Response?): Exception {
         val status = response?.status() ?: throw Exception()
+        val body = response.body()?.asInputStream()?.reader()?.readText() ?: ExceptionKeys.UNKNOWN_ERROR
+        val errorDetails = objectMapper.readValue(body, Map::class.java)
+        val message = errorDetails["message"].toString()
 
-        return when (status) {
-            HttpStatus.NOT_FOUND.value() -> EntityNotFoundException(ExceptionKeys.PROFILE_NOT_FOUND)
-            else -> Exception()
-        }
+        throw ClientException(status, message)
     }
 }
