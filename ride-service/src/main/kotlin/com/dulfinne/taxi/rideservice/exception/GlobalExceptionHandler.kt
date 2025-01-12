@@ -16,6 +16,13 @@ class GlobalExceptionHandler(
     private val exceptionMessageSource: MessageSource
 ) {
 
+    @ExceptionHandler(ClientException::class)
+    fun handleClientException(ex: ClientException): ResponseEntity<ErrorResponse> {
+        val status = HttpStatus.valueOf(ex.code)
+        val errorResponse = ErrorResponse(status, ex.info)
+        return ResponseEntity.status(status).body(errorResponse)
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleHttpMessageNotReadableException(ex: HttpMessageNotReadableException): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(HttpStatus.BAD_REQUEST, ex.message ?: "JSON parse error")

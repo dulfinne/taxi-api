@@ -1,5 +1,38 @@
 version: '3.8'
 services:
+  keycloak-db:
+    container_name: keycloak-db
+    image: postgres:17.0
+    environment:
+      POSTGRES_USER: db
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: keycloak
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    networks:
+      - keycloak-network
+    restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: db
+      KC_DB_PASSWORD: 123
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    networks:
+      - keycloak-network
+    ports:
+      - "8080:8080"
+    command: [ "start-dev", "--import-realm" ]
+    volumes:
+      - ./keycloak/:/opt/keycloak/data/import/
+
   kafka:
     image: confluentinc/cp-kafka:6.0.14
     depends_on:
@@ -42,3 +75,13 @@ services:
       SCHEMA_REGISTRY_LISTENER_HTTP_PORT: 8081
     depends_on:
       - kafka
+
+networks:
+  keycloak-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  keycloak:
+    driver: local
