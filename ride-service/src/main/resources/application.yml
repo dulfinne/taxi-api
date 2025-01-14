@@ -29,12 +29,6 @@ spring:
       promocode-usage: promocode-usage-topic
       ride-payment: ride-payment-topic
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: http://localhost:8080/realms/taxi/protocol/openid-connect/certs
-
 eureka:
   client:
     service-url:
@@ -55,6 +49,12 @@ client:
   promocode-service:
     name: promocode-service
     path: api/v1/promocodes
+
+springdoc:
+  api-docs:
+    path: /api/v1/rides/docs/v3/api-docs
+  swagger-ui:
+    path: /api/v1/rides/docs/swagger-ui.html
 
 server:
   port: 8093

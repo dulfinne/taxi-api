@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.rideservice.controller
 
+import com.dulfinne.taxi.rideservice.controller.api.RideApi
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
 import com.dulfinne.taxi.rideservice.service.RideService
 import org.springframework.data.domain.Page
@@ -13,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
 @RequestMapping("/api/v1/rides")
-class RideController(val service: RideService) {
+class RideController(val service: RideService) : RideApi {
 
     @GetMapping
-    fun getAllRides(
+    override fun getAllRides(
         @RequestParam(value = "offset", defaultValue = "0") offset: Int,
         @RequestParam(value = "limit", defaultValue = "10") limit: Int,
         @RequestParam(value = "sort", defaultValue = "id") sortField: String
@@ -27,13 +28,13 @@ class RideController(val service: RideService) {
     }
 
     @GetMapping("/{rideId}")
-    fun getRideById(@PathVariable rideId: Long): ResponseEntity<RideResponse> {
+    override fun getRideById(@PathVariable rideId: Long): ResponseEntity<RideResponse> {
         val rideResponse = service.getRideById(rideId)
         return ResponseEntity.ok(rideResponse)
     }
 
     @DeleteMapping("/{rideId}")
-    fun deleteRideById(@PathVariable rideId: Long): ResponseEntity<Void> {
+    override fun deleteRideById(@PathVariable rideId: Long): ResponseEntity<Void> {
         service.deleteRideById(rideId)
         return ResponseEntity.noContent().build()
     }

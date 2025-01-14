@@ -17,12 +17,6 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: http://localhost:8080/realms/taxi/protocol/openid-connect/certs
-
   kafka:
     bootstrap-servers: localhost:29092
     schema-registry:
@@ -37,6 +31,12 @@ spring:
         min-interval: 1000
         max-interval: 10000
         multiplier: 2.0
+
+springdoc:
+  api-docs:
+    path: /api/v1/drivers/docs/v3/api-docs
+  swagger-ui:
+    path: /api/v1/drivers/docs/swagger-ui.html
 
 eureka:
   client:

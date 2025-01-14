@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.driverservice.controller;
 
+import com.dulfinne.taxi.driverservice.controller.api.CarApi;
 import com.dulfinne.taxi.driverservice.dto.request.CarRequest;
 import com.dulfinne.taxi.driverservice.dto.response.CarResponse;
 import com.dulfinne.taxi.driverservice.service.CarService;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/cars")
 @RequiredArgsConstructor
-public class CarController {
+public class CarController implements CarApi {
 
   private final CarService carService;
 
