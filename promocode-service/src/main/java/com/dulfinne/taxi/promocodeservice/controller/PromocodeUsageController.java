@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.promocodeservice.controller;
 
+import com.dulfinne.taxi.promocodeservice.controller.api.PromocodeUsageApi;
 import com.dulfinne.taxi.promocodeservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.promocodeservice.dto.response.PromocodeUsageResponse;
 import com.dulfinne.taxi.promocodeservice.service.PromocodeUsageService;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/v1/promocodes/usages")
 @RequiredArgsConstructor
 @Validated
-public class PromocodeUsageController {
+public class PromocodeUsageController implements PromocodeUsageApi {
 
   private final PromocodeUsageService service;
 

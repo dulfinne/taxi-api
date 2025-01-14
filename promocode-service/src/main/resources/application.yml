@@ -22,6 +22,12 @@ spring:
         max-interval: 10000
         multiplier: 2.0
 
+springdoc:
+  api-docs:
+    path: /api/v1/promocodes/docs/v3/api-docs
+  swagger-ui:
+    path: /api/v1/promocodes/docs/swagger-ui.html
+
 eureka:
   client:
     service-url:

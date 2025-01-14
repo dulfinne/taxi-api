@@ -25,7 +25,9 @@
         <avro.version>1.11.4</avro.version>
         <avro-plugin.version>1.11.1</avro-plugin.version>
         <build-helper.version>3.0.0</build-helper.version>
-        <jupiter.version>5.11.3</jupiter.version>
+        <swagger.version>2.1.0</swagger.version>
+        <swagger-core.version>1.6.10</swagger-core.version>
+        <swagger-core-v3.version>2.2.8</swagger-core-v3.version>
     </properties>
 
     <repositories>
@@ -98,11 +100,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
@@ -123,6 +120,24 @@
             <groupId>org.apache.avro</groupId>
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-core</artifactId>
+            <version>${swagger-core-v3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-core</artifactId>
+            <version>${swagger-core.version}</version>
         </dependency>
     </dependencies>
 

@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.promocodeservice.controller;
 
+import com.dulfinne.taxi.promocodeservice.controller.api.PromocodeApi;
 import com.dulfinne.taxi.promocodeservice.dto.request.DiscountRequest;
 import com.dulfinne.taxi.promocodeservice.dto.request.PromocodeRequest;
 import com.dulfinne.taxi.promocodeservice.dto.response.DiscountResponse;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/v1/promocodes")
 @RequiredArgsConstructor
 @Validated
-public class PromocodeController {
+public class PromocodeController implements PromocodeApi {
 
   private final PromocodeService service;
 

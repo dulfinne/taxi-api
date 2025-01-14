@@ -1,10 +1,12 @@
 package com.dulfinne.taxi.driverservice.controller;
 
+import com.dulfinne.taxi.driverservice.controller.api.DriverApi;
 import com.dulfinne.taxi.driverservice.dto.request.DriverRequest;
 import com.dulfinne.taxi.driverservice.dto.request.PointRequest;
 import com.dulfinne.taxi.driverservice.dto.response.DriverResponse;
 import com.dulfinne.taxi.driverservice.dto.response.PointResponse;
 import com.dulfinne.taxi.driverservice.service.DriverService;
+import com.dulfinne.taxi.driverservice.util.HeaderConstants;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -12,13 +14,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/drivers")
 @RequiredArgsConstructor
-public class DriverController {
+public class DriverController implements DriverApi {
 
   private final DriverService driverService;
 
@@ -48,14 +50,14 @@ public class DriverController {
 
   @GetMapping
   public ResponseEntity<DriverResponse> getDriver(
-      @CurrentSecurityContext(expression = "authentication.name") String username) {
+      @RequestHeader(HeaderConstants.USERNAME_HEADER) String username) {
     DriverResponse driverResponse = driverService.getDriverByUsername(username);
     return ResponseEntity.ok(driverResponse);
   }
 
   @PostMapping
   public ResponseEntity<DriverResponse> saveDriver(
-      @CurrentSecurityContext(expression = "authentication.name") String username,
+      @RequestHeader(HeaderConstants.USERNAME_HEADER) String username,
       @RequestBody @Valid DriverRequest driverRequest) {
     DriverResponse driverResponse = driverService.saveDriver(username, driverRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(driverResponse);
@@ -63,7 +65,7 @@ public class DriverController {
 
   @PutMapping
   public ResponseEntity<DriverResponse> updateDriver(
-      @CurrentSecurityContext(expression = "authentication.name") String username,
+      @RequestHeader(HeaderConstants.USERNAME_HEADER) String username,
       @RequestBody @Valid DriverRequest driverRequest) {
     DriverResponse driverResponse = driverService.updateDriver(username, driverRequest);
     return ResponseEntity.ok(driverResponse);
@@ -71,7 +73,7 @@ public class DriverController {
 
   @DeleteMapping
   public ResponseEntity<Void> deleteDriver(
-      @CurrentSecurityContext(expression = "authentication.name") String username) {
+      @RequestHeader(HeaderConstants.USERNAME_HEADER) String username) {
     driverService.deleteDriver(username);
     return ResponseEntity.noContent().build();
   }
@@ -98,14 +100,14 @@ public class DriverController {
 
   @GetMapping("/location")
   public ResponseEntity<PointResponse> getDriverLocation(
-      @CurrentSecurityContext(expression = "authentication.name") String username) {
+      @RequestHeader(HeaderConstants.USERNAME_HEADER) String username) {
     PointResponse pointResponse = driverService.getDriverLocation(username);
     return ResponseEntity.ok(pointResponse);
   }
 
   @PutMapping("/location")
   public ResponseEntity<PointResponse> updateDriverLocation(
-      @CurrentSecurityContext(expression = "authentication.name") String username,
+      @RequestHeader(HeaderConstants.USERNAME_HEADER) String username,
       @RequestBody PointRequest request) {
     PointResponse pointResponse = driverService.updateDriverLocation(username, request);
     return ResponseEntity.ok(pointResponse);

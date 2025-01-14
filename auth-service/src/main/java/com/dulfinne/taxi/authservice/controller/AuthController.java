@@ -1,5 +1,6 @@
 package com.dulfinne.taxi.authservice.controller;
 
+import com.dulfinne.taxi.authservice.controller.api.AuthApi;
 import com.dulfinne.taxi.authservice.dto.request.LoginRequest;
 import com.dulfinne.taxi.authservice.dto.request.RefreshTokenRequest;
 import com.dulfinne.taxi.authservice.dto.request.RegistrationRequest;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthApi {
 
   private final AuthService authService;
 
