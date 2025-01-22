@@ -1,0 +1,236 @@
+name: taxi
+
+services:
+  keycloak-db:
+    container_name: keycloak-db
+    image: postgres:17.0
+    environment:
+      POSTGRES_USER: db
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: keycloak_db
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak_db
+      KC_DB_USERNAME: db
+      KC_DB_PASSWORD: 123
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    command: [ "start-dev", "--import-realm" ]
+    volumes:
+      - ./keycloak/:/opt/keycloak/data/import/
+
+  kafka:
+    image: confluentinc/cp-kafka:6.0.14
+    expose:
+      - "29092"
+    environment:
+      KAFKA_BROKER_ID: 0
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:9092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    expose:
+      - "8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    depends_on:
+      - kafka
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.0.14
+    expose:
+      - "2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:6.0.14
+    expose:
+      - "8081"
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:9092
+      SCHEMA_REGISTRY_LISTENER_SECURITY_PROTOCOL: PLAINTEXT
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENER_HTTP_PORT: 8081
+    depends_on:
+      - kafka
+
+  postgres:
+    image: postgis/postgis:latest
+    container_name: postgres
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: "db"
+      POSTGRES_PASSWORD: "123"
+    volumes:
+      - ./init-database:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:8.0.4
+    restart: always
+    expose:
+      - "27017"
+    environment:
+      MONGO_INITDB_DATABASE: promocode_db
+    volumes:
+      - mongo_data:/data/db
+
+  eureka:
+    build: ./eureka-server
+    container_name: eureka
+    image: eureka:latest
+    environment:
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+    expose:
+      - "8761"
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    image: api-gateway:latest
+    ports:
+      - "8642:8642"
+    environment:
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/taxi/protocol/openid-connect/certs
+    depends_on:
+      - eureka
+      - passenger-service
+      - payment-service
+      - driver-service
+      - auth-service
+      - promocode-service
+      - ride-service
+
+  passenger-service:
+    build: ./passenger-service
+    container_name: passenger-service
+    image: passenger-service:latest
+    expose:
+      - "8091"
+    environment:
+      PG_URL: jdbc:postgresql://postgres:5432
+      PG_USERNAME: "db"
+      PG_PASSWORD: "123"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      SYSTEM_TIMEZONE: Europe/Minsk
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+    depends_on:
+      - eureka
+      - postgres
+      - kafka
+
+  driver-service:
+    build: ./driver-service
+    container_name: driver-service
+    image: driver-service:latest
+    expose:
+      - "8092"
+    environment:
+      PG_URL: jdbc:postgresql://postgres:5432
+      PG_USERNAME: "db"
+      PG_PASSWORD: "123"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+    depends_on:
+      - eureka
+      - postgres
+      - kafka
+
+  ride-service:
+    build: ./ride-service
+    container_name: ride-service
+    image: ride-service:latest
+    expose:
+      - "8093"
+    environment:
+      PG_URL: jdbc:postgresql://postgres:5432
+      PG_USERNAME: "db"
+      PG_PASSWORD: "123"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      SYSTEM_TIMEZONE: Europe/Minsk
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+    depends_on:
+      - eureka
+      - postgres
+      - kafka
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    image: auth-service:latest
+    expose:
+      - "8094"
+    environment:
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      APP_KEYCLOAK_SERVER_URL: http://keycloak:8080
+    depends_on:
+      - eureka
+      - keycloak
+
+  promocode-service:
+    build: ./promocode-service
+    container_name: promocode-service
+    image: promocode-service:latest
+    expose:
+      - "8095"
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+    depends_on:
+      - eureka
+      - mongo
+      - kafka
+
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    image: payment-service:latest
+    expose:
+      - "8096"
+    environment:
+      PG_URL: jdbc:postgresql://postgres:5432
+      PG_USERNAME: "db"
+      PG_PASSWORD: "123"
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+    depends_on:
+      - eureka
+      - postgres
+      - kafka
+
+volumes:
+  postgres_data:
+    driver: local
+  keycloak_data:
+    driver: local
+  mongo_data:
+    driver: local

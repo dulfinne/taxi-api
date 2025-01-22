@@ -64,7 +64,11 @@ public class SecurityConfig {
                     .pathMatchers("/api/v1/passengers/{username}/**")
                     .hasRole("ADMIN")
 
-                    .pathMatchers("/api/v1/payments/wallets")
+                    .pathMatchers(
+                        "/api/v1/payments/wallets",
+                        "/api/v1/payments/wallets/credit",
+                        "/api/v1/payments/wallets/debit",
+                        "/api/v1/payments/wallets/repay-debt")
                     .hasAnyRole("PASSENGER", "DRIVER")
                     .pathMatchers("/api/v1/payments/wallets/{username}/**")
                     .hasRole("ADMIN")
