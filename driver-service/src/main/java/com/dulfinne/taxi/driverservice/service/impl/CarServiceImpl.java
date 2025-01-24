@@ -10,6 +10,7 @@ import com.dulfinne.taxi.driverservice.repository.CarRepository;
 import com.dulfinne.taxi.driverservice.service.CarService;
 import com.dulfinne.taxi.driverservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CarServiceImpl implements CarService {
 
   private final CarRepository carRepository;
@@ -26,6 +28,7 @@ public class CarServiceImpl implements CarService {
   @Transactional(readOnly = true)
   @Override
   public Page<CarResponse> getAllCars(Integer offset, Integer limit, String sortField) {
+    log.info("Getting all cars. Started. Sort field = {}", sortField);
     Page<Car> carsPage =
         carRepository.findAll(
             PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField)));
@@ -36,6 +39,7 @@ public class CarServiceImpl implements CarService {
   @Transactional(readOnly = true)
   @Override
   public CarResponse getCarById(Long id) {
+    log.info("Getting car by id. Started. Car id = {}", id);
     Car car = getCarIfExist(id);
     return carMapper.toResponse(car);
   }
@@ -43,6 +47,7 @@ public class CarServiceImpl implements CarService {
   @Transactional
   @Override
   public CarResponse saveCar(CarRequest request) {
+    log.info("Saving car. Started. Car registration number = {}", request.registrationNumber());
     Car car = carMapper.toEntity(request);
     checkRegistrationNumberUniqueness(car.getRegistrationNumber());
     return carMapper.toResponse(carRepository.save(car));
@@ -51,6 +56,7 @@ public class CarServiceImpl implements CarService {
   @Transactional
   @Override
   public CarResponse updateCar(Long id, CarRequest request) {
+    log.info("Updating car. Started. Car id = {}", id);
     Car car = getCarIfExist(id);
 
     checkRegistrationNumberUniqueness(car.getRegistrationNumber(), request.registrationNumber());
@@ -64,6 +70,7 @@ public class CarServiceImpl implements CarService {
   @Transactional
   @Override
   public void deleteCar(Long id) {
+    log.info("Deleting car. Started. Car id = {}", id);
     Car car = getCarIfExist(id);
     carRepository.delete(car);
   }
@@ -71,13 +78,13 @@ public class CarServiceImpl implements CarService {
   private Car getCarIfExist(Long id) {
     return carRepository
         .findById(id)
-        .orElseThrow(
-            () -> new EntityNotFoundException(ExceptionKeys.CAR_NOT_FOUND_ID, id));
+        .orElseThrow(() -> new EntityNotFoundException(ExceptionKeys.CAR_NOT_FOUND_ID, id));
   }
 
   private void checkRegistrationNumberUniqueness(String registrationNumber) {
     if (carRepository.findByRegistrationNumber(registrationNumber).isPresent()) {
-      throw new EntityAlreadyExistsException(ExceptionKeys.CAR_EXISTS_REGISTRATION_NUMBER, registrationNumber);
+      throw new EntityAlreadyExistsException(
+          ExceptionKeys.CAR_EXISTS_REGISTRATION_NUMBER, registrationNumber);
     }
   }
 
@@ -85,7 +92,8 @@ public class CarServiceImpl implements CarService {
       String registrationNumber, String updatedRegistrationNumber) {
     if (!updatedRegistrationNumber.equals(registrationNumber)
         && carRepository.findByRegistrationNumber(updatedRegistrationNumber).isPresent()) {
-      throw new EntityAlreadyExistsException(ExceptionKeys.CAR_EXISTS_REGISTRATION_NUMBER, updatedRegistrationNumber);
+      throw new EntityAlreadyExistsException(
+          ExceptionKeys.CAR_EXISTS_REGISTRATION_NUMBER, updatedRegistrationNumber);
     }
   }
 }

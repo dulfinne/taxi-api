@@ -1,15 +1,16 @@
 package com.dulfinne.taxi.promocodeservice.kafka.service;
 
-
 import com.dulfinne.taxi.avro.PromocodeUsageRequest;
 import com.dulfinne.taxi.promocodeservice.kafka.config.KafkaProperties;
 import com.dulfinne.taxi.promocodeservice.service.PromocodeUsageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class KafkaConsumerService {
 
   private final PromocodeUsageService usageService;
@@ -20,6 +21,7 @@ public class KafkaConsumerService {
       groupId = "#{kafkaProperties.promocodeUsageGroup}",
       containerFactory = "kafkaListenerContainerFactory")
   public void listen(PromocodeUsageRequest request) {
-      usageService.createPromocodeUsage(request);
+    log.info("Received promocode usage request. Handling. Ride id = {}", request.getRideId());
+    usageService.createPromocodeUsage(request);
   }
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.NotAuthorizedException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -17,12 +18,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
+@Slf4j
 public class GlobalExceptionHandler {
   private final MessageSource validationMessageSource;
   private final MessageSource exceptionMessageSource;
 
   @ExceptionHandler(ResponseStatusException.class)
   public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex) {
+    log.info("Keycloak response exception. Handling. Message: {}", ex.getMessage());
     HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
     ErrorResponse errorResponse = new ErrorResponse(status, ex.getReason());
     return ResponseEntity.status(status).body(errorResponse);
@@ -40,6 +43,7 @@ public class GlobalExceptionHandler {
           fieldName,
           validationMessageSource.getMessage(errorMessage, null, LocaleContextHolder.getLocale()));
     }
+    log.warn("Validation exception. Handling. Errors: {}", errors);
     return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
   }
 
@@ -49,6 +53,7 @@ public class GlobalExceptionHandler {
         exceptionMessageSource.getMessage(
             ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN, message);
+    log.info("Invalid role exception. Handling. Message: {}", message);
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
   }
 
@@ -59,11 +64,13 @@ public class GlobalExceptionHandler {
             ExceptionKeys.KEYCLOAK_UNAUTHORIZED, null, LocaleContextHolder.getLocale());
 
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, message);
+    log.info("Not authorized exception. Handling. Message: {}", message);
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
+    log.info("Unknown exception. Handling.", ex);
     String message =
         exceptionMessageSource.getMessage(
             ExceptionKeys.UNKNOWN_ERROR, null, LocaleContextHolder.getLocale());

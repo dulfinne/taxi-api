@@ -11,6 +11,7 @@ import com.dulfinne.taxi.driverservice.repository.DriverRepository;
 import com.dulfinne.taxi.driverservice.service.DriverRatingService;
 import com.dulfinne.taxi.driverservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DriverRatingServiceImpl implements DriverRatingService {
 
   private final DriverRatingRepository ratingRepository;
@@ -29,7 +31,7 @@ public class DriverRatingServiceImpl implements DriverRatingService {
   @Override
   public Page<DriverRatingResponse> getAllDriverRatings(
       String username, Integer offset, Integer limit, String sortField) {
-
+    log.info("Getting all driver ratings. Started. Username = {}", username);
     Driver driver = getDriverIfExistByUsername(username);
     Page<DriverRating> driverRatingPage =
         ratingRepository.findByDriverId(
@@ -41,6 +43,7 @@ public class DriverRatingServiceImpl implements DriverRatingService {
   @Transactional
   @Override
   public void saveDriverRating(Rating rating) {
+    log.info("Saving rating. Started. Username = {}", rating.getUsername());
     Driver driver = getDriverIfExistByUsername(rating.getUsername());
     DriverRating driverRating = new DriverRating();
     driverRating.setDriver(driver);

@@ -12,6 +12,7 @@ import com.dulfinne.taxi.rideservice.dto.response.CountPriceResponse
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
 import com.dulfinne.taxi.rideservice.exception.ActionNotAllowedException
 import com.dulfinne.taxi.rideservice.exception.EntityNotFoundException
+import com.dulfinne.taxi.rideservice.exception.GlobalExceptionHandler
 import com.dulfinne.taxi.rideservice.kafka.service.KafkaProducerService
 import com.dulfinne.taxi.rideservice.mapper.RideMapper
 import com.dulfinne.taxi.rideservice.model.Payment
@@ -22,6 +23,8 @@ import com.dulfinne.taxi.rideservice.service.PassengerService
 import com.dulfinne.taxi.rideservice.util.ExceptionKeys
 import com.dulfinne.taxi.rideservice.util.RideConstants
 import org.locationtech.jts.geom.Point
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -46,8 +49,10 @@ class PassengerServiceImpl(
     val kafkaService: KafkaProducerService,
     val clientService: ClientService
 ) : PassengerService {
+    private val log: Logger = LoggerFactory.getLogger(PassengerServiceImpl::class.java)
 
     override fun countPrice(username: String, request: LocationRequest, promocode: String): CountPriceResponse {
+        log.info("Counting predicted price. Started. Username = $username")
         val startPosition = mapper.toPoint(request.startPosition)
         val endPosition = mapper.toPoint(request.endPosition)
         var price = countPriceByLocation(startPosition, endPosition)
@@ -59,6 +64,7 @@ class PassengerServiceImpl(
 
     @Transactional
     override fun createRide(passengerUsername: String, request: LocationRequest, promocode: String): RideResponse {
+        log.info("Creating ride. Started. Username = $passengerUsername")
         val passenger: PassengerResponse = clientService.getPassengerByUsername(passengerUsername)
         val payment = passenger.payment
         validatePaymentType(payment, passengerUsername)
@@ -74,6 +80,7 @@ class PassengerServiceImpl(
 
     @Transactional
     override fun cancelRide(rideId: Long, passengerUsername: String) {
+        log.info("Canceling ride. Started. Ride id = $rideId")
         val ride = getRideIfExists(rideId)
         validatePassenger(ride, passengerUsername)
 
@@ -87,6 +94,7 @@ class PassengerServiceImpl(
 
     @Transactional
     override fun rateDriver(rideId: Long, passengerUsername: String, request: RatingRequest) {
+        log.info("Rating driver. Started. Ride id = $rideId")
         val ride = getValidatedRideToRate(rideId, passengerUsername)
 
         val rating = Rating.newBuilder().apply {
@@ -108,7 +116,7 @@ class PassengerServiceImpl(
         limit: Int,
         sortField: String
     ): Page<RideResponse> {
-
+        log.info("Getting all passenger rides. Started. Username = $passengerUsername")
         val ridesPage = repository.findAllByPassengerUsername(
             passengerUsername,
             PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField))
@@ -118,6 +126,7 @@ class PassengerServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getRideById(passengerUsername: String, rideId: Long): RideResponse {
+        log.info("Getting ride. Started. Ride id = $rideId")
         val ride = getRideIfExists(rideId)
         validatePassenger(ride, passengerUsername)
         return mapper.toRideResponse(ride)
@@ -125,6 +134,7 @@ class PassengerServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getDriverProfile(passengerUsername: String, rideId: Long): DriverResponse {
+        log.info("Getting driver profile. Started. Ride id = $rideId")
         val ride = getRideIfExists(rideId)
         validatePassenger(ride, passengerUsername)
 

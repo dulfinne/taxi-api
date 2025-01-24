@@ -1,6 +1,8 @@
 package com.dulfinne.taxi.rideservice.exception
 
 import com.dulfinne.taxi.rideservice.util.ExceptionKeys
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.http.HttpStatus
@@ -15,17 +17,22 @@ class GlobalExceptionHandler(
     private val validationMessageSource: MessageSource,
     private val exceptionMessageSource: MessageSource
 ) {
+    private val log: Logger = LoggerFactory.getLogger(GlobalExceptionHandler::class.java)
 
     @ExceptionHandler(ClientException::class)
     fun handleClientException(ex: ClientException): ResponseEntity<ErrorResponse> {
         val status = HttpStatus.valueOf(ex.code)
         val errorResponse = ErrorResponse(status, ex.info)
+
+        log.warn("Feign client exception. Handling. Message: ${ex.info}")
         return ResponseEntity.status(status).body(errorResponse)
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleHttpMessageNotReadableException(ex: HttpMessageNotReadableException): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(HttpStatus.BAD_REQUEST, ex.message ?: "JSON parse error")
+
+        log.warn("HttpMessageNotReadableException. Handling.", ex)
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
 
@@ -36,6 +43,8 @@ class GlobalExceptionHandler(
             val errorMessage = fieldError.defaultMessage ?: "Invalid value"
             fieldName to validationMessageSource.getMessage(errorMessage, null, LocaleContextHolder.getLocale())
         }
+
+        log.warn("Validation exception. Handling. Message: $errors")
         return ResponseEntity(errors, HttpStatus.BAD_REQUEST)
     }
 
@@ -45,6 +54,7 @@ class GlobalExceptionHandler(
             ex.messageKey, ex.params ?: emptyArray(), LocaleContextHolder.getLocale()
         )
         val errorResponse = ErrorResponse(HttpStatus.NOT_FOUND, message)
+        log.info("Entity not found. Handling. Message: $message")
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
     }
 
@@ -54,6 +64,8 @@ class GlobalExceptionHandler(
             ex.messageKey, ex.params ?: emptyArray(), LocaleContextHolder.getLocale()
         )
         val errorResponse = ErrorResponse(HttpStatus.CONFLICT, message)
+
+        log.info("Action not allowed. Handling. Message: $message")
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse)
     }
 
@@ -61,7 +73,9 @@ class GlobalExceptionHandler(
     fun handleGlobalException(ex: Exception): ResponseEntity<ErrorResponse> {
         val message =
             exceptionMessageSource.getMessage(ExceptionKeys.UNKNOWN_ERROR, null, LocaleContextHolder.getLocale())
+
         val errorResponse = ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message)
+        log.error("Unknown exception. Handling.", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }
 }

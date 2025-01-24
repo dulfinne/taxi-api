@@ -14,6 +14,7 @@ import com.dulfinne.taxi.passengerservice.repository.PassengerRatingRepository;
 import com.dulfinne.taxi.passengerservice.service.PassengerRatingService;
 import com.dulfinne.taxi.passengerservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PassengerRatingServiceImpl implements PassengerRatingService {
 
   private final PassengerRatingRepository passengerRatingRepository;
@@ -33,6 +35,7 @@ public class PassengerRatingServiceImpl implements PassengerRatingService {
   @Override
   public Page<PassengerRatingResponse> getPassengerRatings(
       String username, Integer offset, Integer limit, String sortField) {
+    log.info("Getting all passenger ratings. Started. Username = {}", username);
     checkSortFieldIsValid(sortField);
 
     Passenger passenger = getPassengerIfExistsByUsername(username);
@@ -46,6 +49,7 @@ public class PassengerRatingServiceImpl implements PassengerRatingService {
   @Transactional
   @Override
   public void savePassengerRating(Rating rating) {
+    log.info("Saving passenger rating to database. Started. Username = {}", rating.getUsername());
     Passenger passenger = getPassengerIfExistsByUsername(rating.getUsername());
 
     PassengerRating passengerRating = new PassengerRating();

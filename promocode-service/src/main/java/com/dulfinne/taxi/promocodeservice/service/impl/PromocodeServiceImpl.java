@@ -17,6 +17,7 @@ import com.dulfinne.taxi.promocodeservice.repository.PromocodeUsageRepository;
 import com.dulfinne.taxi.promocodeservice.service.PromocodeService;
 import com.dulfinne.taxi.promocodeservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,6 +29,7 @@ import java.math.RoundingMode;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PromocodeServiceImpl implements PromocodeService {
   private final PromocodeRepository promocodeRepository;
   private final PromocodeUsageRepository usageRepository;
@@ -38,6 +40,7 @@ public class PromocodeServiceImpl implements PromocodeService {
   @Override
   public PaginatedResponse<PromocodeResponse> getAllPromocodes(
       Integer offset, Integer limit, String sortField, String sortOrder) {
+    log.info("Getting all promocodes. Started. Sort field = {}", sortField);
 
     Sort.Direction direction = Sort.Direction.fromString(sortOrder);
     Page<Promocode> promocodes =
@@ -48,6 +51,7 @@ public class PromocodeServiceImpl implements PromocodeService {
   @Transactional(readOnly = true)
   @Override
   public PromocodeResponse getPromocodeByCode(String code) {
+    log.info("Getting promocode. Started. Code = {}", code);
     Promocode promocode = getPromocodeIfExists(code);
     return mapper.toResponse(promocode);
   }
@@ -55,6 +59,7 @@ public class PromocodeServiceImpl implements PromocodeService {
   @Transactional
   @Override
   public PromocodeResponse createPromocode(PromocodeRequest request) {
+    log.info("Creating promocode. Started. Promocode = {}", request.code());
     Promocode promocode = mapper.toEntity(request);
     checkCodeUniquiness(promocode.getCode());
 
@@ -65,6 +70,7 @@ public class PromocodeServiceImpl implements PromocodeService {
   @Transactional
   @Override
   public PromocodeResponse updatePromocode(String code, PromocodeRequest request) {
+    log.info("Updating promocode. Started. Promocode = {}", code);
     Promocode promocode = getPromocodeIfExists(code);
 
     checkPromocodeCanBeUpdated(promocode, request);
@@ -77,6 +83,7 @@ public class PromocodeServiceImpl implements PromocodeService {
   @Transactional(readOnly = true)
   @Override
   public DiscountResponse getDiscount(DiscountRequest request) {
+    log.info("Getting discount. Started. Code = {}", request.code());
     Promocode promocode = getPromocodeIfExists(request.code());
 
     checkPromocodeCanBeUsed(request.username(), promocode);
