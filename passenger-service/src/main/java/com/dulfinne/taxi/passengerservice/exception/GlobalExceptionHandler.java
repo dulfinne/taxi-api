@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
             ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND, message);
 
-    log.info("Entity not found. Handling. Message = {}", ex.getMessage());
+    log.info("Entity not found. Handling. Message = {}", message);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
   }
 
@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
             ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT, message);
 
-    log.info("Entity already exists. Handling. Message = {}", ex.getMessage());
+    log.info("Entity already exists. Handling. Message = {}", message);
     return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 

@@ -75,6 +75,43 @@ services:
     depends_on:
       - kafka
 
+  elasticsearch:
+    image: elasticsearch:7.17.22
+    hostname: elasticsearch
+    container_name: elasticsearch
+    environment:
+      - node.name=elasticsearch
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    expose:
+      - "9200"
+
+  kibana:
+    image: kibana:7.17.22
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    image: logstash:7.17.22
+    container_name: logstash
+    volumes:
+      - ./observability/logstash:/usr/share/logstash/pipeline:ro
+    expose:
+      - "5000"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    depends_on:
+      - elasticsearch
+
   postgres:
     image: postgis/postgis:latest
     container_name: postgres
@@ -233,4 +270,6 @@ volumes:
   keycloak_data:
     driver: local
   mongo_data:
+    driver: local
+  elasticsearch_data:
     driver: local
