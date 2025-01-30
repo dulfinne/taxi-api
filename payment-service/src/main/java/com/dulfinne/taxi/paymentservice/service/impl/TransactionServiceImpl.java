@@ -12,6 +12,7 @@ import com.dulfinne.taxi.paymentservice.repository.WalletRepository;
 import com.dulfinne.taxi.paymentservice.service.TransactionService;
 import com.dulfinne.taxi.paymentservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,6 +23,7 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionServiceImpl implements TransactionService {
   private final TransactionRepository repository;
   private final TransactionMapper mapper;
@@ -32,6 +34,7 @@ public class TransactionServiceImpl implements TransactionService {
   @Override
   public PaginatedResponse<TransactionResponse> getAllTransactions(
       Integer offset, Integer limit, String sort, String order) {
+    log.info("Getting all transactions. Started. Sort field = {}", sort);
     Sort.Direction direction = Sort.Direction.fromString(order);
 
     Page<Transaction> transactions =
@@ -43,6 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
   @Override
   public PaginatedResponse<TransactionResponse> getTransactionsByUsername(
       String username, Integer offset, Integer limit, String sort, String order) {
+    log.info("Getting all user's transactions. Started. Username = {}", username);
     Sort.Direction direction = Sort.Direction.fromString(order);
 
     Wallet wallet = getWalletIfExists(username);
@@ -55,6 +59,7 @@ public class TransactionServiceImpl implements TransactionService {
   @Transactional
   @Override
   public void createTransaction(Wallet wallet, BigDecimal amount, String description) {
+    log.info("Creating transaction. Started. Wallet = {}", wallet.getId());
     Transaction transaction = new Transaction();
     transaction.setWallet(wallet);
     transaction.setAmount(amount);

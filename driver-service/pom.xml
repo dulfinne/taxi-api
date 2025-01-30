@@ -28,6 +28,7 @@
         <swagger.version>2.1.0</swagger.version>
         <swagger-core.version>1.6.10</swagger-core.version>
         <swagger-core-v3.version>2.2.8</swagger-core-v3.version>
+        <logstash-logback.version>7.4</logstash-logback.version>
 
         <liquibase-maven-plugin>4.27.0</liquibase-maven-plugin>
         <jts-core.version>1.19.0</jts-core.version>
@@ -158,6 +159,12 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-spatial</artifactId>
             <version>${hibernate.spatial.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash-logback.version}</version>
         </dependency>
     </dependencies>
 

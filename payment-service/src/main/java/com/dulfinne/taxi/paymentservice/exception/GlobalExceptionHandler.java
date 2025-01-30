@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
+@Slf4j
 public class GlobalExceptionHandler {
 
   private final MessageSource exceptionMessageSource;
@@ -27,6 +29,8 @@ public class GlobalExceptionHandler {
         exceptionMessageSource.getMessage(
             ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT, message);
+
+    log.info("Conflict. Handling. Message: {}", message);
     return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 
@@ -36,6 +40,8 @@ public class GlobalExceptionHandler {
         exceptionMessageSource.getMessage(
             ex.getMessageKey(), ex.getParams(), LocaleContextHolder.getLocale());
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND, message);
+
+    log.info("Entity not found. Handling. Message: {}", message);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
   }
 
@@ -48,6 +54,8 @@ public class GlobalExceptionHandler {
       String errorMessage = fieldError.getDefaultMessage();
       errors.put(fieldName, errorMessage);
     }
+
+    log.warn("Validation exception. Handling. Fields =  {}", errors);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
 
@@ -61,6 +69,8 @@ public class GlobalExceptionHandler {
 
       errors.put(fieldName, errorMessage);
     }
+
+    log.warn("Pagination validation exception. Handling. Fields =  {}", errors);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
 
@@ -69,8 +79,9 @@ public class GlobalExceptionHandler {
     String message =
         exceptionMessageSource.getMessage(
             ExceptionKeys.UNKNOWN_ERROR, null, LocaleContextHolder.getLocale());
-
     ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, message);
+
+    log.error("Unknown exception. Handling.", ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
   }
 }

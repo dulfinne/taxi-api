@@ -15,6 +15,7 @@ import com.dulfinne.taxi.driverservice.repository.DriverRepository;
 import com.dulfinne.taxi.driverservice.service.DriverService;
 import com.dulfinne.taxi.driverservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DriverServiceImpl implements DriverService {
 
   private final DriverRepository driverRepository;
@@ -34,6 +36,7 @@ public class DriverServiceImpl implements DriverService {
   @Transactional(readOnly = true)
   @Override
   public Page<DriverResponse> getAllDrivers(Integer offset, Integer limit, String sortField) {
+    log.info("Getting all drivers. Started. Sort field = {}", sortField);
     Page<Driver> driversPage =
         driverRepository.findAll(
             PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField)));
@@ -44,6 +47,7 @@ public class DriverServiceImpl implements DriverService {
   @Transactional(readOnly = true)
   @Override
   public DriverResponse getDriverByUsername(String username) {
+    log.info("Getting driver by username. Started. Username = {}", username);
     Driver driver = getDriverIfExistByUsername(username);
 
     return driverMapper.toResponse(driver);
@@ -52,6 +56,7 @@ public class DriverServiceImpl implements DriverService {
   @Transactional
   @Override
   public DriverResponse saveDriver(String username, DriverRequest driverRequest) {
+    log.info("Saving driver. Started. Username = {}", username);
     checkUsernameUniqueness(username);
     checkPhoneNumberUniqueness(driverRequest.phoneNumber());
 
@@ -65,6 +70,7 @@ public class DriverServiceImpl implements DriverService {
   @Transactional
   @Override
   public DriverResponse updateDriver(String username, DriverRequest driverRequest) {
+    log.info("Updating driver. Started. Username = {}", username);
     Driver driver = getDriverIfExistByUsername(username);
     checkPhoneNumberUniqueness(driver.getPhoneNumber(), driverRequest.phoneNumber());
 
@@ -76,6 +82,7 @@ public class DriverServiceImpl implements DriverService {
   @Transactional
   @Override
   public void deleteDriver(String username) {
+    log.info("Deleting driver. Started. Username = {}", username);
     Driver driver = getDriverIfExistByUsername(username);
     driverRepository.delete(driver);
   }
@@ -83,6 +90,7 @@ public class DriverServiceImpl implements DriverService {
   @Transactional
   @Override
   public DriverResponse assignCarToDriver(String username, Long carId) {
+    log.info("Assigning car to user. Started. Username = {}. Car id = {}", username, carId);
     Driver driver = getDriverIfExistByUsername(username);
     Car car = getCarIfExist(carId);
     checkCarNotAssigned(carId);
@@ -96,6 +104,7 @@ public class DriverServiceImpl implements DriverService {
   @Transactional
   @Override
   public DriverResponse removeCarFromDriver(String username) {
+    log.info("Removing car from user. Started. Username = {}", username);
     Driver driver = getDriverIfExistByUsername(username);
     driver.setCar(null);
     driverRepository.save(driver);
@@ -105,6 +114,7 @@ public class DriverServiceImpl implements DriverService {
 
   @Override
   public PointResponse getDriverLocation(String username) {
+    log.info("Getting driver location. Started. Username = {}", username);
     Driver driver = getDriverIfExistByUsername(username);
     Point location = driver.getCurrentLocation();
     if (location == null) {
@@ -115,6 +125,7 @@ public class DriverServiceImpl implements DriverService {
 
   @Override
   public PointResponse updateDriverLocation(String username, PointRequest request) {
+    log.info("Updating driver location. Started. Username = {}", username);
     Driver driver = getDriverIfExistByUsername(username);
     Point location = pointMapper.toPoint(request);
 

@@ -13,6 +13,7 @@ import com.dulfinne.taxi.promocodeservice.repository.PromocodeUsageRepository;
 import com.dulfinne.taxi.promocodeservice.service.PromocodeUsageService;
 import com.dulfinne.taxi.promocodeservice.util.ExceptionKeys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,6 +24,7 @@ import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PromocodeUsageServiceImpl implements PromocodeUsageService {
 
   private final PromocodeUsageRepository usageRepository;
@@ -33,6 +35,7 @@ public class PromocodeUsageServiceImpl implements PromocodeUsageService {
   @Transactional(readOnly = true)
   @Override
   public PromocodeUsageResponse getPromocodeUsageById(String id) {
+    log.info("Getting promocode usage. Started. Id = {}", id);
     PromocodeUsage usage = getUsageIfExists(id);
     return mapper.toResponse(usage);
   }
@@ -41,6 +44,7 @@ public class PromocodeUsageServiceImpl implements PromocodeUsageService {
   @Override
   public PaginatedResponse<PromocodeUsageResponse> getAllPromocodeUsages(
       Integer offset, Integer limit, String sortField, String sortOrder) {
+    log.info("Getting all promocode usages. Started. Sort field = {}", sortField);
 
     Sort.Direction direction = Sort.Direction.fromString(sortOrder);
     Page<PromocodeUsage> usages =
@@ -52,6 +56,7 @@ public class PromocodeUsageServiceImpl implements PromocodeUsageService {
   @Override
   public PaginatedResponse<PromocodeUsageResponse> getPromocodeUsagesByUsername(
       String username, Integer offset, Integer limit, String sortField, String sortOrder) {
+    log.info("Getting all user's promocode usages. Started. Username = {}", username);
 
     Sort.Direction direction = Sort.Direction.fromString(sortOrder);
     Page<PromocodeUsage> usages =
@@ -63,6 +68,7 @@ public class PromocodeUsageServiceImpl implements PromocodeUsageService {
   @Transactional
   @Override
   public PromocodeUsageResponse createPromocodeUsage(PromocodeUsageRequest request) {
+    log.info("Creating promocode usage. Started. Code = {}", request.getCode());
     PromocodeUsage usage = mapper.toEntity(request);
     usage.setUsageDate(Instant.now());
     usage = usageRepository.save(usage);

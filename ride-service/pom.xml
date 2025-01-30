@@ -27,6 +27,8 @@
         <swagger.version>2.1.0</swagger.version>
         <swagger-core.version>1.6.10</swagger-core.version>
         <swagger-core-v3.version>2.2.8</swagger-core-v3.version>
+        <slf4j.version>2.0.7</slf4j.version>
+        <logstash-logback.version>7.4</logstash-logback.version>
     </properties>
 
     <repositories>
@@ -163,6 +165,18 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-core</artifactId>
             <version>${swagger-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash-logback.version}</version>
         </dependency>
     </dependencies>
 

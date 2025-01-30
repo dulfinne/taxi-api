@@ -10,6 +10,7 @@ import com.dulfinne.taxi.paymentservice.util.DescriptionConstants;
 import com.dulfinne.taxi.paymentservice.util.ExceptionKeys;
 import com.dulfinne.taxi.paymentservice.util.PaymentConstants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentServiceImpl implements PaymentService {
   private final WalletRepository walletRepository;
   private final TransactionService transactionService;
@@ -24,11 +26,14 @@ public class PaymentServiceImpl implements PaymentService {
   @Transactional
   @Override
   public void handleRidePayment(PaymentRequest request) {
+    log.info("Handling ride payment request. Started. Ride id = {}", request.getRideId());
     processPassengerPayment(request);
     processDriverEarnings(request);
   }
 
   private void processPassengerPayment(PaymentRequest request) {
+    log.info(
+        "Processing passenger payment. Started. Username = {}", request.getPassengerUsername());
     Wallet passengerWallet = getWalletIfExists(request.getPassengerUsername());
     BigDecimal currentBalance = passengerWallet.getBalance();
     BigDecimal paymentAmount = new BigDecimal(request.getPrice());
@@ -50,6 +55,7 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   private void processDriverEarnings(PaymentRequest request) {
+    log.info("Processing driver payout. Started. Username = {}", request.getDriverUsername());
     Wallet driverWallet = getWalletIfExists(request.getDriverUsername());
     BigDecimal price = new BigDecimal(request.getPrice());
     BigDecimal earnings = price.multiply(PaymentConstants.DRIVER_PAYOUT_RATE);

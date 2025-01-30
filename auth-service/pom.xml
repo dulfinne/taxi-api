@@ -23,7 +23,10 @@
         <mapstruct-processor.version>1.6.0.Beta1</mapstruct-processor.version>
         <swagger.version>2.1.0</swagger.version>
         <swagger-core.version>1.6.10</swagger-core.version>
-        <swagger-core-v3.version>2.2.8</swagger-core-v3.version>    </properties>
+        <swagger-core-v3.version>2.2.8</swagger-core-v3.version>
+        <logstash-logback.version>7.4</logstash-logback.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -91,6 +94,12 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-core</artifactId>
             <version>${swagger-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash-logback.version}</version>
         </dependency>
     </dependencies>
 

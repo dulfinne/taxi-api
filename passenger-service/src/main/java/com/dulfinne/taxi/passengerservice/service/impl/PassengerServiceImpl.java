@@ -13,6 +13,7 @@ import com.dulfinne.taxi.passengerservice.service.PassengerService;
 import com.dulfinne.taxi.passengerservice.util.ExceptionKeys;
 import com.dulfinne.taxi.passengerservice.util.PassengerConstants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PassengerServiceImpl implements PassengerService {
 
   private final PassengerRepository passengerRepository;
@@ -30,6 +32,7 @@ public class PassengerServiceImpl implements PassengerService {
   @Transactional(readOnly = true)
   @Override
   public Page<PassengerResponse> getAllPassengers(Integer offset, Integer limit, String sortField) {
+    log.info("Getting all passengers. Started. Sort field = {}", sortField);
     checkSortFieldIsValid(sortField);
 
     Page<Passenger> passengersPage =
@@ -42,6 +45,7 @@ public class PassengerServiceImpl implements PassengerService {
   @Transactional(readOnly = true)
   @Override
   public PassengerResponse getPassengerByUsername(String username) {
+    log.info("Getting passenger by username. Started. Username = {}", username);
     Passenger passenger = getPassengerIfExistsByUsername(username);
     return INFO_MAPPER_INSTANCE.toResponse(passenger);
   }
@@ -49,6 +53,7 @@ public class PassengerServiceImpl implements PassengerService {
   @Transactional
   @Override
   public PassengerResponse savePassenger(String username, PassengerRequest request) {
+    log.info("Saving passenger. Started. Username = {}", username);
     checkUsernameUniqueness(username);
     checkPhoneNumberUniqueness(request.phoneNumber());
 
@@ -63,6 +68,7 @@ public class PassengerServiceImpl implements PassengerService {
   @Transactional
   @Override
   public PassengerResponse updatePassenger(String username, PassengerRequest request) {
+    log.info("Updating passenger. Started. Username = {}", username);
     Passenger passenger = getPassengerIfExistsByUsername(username);
     checkPhoneNumberUniqueness(passenger.getPhoneNumber(), request.phoneNumber());
 
@@ -74,6 +80,7 @@ public class PassengerServiceImpl implements PassengerService {
   @Transactional
   @Override
   public void deletePassenger(String username) {
+    log.info("Deleting passenger. Started. Username = {}", username);
     Passenger passenger = getPassengerIfExistsByUsername(username);
     passengerRepository.delete(passenger);
   }

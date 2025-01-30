@@ -8,6 +8,7 @@ import com.dulfinne.taxi.rideservice.dto.response.AvailableRideResponse
 import com.dulfinne.taxi.rideservice.dto.response.RideResponse
 import com.dulfinne.taxi.rideservice.exception.ActionNotAllowedException
 import com.dulfinne.taxi.rideservice.exception.EntityNotFoundException
+import com.dulfinne.taxi.rideservice.exception.GlobalExceptionHandler
 import com.dulfinne.taxi.rideservice.kafka.service.KafkaProducerService
 import com.dulfinne.taxi.rideservice.mapper.RideMapper
 import com.dulfinne.taxi.rideservice.model.Payment
@@ -17,6 +18,8 @@ import com.dulfinne.taxi.rideservice.repository.RideRepository
 import com.dulfinne.taxi.rideservice.service.DriverService
 import com.dulfinne.taxi.rideservice.util.ExceptionKeys
 import com.dulfinne.taxi.rideservice.util.RideConstants
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -34,9 +37,11 @@ class DriverServiceImpl(
     val kafkaService: KafkaProducerService,
     val clientService: ClientService
 ) : DriverService {
+    private val log: Logger = LoggerFactory.getLogger(DriverServiceImpl::class.java)
 
     @Transactional(readOnly = true)
     override fun getAvailableRides(username: String, radius: Int): List<AvailableRideResponse> {
+        log.info("Getting available rides. Started. Driver username = $username")
         val point = mapper.toPoint(clientService.getDriverLocation(username))
         val list = repository.findByStatusAndRadius(RideStatus.SEARCHING.id, point, radius)
         return list.map(mapper::toAvailableRideResponse)
@@ -44,6 +49,7 @@ class DriverServiceImpl(
 
     @Transactional
     override fun acceptRide(rideId: Long, driverUsername: String): RideResponse {
+        log.info("Accepting ride. Started. Ride id = $rideId.")
         val driver = clientService.getDriverByUsername(driverUsername)
         if (driver.car == null) {
             throw ActionNotAllowedException(ExceptionKeys.START_NOT_ALLOWED_CAR)
@@ -64,6 +70,7 @@ class DriverServiceImpl(
 
     @Transactional
     override fun startRide(rideId: Long, driverUsername: String): RideResponse {
+        log.info("Starting ride. Started. Ride id = $rideId.")
         val ride = getRideIfExists(rideId)
         validateDriver(ride, driverUsername)
 
@@ -81,6 +88,7 @@ class DriverServiceImpl(
 
     @Transactional
     override fun finishRide(rideId: Long, driverUsername: String): RideResponse {
+        log.info("Finishing ride. Started. Ride id = $rideId.")
         val ride = getRideIfExists(rideId)
         validateDriver(ride, driverUsername)
 
@@ -100,6 +108,7 @@ class DriverServiceImpl(
 
     @Transactional
     override fun ratePassenger(rideId: Long, driverUsername: String, request: RatingRequest) {
+        log.info("Rating passenger. Started. Ride id = $rideId")
         val ride = getValidatedRideToRate(rideId, driverUsername)
 
         val rating = Rating.newBuilder().apply {
@@ -121,6 +130,7 @@ class DriverServiceImpl(
         limit: Int,
         sortField: String
     ): Page<RideResponse> {
+        log.info("Getting all driver rides. Started. Driver username = $driverUsername")
         val ridesPage = repository.findAllByDriverUsername(
             driverUsername,
             PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField))
@@ -130,6 +140,7 @@ class DriverServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getRideById(driverUsername: String, rideId: Long): RideResponse {
+        log.info("Getting ride. Started. Ride id = $rideId")
         val ride = getRideIfExists(rideId)
         validateDriver(ride, driverUsername)
         return mapper.toRideResponse(ride)

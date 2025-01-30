@@ -17,6 +17,7 @@ import com.dulfinne.taxi.paymentservice.util.DescriptionConstants;
 import com.dulfinne.taxi.paymentservice.util.ExceptionKeys;
 import com.dulfinne.taxi.paymentservice.util.PaymentConstants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,6 +28,7 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WalletServiceImpl implements WalletService {
   private final WalletRepository repository;
   private final TransactionService transactionService;
@@ -37,6 +39,7 @@ public class WalletServiceImpl implements WalletService {
   @Override
   public PaginatedResponse<WalletResponse> getAllWallets(
       Integer offset, Integer limit, String sort, String order) {
+    log.info("Getting all wallets. Started. Sort field = {}", sort);
     Sort.Direction direction = Sort.Direction.fromString(order);
 
     Page<Wallet> wallets =
@@ -47,6 +50,7 @@ public class WalletServiceImpl implements WalletService {
   @Transactional(readOnly = true)
   @Override
   public WalletResponse getWalletByUsername(String username) {
+    log.info("Getting wallet. Started. Username = {}", username);
     Wallet wallet = getWalletIfExists(username);
     return mapper.toResponse(wallet);
   }
@@ -54,6 +58,7 @@ public class WalletServiceImpl implements WalletService {
   @Transactional
   @Override
   public WalletResponse createWallet(String username) {
+    log.info("Creating wallet. Started. Username = {}", username);
     checkUsernameUniqueness(username);
 
     Wallet wallet = new Wallet();
@@ -66,6 +71,7 @@ public class WalletServiceImpl implements WalletService {
   @Transactional
   @Override
   public WalletResponse creditMoney(String username, MoneyRequest request) {
+    log.info("Crediting money. Started. Username = {}", username);
     BigDecimal requestedAmount = request.amount();
     checkAmountLimits(request.amount());
 
@@ -83,6 +89,7 @@ public class WalletServiceImpl implements WalletService {
   @Transactional
   @Override
   public WalletResponse debitMoney(String username, MoneyRequest request) {
+    log.info("Debiting money. Started. Username = {}", username);
     BigDecimal requestedAmount = request.amount();
     checkAmountLimits(requestedAmount);
 
@@ -102,6 +109,7 @@ public class WalletServiceImpl implements WalletService {
   @Transactional
   @Override
   public WalletResponse repayDebt(String username) {
+    log.info("Repaying debt. Started. Username = {}", username);
     Wallet wallet = getWalletIfExists(username);
     checkCanRepayDebt(wallet);
 
@@ -112,13 +120,15 @@ public class WalletServiceImpl implements WalletService {
     wallet.setDebt(BigDecimal.ZERO);
 
     repository.save(wallet);
-    transactionService.createTransaction(wallet, debt.negate(), DescriptionConstants.DEBT_REPAYMENT);
+    transactionService.createTransaction(
+        wallet, debt.negate(), DescriptionConstants.DEBT_REPAYMENT);
     return mapper.toResponse(wallet);
   }
 
   @Transactional(readOnly = true)
   @Override
   public CanPayByCardResponse canPayWithCard(String username) {
+    log.info("Checking card payment availability. Started. Username = {}", username);
     Wallet wallet = getWalletIfExists(username);
     boolean canPayByCard = wallet.getDebt().compareTo(BigDecimal.ZERO) == 0;
     return new CanPayByCardResponse(canPayByCard);

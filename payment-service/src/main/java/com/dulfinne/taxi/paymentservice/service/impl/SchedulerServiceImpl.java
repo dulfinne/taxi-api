@@ -6,6 +6,7 @@ import com.dulfinne.taxi.paymentservice.service.SchedulerService;
 import com.dulfinne.taxi.paymentservice.service.TransactionService;
 import com.dulfinne.taxi.paymentservice.util.DescriptionConstants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class SchedulerServiceImpl implements SchedulerService {
 
     private final WalletRepository repository;
@@ -29,6 +31,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             lockAtLeastFor = "PT5M", lockAtMostFor = "PT10M"
     )
     public void scheduleDebtRepayment() {
+        log.info("Processing scheduled debt repayment. Started.");
         List<Wallet> wallets = repository.findAllByDebtGreaterThan(BigDecimal.ZERO);
 
         for (Wallet wallet : wallets) {
@@ -37,6 +40,7 @@ public class SchedulerServiceImpl implements SchedulerService {
     }
 
     private void repayDebt(Wallet wallet) {
+        log.info("Repaying debt. Started. Wallet id = {}", wallet.getId());
         BigDecimal debt = wallet.getDebt();
         BigDecimal currentBalance = wallet.getBalance();
 
@@ -47,6 +51,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
             repository.save(wallet);
             transactionService.createTransaction(wallet, debt.negate(), DescriptionConstants.DEBT_REPAYMENT);
+            log.info("Repaying debt. Finished. Wallet id = {}", wallet.getId());
         }
     }
 }

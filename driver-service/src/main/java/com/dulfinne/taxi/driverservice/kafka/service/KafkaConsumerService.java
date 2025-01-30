@@ -4,11 +4,13 @@ import com.dulfinne.taxi.avro.Rating;
 import com.dulfinne.taxi.driverservice.service.DriverRatingService;
 import com.dulfinne.taxi.driverservice.kafka.config.KafkaProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class KafkaConsumerService {
 
   private final DriverRatingService ratingService;
@@ -19,6 +21,7 @@ public class KafkaConsumerService {
       groupId = "#{kafkaProperties.driverRatingGroup}",
       containerFactory = "kafkaListenerContainerFactory")
   public void listen(Rating rating) {
+    log.info("Driver rating received. Handling. Username = {}", rating.getUsername());
     ratingService.saveDriverRating(rating);
   }
 }
