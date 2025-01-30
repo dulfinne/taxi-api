@@ -30,6 +30,12 @@ public class SecurityConfig {
             exchange ->
                 exchange
                     .pathMatchers(
+                        "/webjars/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**"
+                    ).permitAll()
+
+                    .pathMatchers(
                         "/api/v1/passengers/docs/**",
                         "/api/v1/drivers/docs/**",
                         "/api/v1/rides/docs/**",
@@ -37,6 +43,8 @@ public class SecurityConfig {
                         "/api/v1/payments/docs/**",
                         "/api/v1/auth/docs/**")
                     .permitAll()
+
+                    .pathMatchers("/fallback/**").permitAll()
 
                     .pathMatchers("/api/v1/auth/admin/**")
                     .hasRole("ADMIN")
