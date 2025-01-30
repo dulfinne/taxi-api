@@ -76,7 +76,7 @@ class GlobalExceptionHandler(
         )
         val errorResponse = ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, message)
         log.info("Service not available. Handling. Message: $message")
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse)
     }
 
     @ExceptionHandler(Exception::class)
