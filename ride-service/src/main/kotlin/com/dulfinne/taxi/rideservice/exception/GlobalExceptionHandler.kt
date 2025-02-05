@@ -69,6 +69,16 @@ class GlobalExceptionHandler(
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse)
     }
 
+    @ExceptionHandler(ServiceNotAvailableException::class)
+    fun handleServiceNotAvailableException(ex: ServiceNotAvailableException): ResponseEntity<ErrorResponse> {
+        val message = exceptionMessageSource.getMessage(
+            ex.messageKey, null, LocaleContextHolder.getLocale()
+        )
+        val errorResponse = ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, message)
+        log.info("Service not available. Handling. Message: $message")
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse)
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleGlobalException(ex: Exception): ResponseEntity<ErrorResponse> {
         val message =
