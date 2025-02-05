@@ -112,6 +112,12 @@ services:
     depends_on:
       - elasticsearch
 
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+
   postgres:
     image: postgis/postgis:latest
     container_name: postgres
