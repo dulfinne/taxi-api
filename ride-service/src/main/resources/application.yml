@@ -59,6 +59,18 @@ client:
     name: promocode-service
     path: api/v1/promocodes
 
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+        minimum-number-of-calls: 5
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+
 springdoc:
   api-docs:
     path: /api/v1/rides/docs/v3/api-docs
