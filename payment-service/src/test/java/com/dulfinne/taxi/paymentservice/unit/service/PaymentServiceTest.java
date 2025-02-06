@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +27,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class PaymentServiceTest {
+class PaymentServiceTest {
 
   @InjectMocks private PaymentServiceImpl paymentService;
 
@@ -60,9 +61,9 @@ public class PaymentServiceTest {
     paymentService.handleRidePayment(request);
 
     // Assert
-    assertEquals(passengerWallet.getBalance(), expectedPassengerBalance);
-    assertEquals(driverWallet.getBalance(), expectedDriverBalance);
-    assertEquals(passengerWallet.getDebt(), expectedDebt);
+    assertThat(driverWallet.getBalance()).isEqualByComparingTo(expectedDriverBalance);
+    assertEquals(expectedPassengerBalance, passengerWallet.getBalance());
+    assertEquals(expectedDebt, passengerWallet.getDebt());
     verify(walletRepository, times(2)).findByUsername(any(String.class));
     verify(walletRepository, times(2)).save(any(Wallet.class));
     verify(transactionService, times(2))
@@ -96,9 +97,9 @@ public class PaymentServiceTest {
     paymentService.handleRidePayment(request);
 
     // Assert
-    assertEquals(passengerWallet.getBalance(), expectedPassengerBalance);
-    assertEquals(driverWallet.getBalance(), expectedDriverBalance);
-    assertEquals(passengerWallet.getDebt(), expectedDebt);
+    assertThat(driverWallet.getBalance()).isEqualByComparingTo(expectedDriverBalance);
+    assertEquals(expectedPassengerBalance, passengerWallet.getBalance());
+    assertEquals(expectedDebt, passengerWallet.getDebt());
     verify(walletRepository, times(2)).findByUsername(any(String.class));
     verify(walletRepository, times(2)).save(any(Wallet.class));
     verify(transactionService, times(2))
