@@ -14,6 +14,10 @@ object ExceptionKeys {
     const val VIEW_DRIVER_TIME_IS_OVER = "view-driver-time-is-over"
     const val PROFILE_NOT_FOUND = "profile-not-found"
     const val CARD_PAYMENT_NOT_AVAILABLE = "card-payment-not-available"
+    const val PASSENGER_SERVICE_NOT_AVAILABLE = "passenger-service-not-available"
+    const val DRIVER_SERVICE_NOT_AVAILABLE = "driver-service-not-available"
+    const val PAYMENT_SERVICE_NOT_AVAILABLE = "payment-service-not-available"
+    const val PROMOCODE_SERVICE_NOT_AVAILABLE = "promocode-service-not-available"
 
     const val UNKNOWN_ERROR = "unknown-error"
 }

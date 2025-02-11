@@ -12,36 +12,107 @@ spring:
           uri: lb://passenger-service
           predicates:
             - Path=/api/v1/passengers/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: passenger-cb
+                fallbackUri: forward:/fallback/passenger
         - id: driver-service-route
           uri: lb://driver-service
           predicates:
-            - Path=/api/v1/drivers/**
-        - id: driver-service-cars-route
-          uri: lb://driver-service
-          predicates:
-            - Path=/api/v1/cars/**
+            - Path=/api/v1/drivers/**, /api/v1/cars/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: driver-cb
+                fallbackUri: forward:/fallback/driver
         - id: ride-service-route
           uri: lb://ride-service
           predicates:
             - Path=/api/v1/rides/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ride-cb
+                fallbackUri: forward:/fallback/ride
         - id: auth-service-route
           uri: lb://auth-service
           predicates:
             - Path=/api/v1/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: auth-cb
+                fallbackUri: forward:/fallback/auth
         - id: payment-service-route
           uri: lb://payment-service
           predicates:
             - Path=/api/v1/payments/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: payment-cb
+                fallbackUri: forward:/fallback/payment
         - id: promocode-service-route
           uri: lb://promocode-service
           predicates:
             - Path=/api/v1/promocodes/**
-
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: promocode-cb
+                fallbackUri: forward:/fallback/promocode
   security:
     oauth2:
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:8080/realms/taxi/protocol/openid-connect/certs
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://zipkin:9411/api/v2/spans
+      
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - name: gateway-service
+        url: /v3/api-docs
+      - name: passenger-service
+        url: /api/v1/passengers/docs/v3/api-docs
+      - name: driver-service
+        url: /api/v1/drivers/docs/v3/api-docs
+      - name: ride-service
+        url: /api/v1/rides/docs/v3/api-docs
+      - name: auth-service
+        url: /api/v1/auth/docs/v3/api-docs
+      - name: promocode-service
+        url: /api/v1/promocodes/docs/v3/api-docs
+      - name: payment-service
+        url: /api/v1/payments/docs/v3/api-docs
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        register-health-indicator: true
+        minimum-number-of-calls: 5
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
 
 eureka:
   client:
