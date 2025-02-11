@@ -4,7 +4,6 @@ import com.dulfinne.taxi.avro.PaymentRequest
 import com.dulfinne.taxi.avro.PromocodeUsageRequest
 import com.dulfinne.taxi.avro.Rating
 import com.dulfinne.taxi.rideservice.kafka.config.KafkaProperties
-import com.dulfinne.taxi.rideservice.service.impl.DriverServiceImpl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate

@@ -6,12 +6,15 @@ import com.dulfinne.taxi.passengerservice.model.Passenger;
 import com.dulfinne.taxi.passengerservice.model.Payment;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.experimental.UtilityClass;
 
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PassengerTestData {
+
+  public static final String NON_EXISTING_PASSENGER_USERNAME = "notfound123";
+  public static final String ADMIN_USERNAME = "admin";
+  public static final String EXISTING_PHONE_NUMBER = "375443333333";
 
   public static final String FIRST_USERNAME = "anna123";
   public static final Long FIRST_ID = 1L;
@@ -24,7 +27,7 @@ public final class PassengerTestData {
   public static final Integer FIRST_NUMBER_OF_RATINGS = 5;
   public static final Double FIRST_AVERAGE_RATING = FIRST_SUM_OF_RATINGS / FIRST_NUMBER_OF_RATINGS;
 
-  public static final Long SECOND_ID = 2L;
+  public static final Long SECOND_ID = 3L;
   public static final String SECOND_USERNAME = "zhanna123";
   public static final String SECOND_FIRSTNAME = "zhanna";
   public static final String SECOND_LASTNAME = "dictorova";
@@ -45,6 +48,14 @@ public final class PassengerTestData {
         .lastName(FIRST_LASTNAME)
         .phoneNumber(FIRST_PHONE_NUMBER)
         .payment(FIRST_PAYMENT);
+  }
+
+  public static PassengerRequest.PassengerRequestBuilder getSecondCreateRequest() {
+    return PassengerRequest.builder()
+            .firstName(SECOND_FIRSTNAME)
+            .lastName(SECOND_LASTNAME)
+            .phoneNumber(SECOND_PHONE_NUMBER)
+            .payment(SECOND_PAYMENT);
   }
 
   public static PassengerRequest.PassengerRequestBuilder getUpdateFirstRequest() {
@@ -124,6 +135,18 @@ public final class PassengerTestData {
         .payment(SECOND_PAYMENT)
         .rideCount(SECOND_RIDE_COUNT)
         .averageRating(SECOND_AVERAGE_RATING);
+  }
+
+  public static PassengerResponse.PassengerResponseBuilder getSecondCreatedResponse() {
+    return PassengerResponse.builder()
+            .id(SECOND_ID)
+            .username(SECOND_USERNAME)
+            .firstName(SECOND_FIRSTNAME)
+            .lastName(SECOND_LASTNAME)
+            .phoneNumber(SECOND_PHONE_NUMBER)
+            .payment(SECOND_PAYMENT)
+            .rideCount(PassengerConstants.START_RIDE_COUNT)
+            .averageRating(START_AVERAGE_RATING);
   }
 
   public static PassengerResponse.PassengerResponseBuilder getUpdatedFirstResponse() {
