@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class WalletServiceTest {
+class WalletServiceTest {
 
   @InjectMocks private WalletServiceImpl walletService;
 

@@ -113,7 +113,7 @@ class DriverServiceTest {
     DriverResponse response =
         DriverTestData.getResponse().averageRating(DriverTestData.START_AVERAGE_RATING).build();
     String username = DriverTestData.USERNAME;
-    DriverRequest request = DriverTestData.getCreateRequest().build();
+    DriverRequest request = DriverTestData.getCreateFirstRequest().build();
 
     // Arrange
     when(driverRepository.findByUsername(any(String.class))).thenReturn(Optional.empty());
@@ -144,7 +144,7 @@ class DriverServiceTest {
             .numberOfRatings(DriverTestData.START_NUMBER_OF_RATINGS)
             .build();
     String username = DriverTestData.USERNAME;
-    DriverRequest request = DriverTestData.getCreateRequest().build();
+    DriverRequest request = DriverTestData.getCreateFirstRequest().build();
 
     // Arrange
     when(driverRepository.findByUsername(any(String.class))).thenReturn(Optional.of(driver));
@@ -162,7 +162,7 @@ class DriverServiceTest {
             .numberOfRatings(DriverTestData.START_NUMBER_OF_RATINGS)
             .build();
     String username = DriverTestData.USERNAME;
-    DriverRequest request = DriverTestData.getCreateRequest().build();
+    DriverRequest request = DriverTestData.getCreateFirstRequest().build();
 
     // Arrange
     when(driverRepository.findByPhoneNumber(any(String.class))).thenReturn(Optional.of(driver));
@@ -176,7 +176,7 @@ class DriverServiceTest {
   void updateDriver_whenUpdateToSameFields_thenReturnDriverResponse() {
     String username = DriverTestData.USERNAME;
     Driver driver = DriverTestData.getDriver().build();
-    DriverRequest request = DriverTestData.getCreateRequest().build();
+    DriverRequest request = DriverTestData.getCreateFirstRequest().build();
     DriverResponse response = DriverTestData.getResponse().build();
 
     // Arrange

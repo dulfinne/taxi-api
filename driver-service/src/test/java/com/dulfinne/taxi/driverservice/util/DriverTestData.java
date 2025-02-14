@@ -5,16 +5,22 @@ import com.dulfinne.taxi.driverservice.dto.response.DriverResponse;
 import com.dulfinne.taxi.driverservice.model.Driver;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.experimental.UtilityClass;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DriverTestData {
+
+  public static final String NON_EXISTING_USERNAME = "notfound123";
+  public static final String ADMIN_USERNAME = "admin";
+  public static final String SECOND_USERNAME = "zhanna123";
+  public static final Long SECOND_ID = 3L;
+  public static final String EXISTING_PHONE_NUMBER = "375443333333";
+
 
   public static final Long ID = 1L;
   public static final String USERNAME = "anna123";
   public static final String FIRST_NAME = "anna";
   public static final String LAST_NAME = "victorova";
-  public static final String PHONE_NUMBER = "+375441111111";
+  public static final String PHONE_NUMBER = "375441111111";
   public static final Integer EXPERIENCE = 4;
   public static final Double SUM_OF_RATINGS = 25.0;
   public static final Integer NUMBER_OF_RATINGS = 5;
@@ -22,7 +28,7 @@ public final class DriverTestData {
 
   public static final String UPDATED_FIRST_NAME = "zhanna";
   public static final String UPDATED_LAST_NAME = "dictorova";
-  public static final String UPDATED_PHONE_NUMBER = "+375442222222";
+  public static final String UPDATED_PHONE_NUMBER = "375442222222";
   public static final Integer UPDATED_EXPERIENCE = 7;
 
   public static final Double START_SUM_OF_RATINGS = 5.0;
@@ -52,12 +58,20 @@ public final class DriverTestData {
         .averageRating(AVERAGE_RATING);
   }
 
-  public static DriverRequest.DriverRequestBuilder getCreateRequest() {
+  public static DriverRequest.DriverRequestBuilder getCreateFirstRequest() {
     return DriverRequest.builder()
         .firstName(FIRST_NAME)
         .lastName(LAST_NAME)
         .experience(EXPERIENCE)
         .phoneNumber(PHONE_NUMBER);
+  }
+
+  public static DriverRequest.DriverRequestBuilder getCreateSecondRequest() {
+    return DriverRequest.builder()
+            .firstName(UPDATED_FIRST_NAME)
+            .lastName(UPDATED_LAST_NAME)
+            .experience(UPDATED_EXPERIENCE)
+            .phoneNumber(UPDATED_PHONE_NUMBER);
   }
 
   public static DriverRequest.DriverRequestBuilder getUpdateRequest() {
@@ -77,5 +91,16 @@ public final class DriverTestData {
         .phoneNumber(UPDATED_PHONE_NUMBER)
         .experience(UPDATED_EXPERIENCE.toString())
         .averageRating(START_AVERAGE_RATING);
+  }
+
+  public static DriverResponse.DriverResponseBuilder getCreatedSecondResponse() {
+    return DriverResponse.builder()
+            .id(SECOND_ID)
+            .username(SECOND_USERNAME)
+            .firstName(UPDATED_FIRST_NAME)
+            .lastName(UPDATED_LAST_NAME)
+            .phoneNumber(UPDATED_PHONE_NUMBER)
+            .experience(UPDATED_EXPERIENCE.toString())
+            .averageRating(START_AVERAGE_RATING);
   }
 }
