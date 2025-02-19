@@ -2,6 +2,8 @@ package com.dulfinne.taxi.authservice.config;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,10 +14,13 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 @Configuration
 public class LocalizationConfig {
 
+  @Value("${DEFAULT_LOCALE}")
+  private String defaultLocale;
+
   @Bean
   public LocaleResolver localeResolver() {
     AcceptHeaderLocaleResolver resolver = new AcceptHeaderLocaleResolver();
-    resolver.setDefaultLocale(Locale.ENGLISH);
+    resolver.setDefaultLocale(Locale.forLanguageTag(defaultLocale));
     return resolver;
   }
 
