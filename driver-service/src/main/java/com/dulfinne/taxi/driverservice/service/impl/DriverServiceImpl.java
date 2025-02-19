@@ -38,7 +38,7 @@ public class DriverServiceImpl implements DriverService {
   public Page<DriverResponse> getAllDrivers(Integer offset, Integer limit, String sortField) {
     log.info("Getting all drivers. Started. Sort field = {}", sortField);
     Page<Driver> driversPage =
-        driverRepository.findAll(
+        driverRepository.findAllWithCars(
             PageRequest.of(offset, limit, Sort.by(Sort.Direction.ASC, sortField)));
 
     return driversPage.map(driverMapper::toResponse);
