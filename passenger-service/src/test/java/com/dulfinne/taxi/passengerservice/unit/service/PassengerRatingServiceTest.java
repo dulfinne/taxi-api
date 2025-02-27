@@ -1,11 +1,12 @@
 package com.dulfinne.taxi.passengerservice.unit.service;
 
+import com.dulfinne.jooq.generated.public_.tables.records.PassengerRatingRecord;
+import com.dulfinne.jooq.generated.public_.tables.records.PassengerRecord;
 import com.dulfinne.taxi.avro.Rating;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
 import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
 import com.dulfinne.taxi.passengerservice.exception.IllegalSortFieldException;
-import com.dulfinne.taxi.passengerservice.model.Passenger;
-import com.dulfinne.taxi.passengerservice.model.PassengerRating;
+import com.dulfinne.taxi.passengerservice.mapper.PassengerRatingMapper;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRatingRepository;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRepository;
 import com.dulfinne.taxi.passengerservice.service.impl.PassengerRatingServiceImpl;
@@ -14,13 +15,13 @@ import com.dulfinne.taxi.passengerservice.util.PassengerTestData;
 import com.dulfinne.taxi.passengerservice.util.RatingTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,22 +41,26 @@ class PassengerRatingServiceTest {
   private PassengerRatingRepository ratingRepository;
   @Mock
   private PassengerRepository passengerRepository;
+  @Spy
+  private PassengerRatingMapper passengerRatingMapper =
+      Mappers.getMapper(PassengerRatingMapper.class);
 
   @Test
   void getPassengerRatings_whenValidParams_thenReturnRatingsPage() {
     String username = PassengerTestData.FIRST_USERNAME;
-    Passenger passenger = PassengerTestData.getFirst().build();
+    PassengerRecord passenger = PassengerTestData.getFirst();
 
-    Page<PassengerRating> ratingsPage = new PageImpl<>(RatingTestData.getRatingList());
+    List<PassengerRatingRecord> ratings = RatingTestData.getRatingList();
     List<PassengerRatingResponse> expectedContent = RatingTestData.getResponseList();
 
     // Arrange
     when(passengerRepository.findByUsername(any(String.class))).thenReturn(Optional.of(passenger));
-    when(ratingRepository.findByPassengerId(any(Long.class), any(Pageable.class)))
-        .thenReturn(ratingsPage);
+    when(ratingRepository.findByPassengerId(
+            any(Long.class), any(Integer.class), any(Integer.class), any(String.class)))
+        .thenReturn(ratings);
 
     // Act
-    Page<PassengerRatingResponse> actualPage =
+    List<PassengerRatingResponse> actual =
         ratingService.getPassengerRatings(
             username,
             PaginationTestData.DEFAULT_OFFSET,
@@ -63,13 +68,12 @@ class PassengerRatingServiceTest {
             PaginationTestData.RATING_SORT_FIELD);
 
     // Assert
-    assertEquals(ratingsPage.getTotalElements(), actualPage.getTotalElements());
-    assertEquals(ratingsPage.getNumber(), actualPage.getNumber());
-    assertEquals(ratingsPage.getSize(), actualPage.getSize());
-    assertEquals(expectedContent, actualPage.getContent());
+    assertEquals(expectedContent, actual);
 
     verify(passengerRepository).findByUsername(any(String.class));
-    verify(ratingRepository).findByPassengerId(any(Long.class), any(Pageable.class));
+    verify(ratingRepository)
+        .findByPassengerId(
+            any(Long.class), any(Integer.class), any(Integer.class), any(String.class));
   }
 
   @Test
@@ -107,9 +111,10 @@ class PassengerRatingServiceTest {
 
   @Test
   void savePassengerRating_whenValidParams_thenSavePassengerRating() {
-    Passenger passenger = PassengerTestData.getFirst().build();
+    PassengerRecord passenger = PassengerTestData.getFirst();
     Rating ratingFromKafka = RatingTestData.getKafkaRating().build();
-    Double expectedSum = passenger.getSumOfRatings() + ratingFromKafka.getRating();
+    BigDecimal expectedSum =
+        passenger.getSumOfRatings().add(BigDecimal.valueOf(ratingFromKafka.getRating()));
     Integer expectedRatingCount = passenger.getNumberOfRatings() + 1;
 
     // Arrange
@@ -123,7 +128,7 @@ class PassengerRatingServiceTest {
     assertEquals(expectedRatingCount, passenger.getNumberOfRatings());
 
     verify(passengerRepository).findByUsername(any(String.class));
-    verify(ratingRepository).save(any(PassengerRating.class));
+    verify(ratingRepository).save(any(PassengerRatingRecord.class));
   }
 
   @Test

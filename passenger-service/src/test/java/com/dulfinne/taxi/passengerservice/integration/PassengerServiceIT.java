@@ -4,9 +4,9 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
+import com.dulfinne.jooq.generated.public_.tables.records.PassengerRecord;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
-import com.dulfinne.taxi.passengerservice.model.Passenger;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRepository;
 import com.dulfinne.taxi.passengerservice.util.HeaderConstants;
 import com.dulfinne.taxi.passengerservice.util.PassengerTestData;
@@ -225,7 +225,7 @@ class PassengerServiceIT extends IntegrationTestBase {
           .then()
           .statusCode(HttpStatus.NO_CONTENT.value());
 
-      Optional<Passenger> passenger =
+      Optional<PassengerRecord> passenger =
           passengerRepository.findByUsername(PassengerTestData.FIRST_USERNAME);
       assertThat(passenger).isEmpty();
     }

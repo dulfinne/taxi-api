@@ -9,11 +9,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @Tag(name = "Rating Controller", description = "Interactions with passenger ratings")
 public interface PassengerRatingApi {
@@ -34,7 +35,7 @@ public interface PassengerRatingApi {
             content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       })
   @GetMapping("/{username}/ratings")
-  ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatingsByUsername(
+  ResponseEntity<List<PassengerRatingResponse>> getAllPassengerRatingsByUsername(
       @PathVariable String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
@@ -56,7 +57,7 @@ public interface PassengerRatingApi {
             content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       })
   @GetMapping("/ratings")
-  ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatings(
+  ResponseEntity<List<PassengerRatingResponse>> getAllPassengerRatings(
       String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,

@@ -2,12 +2,12 @@ package com.dulfinne.taxi.passengerservice.service;
 
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 public interface PassengerService {
 
-  Page<PassengerResponse> getAllPassengers(Integer offset, Integer limit, String sortField);
+  List<PassengerResponse> getAllPassengers(Integer offset, Integer limit, String sortField);
 
   PassengerResponse getPassengerByUsername(String username);
 

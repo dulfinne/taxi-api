@@ -1,11 +1,12 @@
 package com.dulfinne.taxi.passengerservice.unit.service;
 
+import com.dulfinne.jooq.generated.public_.tables.records.PassengerRecord;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
 import com.dulfinne.taxi.passengerservice.exception.EntityAlreadyExistsException;
 import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
 import com.dulfinne.taxi.passengerservice.exception.IllegalSortFieldException;
-import com.dulfinne.taxi.passengerservice.model.Passenger;
+import com.dulfinne.taxi.passengerservice.mapper.PassengerMapper;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRepository;
 import com.dulfinne.taxi.passengerservice.service.impl.PassengerServiceImpl;
 import com.dulfinne.taxi.passengerservice.util.PaginationTestData;
@@ -13,12 +14,11 @@ import com.dulfinne.taxi.passengerservice.util.PassengerConstants;
 import com.dulfinne.taxi.passengerservice.util.PassengerTestData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,39 +26,39 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PassengerServiceTest {
 
-  @InjectMocks private PassengerServiceImpl passengerService;
+  @InjectMocks
+  private PassengerServiceImpl passengerService;
 
-  @Mock private PassengerRepository passengerRepository;
+  @Mock
+  private PassengerRepository passengerRepository;
+  @Spy
+  private PassengerMapper passengerMapper = Mappers.getMapper(PassengerMapper.class);
 
   @Test
   void getAllPassengers_whenValidParams_thenReturnPassengersPage() {
     List<PassengerResponse> expectedContent = PassengerTestData.getResponseList();
-    Page<Passenger> passengersPage = new PageImpl<>(PassengerTestData.getPassengerList());
+    List<PassengerRecord> passengersPage = PassengerTestData.getPassengerList();
 
     // Arrange
-    when(passengerRepository.findAll(any(Pageable.class))).thenReturn(passengersPage);
+    when(passengerRepository.findAll(any(Integer.class), any(Integer.class), any(String.class)))
+        .thenReturn(passengersPage);
 
     // Act
-    Page<PassengerResponse> actualPage =
+    List<PassengerResponse> actual =
         passengerService.getAllPassengers(
             PaginationTestData.DEFAULT_OFFSET,
             PaginationTestData.DEFAULT_LIMIT,
             PaginationTestData.PASSENGER_SORT_FIELD);
 
     // Assert
-    assertEquals(expectedContent, actualPage.getContent());
-    assertEquals(passengersPage.getTotalElements(), actualPage.getTotalElements());
-    assertEquals(passengersPage.getNumber(), actualPage.getNumber());
-    assertEquals(passengersPage.getSize(), actualPage.getSize());
-
-    verify(passengerRepository).findAll(any(Pageable.class));
+    assertEquals(expectedContent, actual);
+    verify(passengerRepository).findAll(any(Integer.class), any(Integer.class), any(String.class));
   }
 
   @Test
@@ -76,7 +76,7 @@ class PassengerServiceTest {
   @Test
   void getPassengerByUsername_whenPassengerExists_thenReturnPassengerResponse() {
     String username = PassengerTestData.FIRST_USERNAME;
-    Passenger passenger = PassengerTestData.getFirst().build();
+    PassengerRecord passenger = PassengerTestData.getFirst();
     PassengerResponse expected = PassengerTestData.getFirstResponse().build();
 
     // Arrange
@@ -106,16 +106,16 @@ class PassengerServiceTest {
   void savePassenger_whenValidRequest_thenReturnPassengerResponse() {
     String username = PassengerTestData.FIRST_USERNAME;
     PassengerRequest request = PassengerTestData.getFirstRequest().build();
-    Passenger passenger =
-        PassengerTestData.getFirst()
-            .rideCount(PassengerConstants.START_RIDE_COUNT)
-            .sumOfRatings(PassengerConstants.START_SUM_OF_RATINGS)
-            .numberOfRatings(PassengerConstants.START_NUMBER_OF_RATINGS)
-            .build();
+
+    PassengerRecord passenger = PassengerTestData.getFirst();
+    passenger.setRideCount(PassengerConstants.START_RIDE_COUNT);
+    passenger.setNumberOfRatings(PassengerConstants.START_NUMBER_OF_RATINGS);
+    passenger.setSumOfRatings(PassengerConstants.START_SUM_OF_RATINGS);
+
     PassengerResponse expected =
         PassengerTestData.getFirstResponse()
             .rideCount(PassengerConstants.START_RIDE_COUNT)
-            .averageRating(PassengerTestData.START_AVERAGE_RATING)
+            .averageRating(PassengerTestData.START_AVERAGE_RATING.doubleValue())
             .build();
 
     // Arrange
@@ -123,7 +123,7 @@ class PassengerServiceTest {
         .thenReturn(Optional.empty());
     when(passengerRepository.findByPhoneNumber(PassengerTestData.FIRST_PHONE_NUMBER))
         .thenReturn(Optional.empty());
-    when(passengerRepository.save(any(Passenger.class))).thenReturn(passenger);
+    when(passengerRepository.save(any(PassengerRecord.class))).thenReturn(passenger);
 
     // Act
     PassengerResponse actual = passengerService.savePassenger(username, request);
@@ -132,19 +132,18 @@ class PassengerServiceTest {
     assertEquals(expected, actual);
     verify(passengerRepository).findByUsername(PassengerTestData.FIRST_USERNAME);
     verify(passengerRepository).findByPhoneNumber(PassengerTestData.FIRST_PHONE_NUMBER);
-    verify(passengerRepository).save(any(Passenger.class));
+    verify(passengerRepository).save(any(PassengerRecord.class));
   }
 
   @Test
   void savePassenger_whenDuplicateUsername_thenReturnEntityAlreadyExistsException() {
     String username = PassengerTestData.FIRST_USERNAME;
     PassengerRequest request = PassengerTestData.getFirstRequest().build();
-    Passenger passenger =
-        PassengerTestData.getFirst()
-            .rideCount(PassengerConstants.START_RIDE_COUNT)
-            .sumOfRatings(PassengerConstants.START_SUM_OF_RATINGS)
-            .numberOfRatings(PassengerConstants.START_NUMBER_OF_RATINGS)
-            .build();
+
+    PassengerRecord passenger = PassengerTestData.getFirst();
+    passenger.setRideCount(PassengerConstants.START_RIDE_COUNT);
+    passenger.setNumberOfRatings(PassengerConstants.START_NUMBER_OF_RATINGS);
+    passenger.setSumOfRatings(PassengerConstants.START_SUM_OF_RATINGS);
 
     // Arrange
     when(passengerRepository.findByUsername(PassengerTestData.FIRST_USERNAME))
@@ -160,12 +159,11 @@ class PassengerServiceTest {
   void savePassenger_whenDuplicatePhoneNumber_thenReturnEntityAlreadyExistsException() {
     String username = PassengerTestData.FIRST_USERNAME;
     PassengerRequest request = PassengerTestData.getFirstRequest().build();
-    Passenger passenger =
-        PassengerTestData.getFirst()
-            .rideCount(PassengerConstants.START_RIDE_COUNT)
-            .sumOfRatings(PassengerConstants.START_SUM_OF_RATINGS)
-            .numberOfRatings(PassengerConstants.START_NUMBER_OF_RATINGS)
-            .build();
+
+    PassengerRecord passenger = PassengerTestData.getFirst();
+    passenger.setRideCount(PassengerConstants.START_RIDE_COUNT);
+    passenger.setNumberOfRatings(PassengerConstants.START_NUMBER_OF_RATINGS);
+    passenger.setSumOfRatings(PassengerConstants.START_SUM_OF_RATINGS);
 
     // Arrange
     when(passengerRepository.findByUsername(PassengerTestData.FIRST_USERNAME))
@@ -183,13 +181,13 @@ class PassengerServiceTest {
   void updatePassenger_whenUpdateToSameFields_thenReturnPassengerResponse() {
     String username = PassengerTestData.FIRST_USERNAME;
     PassengerRequest request = PassengerTestData.getFirstRequest().build();
-    Passenger passenger = PassengerTestData.getFirst().build();
+    PassengerRecord passenger = PassengerTestData.getFirst();
 
     PassengerResponse expected = PassengerTestData.getFirstResponse().build();
 
     // Arrange
     when(passengerRepository.findByUsername(username)).thenReturn(Optional.of(passenger));
-    when(passengerRepository.save(any(Passenger.class))).thenReturn(passenger);
+    when(passengerRepository.update(any(String.class), any(PassengerRecord.class))).thenReturn(passenger);
 
     // Act
     PassengerResponse actual = passengerService.updatePassenger(username, request);
@@ -197,22 +195,23 @@ class PassengerServiceTest {
     // Assert
     assertEquals(expected, actual);
     verify(passengerRepository).findByUsername(PassengerTestData.FIRST_USERNAME);
-    verify(passengerRepository).save(any(Passenger.class));
+    verify(passengerRepository).update(any(String.class), any(PassengerRecord.class));
   }
 
   @Test
   void updatePassenger_whenUpdateToOtherFields_thenReturnPassengerResponse() {
     String username = PassengerTestData.FIRST_USERNAME;
-    Passenger passenger = PassengerTestData.getFirst().build();
+    PassengerRecord passenger = PassengerTestData.getFirst();
 
     PassengerRequest request = PassengerTestData.getUpdateFirstRequest().build();
-    Passenger updatedPassenger = PassengerTestData.getUpdatedFirst().build();
+    PassengerRecord updatedPassenger = PassengerTestData.getUpdatedFirst();
     PassengerResponse expected = PassengerTestData.getUpdatedFirstResponse().build();
 
     // Arrange
     when(passengerRepository.findByUsername(any(String.class))).thenReturn(Optional.of(passenger));
     when(passengerRepository.findByPhoneNumber(any(String.class))).thenReturn(Optional.empty());
-    when(passengerRepository.save(any(Passenger.class))).thenReturn(updatedPassenger);
+    when(passengerRepository.update(any(String.class), any(PassengerRecord.class)))
+        .thenReturn(updatedPassenger);
 
     // Act
     PassengerResponse actual = passengerService.updatePassenger(username, request);
@@ -221,13 +220,13 @@ class PassengerServiceTest {
     assertEquals(expected, actual);
     verify(passengerRepository).findByUsername(username);
     verify(passengerRepository).findByPhoneNumber(any(String.class));
-    verify(passengerRepository).save(any(Passenger.class));
+    verify(passengerRepository).update(any(String.class), any(PassengerRecord.class));
   }
 
   @Test
   void updatePassenger_whenSamePhoneNumberDifferentUser_thenThrowEntityAlreadyExistsException() {
     String username = PassengerTestData.FIRST_USERNAME;
-    Passenger passenger = PassengerTestData.getFirst().build();
+    PassengerRecord passenger = PassengerTestData.getFirst();
     PassengerRequest request = PassengerTestData.getUpdateFirstRequest().build();
 
     // Arrange
@@ -257,7 +256,7 @@ class PassengerServiceTest {
   @Test
   void deletePassenger_whenPassengerWasFound_thenDeletePassenger() {
     String username = PassengerTestData.FIRST_USERNAME;
-    Passenger passenger = PassengerTestData.getFirst().build();
+    PassengerRecord passenger = PassengerTestData.getFirst();
 
     // Arrange
     when(passengerRepository.findByUsername(any(String.class))).thenReturn(Optional.of(passenger));
@@ -267,7 +266,7 @@ class PassengerServiceTest {
 
     // Assert
     verify(passengerRepository).findByUsername(username);
-    verify(passengerRepository).delete(any(Passenger.class));
+    verify(passengerRepository).delete(any(String.class));
   }
 
   @Test
