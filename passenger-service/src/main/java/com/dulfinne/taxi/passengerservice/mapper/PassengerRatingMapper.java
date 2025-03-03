@@ -1,16 +1,14 @@
 package com.dulfinne.taxi.passengerservice.mapper;
 
+import com.dulfinne.jooq.generated.tables.records.PassengerRatingRecord;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRatingRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
-import com.dulfinne.taxi.passengerservice.model.PassengerRating;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PassengerRatingMapper {
-  PassengerRatingMapper RATING_MAPPER_INSTANCE = Mappers.getMapper(PassengerRatingMapper.class);
+  PassengerRatingResponse toResponse(PassengerRatingRecord entity);
 
-  PassengerRatingResponse toResponse(PassengerRating entity);
-
-  PassengerRating toEntity(PassengerRatingRequest request);
+  PassengerRatingRecord toEntity(PassengerRatingRequest request);
 }

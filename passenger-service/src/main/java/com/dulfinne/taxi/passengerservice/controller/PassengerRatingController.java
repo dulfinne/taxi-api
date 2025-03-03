@@ -1,13 +1,13 @@
 package com.dulfinne.taxi.passengerservice.controller;
 
 import com.dulfinne.taxi.passengerservice.controller.api.PassengerRatingApi;
+import com.dulfinne.taxi.passengerservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
 import com.dulfinne.taxi.passengerservice.service.PassengerRatingService;
 import com.dulfinne.taxi.passengerservice.util.HeaderConstants;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,25 +24,25 @@ public class PassengerRatingController implements PassengerRatingApi {
   private final PassengerRatingService passengerRatingService;
 
   @GetMapping("/{username}/ratings")
-  public ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatingsByUsername(
+  public ResponseEntity<PaginatedResponse<PassengerRatingResponse>> getAllPassengerRatingsByUsername(
       @PathVariable String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
 
-    Page<PassengerRatingResponse> ratingResponsePage =
+    PaginatedResponse<PassengerRatingResponse> ratingResponsePage =
         passengerRatingService.getPassengerRatings(username, offset, limit, sortField);
     return ResponseEntity.ok(ratingResponsePage);
   }
 
   @GetMapping("/ratings")
-  public ResponseEntity<Page<PassengerRatingResponse>> getAllPassengerRatings(
+  public ResponseEntity<PaginatedResponse<PassengerRatingResponse>> getAllPassengerRatings(
       @RequestHeader(HeaderConstants.USERNAME_HEADER) String username,
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "rating") String sortField) {
 
-    Page<PassengerRatingResponse> ratingResponsePage =
+    PaginatedResponse<PassengerRatingResponse> ratingResponsePage =
         passengerRatingService.getPassengerRatings(username, offset, limit, sortField);
     return ResponseEntity.ok(ratingResponsePage);
   }

@@ -1,11 +1,10 @@
 package com.dulfinne.taxi.passengerservice.util;
 
+import com.dulfinne.jooq.generated.tables.records.PassengerRatingRecord;
 import com.dulfinne.taxi.avro.Rating;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
-import com.dulfinne.taxi.passengerservice.model.PassengerRating;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.experimental.UtilityClass;
 
 import java.util.List;
 
@@ -19,7 +18,7 @@ public final class RatingTestData {
   public static final Integer SECOND_RATING = 5;
   public static final String SECOND_FEEDBACK = "test second feedback";
 
-  public static List<PassengerRatingResponse> getResponseList() {
+  public static List<Object> getResponseList() {
     return List.of(getFirstResponse().build(), getSecondResponse().build());
   }
 
@@ -37,25 +36,18 @@ public final class RatingTestData {
         .feedback(SECOND_FEEDBACK);
   }
 
-  public static List<PassengerRating> getRatingList() {
-    return List.of(getFirst().build(), getSecond().build());
+  public static List<PassengerRatingRecord> getRatingList() {
+    return List.of(getFirst(), getSecond());
   }
 
-  public static PassengerRating.PassengerRatingBuilder getFirst() {
-
-    return PassengerRating.builder()
-        .id(FIRST_ID)
-        .passenger(PassengerTestData.getFirst().build())
-        .rating(FIRST_RATING)
-        .feedback(FIRST_FEEDBACK);
+  public static PassengerRatingRecord getFirst() {
+    return new PassengerRatingRecord(
+        FIRST_ID, PassengerTestData.FIRST_ID, FIRST_RATING, FIRST_FEEDBACK);
   }
 
-  public static PassengerRating.PassengerRatingBuilder getSecond() {
-    return PassengerRating.builder()
-        .id(SECOND_ID)
-        .passenger(PassengerTestData.getFirst().build())
-        .rating(SECOND_RATING)
-        .feedback(SECOND_FEEDBACK);
+  public static PassengerRatingRecord getSecond() {
+    return new PassengerRatingRecord(
+        SECOND_ID, PassengerTestData.FIRST_ID, SECOND_RATING, SECOND_FEEDBACK);
   }
 
   public static Rating.Builder getKafkaRating() {

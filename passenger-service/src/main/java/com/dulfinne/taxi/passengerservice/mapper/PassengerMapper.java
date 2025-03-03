@@ -1,32 +1,31 @@
 package com.dulfinne.taxi.passengerservice.mapper;
 
+import com.dulfinne.jooq.generated.tables.records.PassengerRecord;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
-import com.dulfinne.taxi.passengerservice.model.Passenger;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.factory.Mappers;
-
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PassengerMapper {
-  PassengerMapper INFO_MAPPER_INSTANCE = Mappers.getMapper(PassengerMapper.class);
 
   @Mapping(
       target = "averageRating",
       expression =
           "java(calculateAverageRating(entity.getSumOfRatings(), entity.getNumberOfRatings()))")
-  PassengerResponse toResponse(Passenger entity);
+  PassengerResponse toResponse(PassengerRecord entity);
 
-  Passenger toEntity(PassengerRequest request);
+  PassengerRecord toEntity(PassengerRequest request);
 
-  void updateEntity(PassengerRequest request, @MappingTarget Passenger entity);
+  void updateEntity(PassengerRequest request, @MappingTarget PassengerRecord entity);
 
-  default Double calculateAverageRating(Double sumOfRatings, Integer numberOfRatings) {
-    return new BigDecimal(sumOfRatings / numberOfRatings)
-        .setScale(2, java.math.RoundingMode.HALF_UP)
+  default Double calculateAverageRating(BigDecimal sumOfRatings, Integer numberOfRatings) {
+    return sumOfRatings
+        .divide(BigDecimal.valueOf(numberOfRatings), 2, RoundingMode.HALF_UP)
         .doubleValue();
   }
 }
