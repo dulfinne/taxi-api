@@ -2,6 +2,7 @@ package com.dulfinne.taxi.passengerservice.service.impl;
 
 import com.dulfinne.jooq.generated.tables.records.PassengerRecord;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
+import com.dulfinne.taxi.passengerservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
 import com.dulfinne.taxi.passengerservice.exception.EntityAlreadyExistsException;
 import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
@@ -30,13 +31,19 @@ public class PassengerServiceImpl implements PassengerService {
 
   @Transactional(readOnly = true)
   @Override
-  public List<PassengerResponse> getAllPassengers(Integer offset, Integer limit, String sortField) {
+  public PaginatedResponse<PassengerResponse> getAllPassengers(
+      Integer offset, Integer limit, String sortField) {
     log.info("Getting all passengers. Started. Sort field = {}", sortField);
     checkSortFieldIsValid(sortField);
 
-    return passengerRepository.findAll(offset, limit, sortField).stream()
-        .map(passengerMapper::toResponse)
-        .toList();
+    List<PassengerResponse> passengers =
+        passengerRepository.findAll(offset, limit, sortField).stream()
+            .map(passengerMapper::toResponse)
+            .toList();
+    int totalElements = passengerRepository.getTotalRecords();
+    int totalPages = (int) Math.ceil((double) totalElements / limit);
+
+    return new PaginatedResponse<>(passengers, offset, limit, totalElements, totalPages);
   }
 
   @Transactional(readOnly = true)

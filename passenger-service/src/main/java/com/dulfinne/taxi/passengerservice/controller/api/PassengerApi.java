@@ -1,6 +1,7 @@
 package com.dulfinne.taxi.passengerservice.controller.api;
 
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
+import com.dulfinne.taxi.passengerservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
 import com.dulfinne.taxi.passengerservice.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,8 +18,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Tag(name = "Passenger Controller", description = "Interactions with passenger")
 public interface PassengerApi {
@@ -37,7 +36,7 @@ public interface PassengerApi {
             responseCode = "400",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       })
-  ResponseEntity<List<PassengerResponse>> getAllPassengers(
+  ResponseEntity<PaginatedResponse<PassengerResponse>> getAllPassengers(
       @RequestParam(value = "offset", defaultValue = "0")
           @Min(0)
           @Parameter(description = "Start Page")

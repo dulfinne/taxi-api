@@ -115,7 +115,7 @@ public final class PassengerTestData {
         FIRST_NUMBER_OF_RATINGS);
   }
 
-  public static List<PassengerResponse> getResponseList() {
+  public static List<Object> getResponseList() {
     return List.of(getFirstResponse().build(), getSecondResponse().build());
   }
 

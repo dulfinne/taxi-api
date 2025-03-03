@@ -2,6 +2,7 @@ package com.dulfinne.taxi.passengerservice.controller;
 
 import com.dulfinne.taxi.passengerservice.controller.api.PassengerApi;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
+import com.dulfinne.taxi.passengerservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
 import com.dulfinne.taxi.passengerservice.service.PassengerService;
 import com.dulfinne.taxi.passengerservice.util.HeaderConstants;
@@ -23,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/passengers")
 @RequiredArgsConstructor
@@ -34,12 +33,12 @@ public class PassengerController implements PassengerApi {
   private final PassengerService passengerService;
 
   @GetMapping("/all")
-  public ResponseEntity<List<PassengerResponse>> getAllPassengers(
+  public ResponseEntity<PaginatedResponse<PassengerResponse>> getAllPassengers(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit", defaultValue = "10") @Min(1) @Max(50) Integer limit,
       @RequestParam(value = "sort", defaultValue = "rideCount") String sortField) {
 
-    List<PassengerResponse> infoResponsePage =
+    PaginatedResponse<PassengerResponse> infoResponsePage =
         passengerService.getAllPassengers(offset, limit, sortField);
     return ResponseEntity.ok(infoResponsePage);
   }

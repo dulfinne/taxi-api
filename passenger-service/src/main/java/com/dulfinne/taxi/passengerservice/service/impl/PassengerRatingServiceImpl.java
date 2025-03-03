@@ -3,6 +3,7 @@ package com.dulfinne.taxi.passengerservice.service.impl;
 import com.dulfinne.jooq.generated.tables.records.PassengerRatingRecord;
 import com.dulfinne.jooq.generated.tables.records.PassengerRecord;
 import com.dulfinne.taxi.avro.Rating;
+import com.dulfinne.taxi.passengerservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
 import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
 import com.dulfinne.taxi.passengerservice.exception.IllegalSortFieldException;
@@ -32,18 +33,23 @@ public class PassengerRatingServiceImpl implements PassengerRatingService {
 
   @Transactional(readOnly = true)
   @Override
-  public List<PassengerRatingResponse> getPassengerRatings(
+  public PaginatedResponse<PassengerRatingResponse> getPassengerRatings(
       String username, Integer offset, Integer limit, String sortField) {
     log.info("Getting all passenger ratings. Started. Username = {}", username);
     checkSortFieldIsValid(sortField);
 
     PassengerRecord passenger = getPassengerIfExistsByUsername(username);
-    List<PassengerRatingRecord> ratingPage =
-        passengerRatingRepository.findByPassengerId(passenger.getId(), offset, limit, sortField);
-
-    return ratingPage.stream()
+    List<PassengerRatingResponse> ratingsPage =
+        passengerRatingRepository
+            .findByPassengerId(passenger.getId(), offset, limit, sortField)
+            .stream()
             .map(passengerRatingMapper::toResponse)
             .toList();
+
+    int totalElements = passengerRatingRepository.getTotalRecords();
+    int totalPages = (int) Math.ceil((double) totalElements / limit);
+
+    return new PaginatedResponse<>(ratingsPage, offset, limit, totalElements, totalPages);
   }
 
   @Transactional

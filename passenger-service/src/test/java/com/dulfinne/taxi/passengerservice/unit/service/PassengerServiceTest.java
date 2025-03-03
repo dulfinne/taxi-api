@@ -2,6 +2,7 @@ package com.dulfinne.taxi.passengerservice.unit.service;
 
 import com.dulfinne.jooq.generated.tables.records.PassengerRecord;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
+import com.dulfinne.taxi.passengerservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
 import com.dulfinne.taxi.passengerservice.exception.EntityAlreadyExistsException;
 import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
@@ -42,22 +43,32 @@ class PassengerServiceTest {
 
   @Test
   void getAllPassengers_whenValidParams_thenReturnPassengersPage() {
-    List<PassengerResponse> expectedContent = PassengerTestData.getResponseList();
-    List<PassengerRecord> passengersPage = PassengerTestData.getPassengerList();
+    List<PassengerRecord> expectedContent = PassengerTestData.getPassengerList();
+    List<Object> passengers = PassengerTestData.getResponseList();
 
+    PaginatedResponse<Object> expected =
+        PaginatedResponse.builder()
+            .content(passengers)
+            .offset(PaginationTestData.DEFAULT_OFFSET)
+            .limit(PaginationTestData.DEFAULT_LIMIT)
+            .totalElements(PaginationTestData.DEFAULT_TOTAL_ELEMENTS)
+            .totalPages(PaginationTestData.DEFAULT_TOTAL_PAGES)
+            .build();
     // Arrange
     when(passengerRepository.findAll(any(Integer.class), any(Integer.class), any(String.class)))
-        .thenReturn(passengersPage);
+        .thenReturn(expectedContent);
+    when(passengerRepository.getTotalRecords())
+        .thenReturn(PaginationTestData.DEFAULT_TOTAL_ELEMENTS);
 
     // Act
-    List<PassengerResponse> actual =
+    PaginatedResponse<PassengerResponse> actual =
         passengerService.getAllPassengers(
             PaginationTestData.DEFAULT_OFFSET,
             PaginationTestData.DEFAULT_LIMIT,
             PaginationTestData.PASSENGER_SORT_FIELD);
 
     // Assert
-    assertEquals(expectedContent, actual);
+    assertEquals(expected, actual);
     verify(passengerRepository).findAll(any(Integer.class), any(Integer.class), any(String.class));
   }
 
@@ -187,7 +198,8 @@ class PassengerServiceTest {
 
     // Arrange
     when(passengerRepository.findByUsername(username)).thenReturn(Optional.of(passenger));
-    when(passengerRepository.update(any(String.class), any(PassengerRecord.class))).thenReturn(passenger);
+    when(passengerRepository.update(any(String.class), any(PassengerRecord.class)))
+        .thenReturn(passenger);
 
     // Act
     PassengerResponse actual = passengerService.updatePassenger(username, request);

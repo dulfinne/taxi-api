@@ -1,13 +1,14 @@
 package com.dulfinne.taxi.passengerservice.service;
 
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
+import com.dulfinne.taxi.passengerservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
 
 import java.util.List;
 
 public interface PassengerService {
 
-  List<PassengerResponse> getAllPassengers(Integer offset, Integer limit, String sortField);
+  PaginatedResponse<PassengerResponse> getAllPassengers(Integer offset, Integer limit, String sortField);
 
   PassengerResponse getPassengerByUsername(String username);
 

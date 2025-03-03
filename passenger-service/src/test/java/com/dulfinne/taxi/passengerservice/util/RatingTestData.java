@@ -18,7 +18,7 @@ public final class RatingTestData {
   public static final Integer SECOND_RATING = 5;
   public static final String SECOND_FEEDBACK = "test second feedback";
 
-  public static List<PassengerRatingResponse> getResponseList() {
+  public static List<Object> getResponseList() {
     return List.of(getFirstResponse().build(), getSecondResponse().build());
   }
 

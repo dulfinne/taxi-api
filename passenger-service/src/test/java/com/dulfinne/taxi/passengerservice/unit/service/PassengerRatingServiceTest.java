@@ -3,6 +3,7 @@ package com.dulfinne.taxi.passengerservice.unit.service;
 import com.dulfinne.jooq.generated.tables.records.PassengerRatingRecord;
 import com.dulfinne.jooq.generated.tables.records.PassengerRecord;
 import com.dulfinne.taxi.avro.Rating;
+import com.dulfinne.taxi.passengerservice.dto.response.PaginatedResponse;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
 import com.dulfinne.taxi.passengerservice.exception.EntityNotFoundException;
 import com.dulfinne.taxi.passengerservice.exception.IllegalSortFieldException;
@@ -34,13 +35,11 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class PassengerRatingServiceTest {
 
-  @InjectMocks
-  private PassengerRatingServiceImpl ratingService;
+  @InjectMocks private PassengerRatingServiceImpl ratingService;
 
-  @Mock
-  private PassengerRatingRepository ratingRepository;
-  @Mock
-  private PassengerRepository passengerRepository;
+  @Mock private PassengerRatingRepository ratingRepository;
+  @Mock private PassengerRepository passengerRepository;
+
   @Spy
   private PassengerRatingMapper passengerRatingMapper =
       Mappers.getMapper(PassengerRatingMapper.class);
@@ -51,16 +50,25 @@ class PassengerRatingServiceTest {
     PassengerRecord passenger = PassengerTestData.getFirst();
 
     List<PassengerRatingRecord> ratings = RatingTestData.getRatingList();
-    List<PassengerRatingResponse> expectedContent = RatingTestData.getResponseList();
+    List<Object> passengerRatings = RatingTestData.getResponseList();
+    PaginatedResponse<Object> expected =
+        PaginatedResponse.builder()
+            .content(passengerRatings)
+            .offset(PaginationTestData.DEFAULT_OFFSET)
+            .limit(PaginationTestData.DEFAULT_LIMIT)
+            .totalElements(PaginationTestData.DEFAULT_TOTAL_ELEMENTS)
+            .totalPages(PaginationTestData.DEFAULT_TOTAL_PAGES)
+            .build();
 
     // Arrange
     when(passengerRepository.findByUsername(any(String.class))).thenReturn(Optional.of(passenger));
     when(ratingRepository.findByPassengerId(
             any(Long.class), any(Integer.class), any(Integer.class), any(String.class)))
         .thenReturn(ratings);
+    when(ratingRepository.getTotalRecords()).thenReturn(PaginationTestData.DEFAULT_TOTAL_ELEMENTS);
 
     // Act
-    List<PassengerRatingResponse> actual =
+    PaginatedResponse<PassengerRatingResponse> actual =
         ratingService.getPassengerRatings(
             username,
             PaginationTestData.DEFAULT_OFFSET,
@@ -68,7 +76,7 @@ class PassengerRatingServiceTest {
             PaginationTestData.RATING_SORT_FIELD);
 
     // Assert
-    assertEquals(expectedContent, actual);
+    assertEquals(expected, actual);
 
     verify(passengerRepository).findByUsername(any(String.class));
     verify(ratingRepository)
