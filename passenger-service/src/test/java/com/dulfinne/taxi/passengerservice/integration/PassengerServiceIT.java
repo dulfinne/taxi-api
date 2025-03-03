@@ -4,7 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
-import com.dulfinne.jooq.generated.public_.tables.records.PassengerRecord;
+import com.dulfinne.jooq.generated.tables.records.PassengerRecord;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
 import com.dulfinne.taxi.passengerservice.repository.PassengerRepository;

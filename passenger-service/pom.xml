@@ -31,6 +31,7 @@
         <logstash-logback.version>7.4</logstash-logback.version>
         <assertJ.version>3.27.3</assertJ.version>
         <jooq.version>3.19.18</jooq.version>
+        <testcontainers-jooq-codegen-maven-plugin.version>0.0.4</testcontainers-jooq-codegen-maven-plugin.version>
 
         <pg.url>${env.PG_URL}/passenger_service_db</pg.url>
         <pg.username>${env.PG_USERNAME}</pg.username>
@@ -256,36 +257,53 @@
             </plugin>
 
             <plugin>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq-codegen-maven</artifactId>
-                <version>${jooq.version}</version>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-jooq-codegen-maven-plugin</artifactId>
+                <version>${testcontainers-jooq-codegen-maven-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.testcontainers</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${testcontainers.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
-                        <id>generate-sources</id>
-                        <phase>generate-sources</phase>
+                        <id>generate-jooq-sources</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <database>
+                                <type>POSTGRES</type>
+                                <containerImage>postgres:15-alpine</containerImage>
+                            </database>
+                            <liquibase>
+                                <changeLogPath>db.changelog-master.xml</changeLogPath>
+                                <changeLogDirectory>src/main/resources/db/changelog</changeLogDirectory>
+                            </liquibase>
+                            <jooq>
+                                <generator>
+                                    <database>
+                                        <includes>.*</includes>
+                                        <excludes>DATABASECHANGELOG.*</excludes>
+                                        <inputSchema>public</inputSchema>
+                                    </database>
+                                    <target>
+                                        <packageName>com.dulfinne.jooq.generated</packageName>
+                                        <directory>target/generated-sources/jooq</directory>
+                                    </target>
+                                </generator>
+                            </jooq>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <jdbc>
-                        <driver>org.postgresql.Driver</driver>
-                        <url>${pg.url}</url>
-                        <user>${pg.username}</user>
-                        <password>${pg.password}</password>
-                    </jdbc>
-                    <generator>
-                        <database>
-                            <name>org.jooq.meta.postgres.PostgresDatabase</name>
-                            <includes>.*</includes>
-                        </database>
-                        <target>
-                            <packageName>com.dulfinne.jooq.generated</packageName>
-                            <directory>target/generated-sources/jooq</directory>
-                        </target>
-                    </generator>
-                </configuration>
             </plugin>
 
             <plugin>

@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.passengerservice.util;
 
-import com.dulfinne.jooq.generated.public_.tables.records.PassengerRecord;
+import com.dulfinne.jooq.generated.tables.records.PassengerRecord;
 import com.dulfinne.taxi.passengerservice.dto.request.PassengerRequest;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerResponse;
 import com.dulfinne.taxi.passengerservice.model.Payment;

@@ -1,7 +1,7 @@
 package com.dulfinne.taxi.passengerservice.repository;
 
-import com.dulfinne.jooq.generated.public_.tables.PassengerRating;
-import com.dulfinne.jooq.generated.public_.tables.records.PassengerRatingRecord;
+import com.dulfinne.jooq.generated.tables.PassengerRating;
+import com.dulfinne.jooq.generated.tables.records.PassengerRatingRecord;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;

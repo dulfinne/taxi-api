@@ -1,6 +1,6 @@
 package com.dulfinne.taxi.passengerservice.util;
 
-import com.dulfinne.jooq.generated.public_.tables.records.PassengerRatingRecord;
+import com.dulfinne.jooq.generated.tables.records.PassengerRatingRecord;
 import com.dulfinne.taxi.avro.Rating;
 import com.dulfinne.taxi.passengerservice.dto.response.PassengerRatingResponse;
 import lombok.AccessLevel;
