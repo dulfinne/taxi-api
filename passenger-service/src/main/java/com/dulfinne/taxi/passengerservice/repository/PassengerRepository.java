@@ -25,18 +25,20 @@ public class PassengerRepository {
     };
   }
 
-  public List<PassengerRecord> findAll(int offset, int limit, String sortBy) {
+  public List<PassengerRecord> findAll(int pageNumber, int pageSize, String sortBy) {
     var sortField = getSortField(sortBy);
 
     return dsl.selectFrom(Passenger.PASSENGER)
         .orderBy(sortField)
-        .offset(offset * limit)
-        .limit(limit)
+        .offset(pageNumber * pageSize)
+        .limit(pageSize)
         .fetch();
   }
 
   public Integer getTotalRecords() {
-    return dsl.selectCount().from(Passenger.PASSENGER).fetchOne(0, Integer.class);
+    return dsl.selectCount().
+            from(Passenger.PASSENGER)
+            .fetchOne(0, Integer.class);
   }
 
   public Optional<PassengerRecord> findByUsername(String username) {
@@ -44,11 +46,15 @@ public class PassengerRepository {
         dsl.selectFrom(Passenger.PASSENGER)
             .where(Passenger.PASSENGER.USERNAME.eq(username))
             .fetchOne();
+
     return Optional.ofNullable(passengerRecord);
   }
 
   public PassengerRecord save(PassengerRecord passengerRecord) {
-    return dsl.insertInto(Passenger.PASSENGER).set(passengerRecord).returning().fetchOne();
+    return dsl.insertInto(Passenger.PASSENGER)
+            .set(passengerRecord)
+            .returning()
+            .fetchOne();
   }
 
   public PassengerRecord update(String username, PassengerRecord passengerRecord) {
@@ -68,6 +74,8 @@ public class PassengerRepository {
   }
 
   public void delete(String username) {
-    dsl.delete(Passenger.PASSENGER).where(Passenger.PASSENGER.USERNAME.eq(username)).execute();
+    dsl.delete(Passenger.PASSENGER)
+            .where(Passenger.PASSENGER.USERNAME.eq(username))
+            .execute();
   }
 }
