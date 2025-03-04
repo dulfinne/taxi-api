@@ -52,7 +52,7 @@ class DriverServiceTest {
     Page<DriverResponse> responsePage = new PageImpl<>(List.of(response, response));
 
     // Arrange
-    when(driverRepository.findAll(any(Pageable.class))).thenReturn(driverPage);
+    when(driverRepository.findAllWithCars(any(Pageable.class))).thenReturn(driverPage);
     when(driverMapper.toResponse(any(Driver.class))).thenReturn(response);
 
     // Act
@@ -68,7 +68,7 @@ class DriverServiceTest {
     assertEquals(driverPage.getNumber(), actualPage.getNumber());
     assertEquals(driverPage.getSize(), actualPage.getSize());
 
-    verify(driverRepository).findAll(any(Pageable.class));
+    verify(driverRepository).findAllWithCars(any(Pageable.class));
     verify(driverMapper, times(2)).toResponse(any(Driver.class));
   }
 

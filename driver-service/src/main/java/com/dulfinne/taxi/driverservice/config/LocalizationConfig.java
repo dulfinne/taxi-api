@@ -1,20 +1,26 @@
 package com.dulfinne.taxi.driverservice.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 @Configuration
 public class LocalizationConfig {
 
+  @Value("${DEFAULT_LOCALE}")
+  private String defaultLocale;
+
   @Bean
   public LocaleResolver localeResolver() {
     AcceptHeaderLocaleResolver resolver = new AcceptHeaderLocaleResolver();
-    resolver.setDefaultLocale(Locale.ENGLISH);
+    resolver.setDefaultLocale(Locale.forLanguageTag(defaultLocale));
     return resolver;
   }
 
@@ -23,7 +29,7 @@ public class LocalizationConfig {
     ReloadableResourceBundleMessageSource messageSource =
         new ReloadableResourceBundleMessageSource();
     messageSource.setBasename("classpath:localization/validation/validation");
-    messageSource.setDefaultEncoding("ISO-8859-1");
+    messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
     return messageSource;
   }
 
@@ -32,7 +38,7 @@ public class LocalizationConfig {
     ReloadableResourceBundleMessageSource messageSource =
         new ReloadableResourceBundleMessageSource();
     messageSource.setBasename("classpath:localization/exception/exception");
-    messageSource.setDefaultEncoding("ISO-8859-1");
+    messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
     return messageSource;
   }
 }
