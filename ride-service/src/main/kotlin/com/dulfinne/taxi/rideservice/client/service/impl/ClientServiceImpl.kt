@@ -13,6 +13,7 @@ import com.dulfinne.taxi.rideservice.client.service.ClientService
 import com.dulfinne.taxi.rideservice.dto.response.PointResponse
 import com.dulfinne.taxi.rideservice.exception.ServiceNotAvailableException
 import com.dulfinne.taxi.rideservice.util.ExceptionKeys
+import feign.RetryableException
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -61,27 +62,27 @@ class ClientServiceImpl(
         return promocodeClient.getDiscount(request)
     }
 
-    private fun fallBackPassengerService(ex: Exception): PassengerResponse {
+    private fun fallBackPassengerService(ex: RetryableException): PassengerResponse {
         log.info("Passenger service is not available. Fallback method was called.")
         throw ServiceNotAvailableException(ExceptionKeys.PASSENGER_SERVICE_NOT_AVAILABLE)
     }
 
-    private fun fallBackDriverService(ex: Exception): DriverResponse {
+    private fun fallBackDriverService(ex: RetryableException): DriverResponse {
         log.info("Driver service is not available. Fallback method was called.")
         throw ServiceNotAvailableException(ExceptionKeys.DRIVER_SERVICE_NOT_AVAILABLE)
     }
 
-    private fun fallBackDriverServiceLocation(ex: Exception): PointResponse {
+    private fun fallBackDriverServiceLocation(ex: RetryableException): PointResponse {
         log.info("Driver service is not available. Fallback method was called.")
         throw ServiceNotAvailableException(ExceptionKeys.DRIVER_SERVICE_NOT_AVAILABLE)
     }
 
-    private fun fallBackPaymentService(ex: Exception): CanPayByCardResponse {
+    private fun fallBackPaymentService(ex: RetryableException): CanPayByCardResponse {
         log.info("Payment service is not available. Fallback method was called.")
         throw ServiceNotAvailableException(ExceptionKeys.PAYMENT_SERVICE_NOT_AVAILABLE)
     }
 
-    private fun fallBackPromocodeService(ex: Exception): DiscountResponse {
+    private fun fallBackPromocodeService(ex: RetryableException): DiscountResponse {
         log.info("Promocode service is not available. Fallback method was called.")
         throw ServiceNotAvailableException(ExceptionKeys.PROMOCODE_SERVICE_NOT_AVAILABLE)
     }

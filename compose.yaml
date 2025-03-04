@@ -46,8 +46,8 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
-    expose:
-      - "8080"
+    ports:
+      - "8888:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
@@ -141,18 +141,14 @@ services:
       - mongo_data:/data/db
 
   eureka:
-    build: ./eureka-server
-    container_name: eureka
-    image: eureka:latest
+    image: dulfinne/eureka-server:latest
     environment:
       EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka:8761/eureka/
     expose:
       - "8761"
 
   api-gateway:
-    build: ./api-gateway
-    container_name: api-gateway
-    image: api-gateway:latest
+    image: dulfinne/api-gateway:latest
     ports:
       - "8642:8642"
     environment:
@@ -168,9 +164,7 @@ services:
       - ride-service
 
   passenger-service:
-    build: ./passenger-service
-    container_name: passenger-service
-    image: passenger-service:latest
+    image: dulfinne/passenger-service:latest
     expose:
       - "8091"
     environment:
@@ -188,9 +182,7 @@ services:
       - kafka
 
   driver-service:
-    build: ./driver-service
-    container_name: driver-service
-    image: driver-service:latest
+    image: dulfinne/driver-service:latest
     expose:
       - "8092"
     environment:
@@ -207,9 +199,7 @@ services:
       - kafka
 
   ride-service:
-    build: ./ride-service
-    container_name: ride-service
-    image: ride-service:latest
+    image: dulfinne/ride-service:latest
     expose:
       - "8093"
     environment:
@@ -227,9 +217,7 @@ services:
       - kafka
 
   auth-service:
-    build: ./auth-service
-    container_name: auth-service
-    image: auth-service:latest
+    image: dulfinne/auth-service:latest
     expose:
       - "8094"
     environment:
@@ -241,9 +229,7 @@ services:
       - keycloak
 
   promocode-service:
-    build: ./promocode-service
-    container_name: promocode-service
-    image: promocode-service:latest
+    image: dulfinne/promocode-service:latest
     expose:
       - "8095"
     environment:
@@ -258,9 +244,7 @@ services:
       - kafka
 
   payment-service:
-    build: ./payment-service
-    container_name: payment-service
-    image: payment-service:latest
+    image: dulfinne/payment-service:latest
     expose:
       - "8096"
     environment:
